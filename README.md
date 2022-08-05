@@ -38,5 +38,7 @@ So every minima node could act as a neuron or group of neurons to develope a
 worlds, games or even to rule a real country in a decentralized way.
 Anyone, in case of a metaverse should own their piece of land, one piece of land for running minima node, where everything could be tokenized,
 and with the tools provided from the DAO this "metaverse" could be one, multiples, or build the way their communities wanted.
+And also how to build a Proof_of_Identity specify on the DAO's things to do, where using the minima network, the same users of the network can build that universal system of identity where could be used everywhere.
   - The Idea with all that should be done:
     - https://github.com/elledaniels/MinimaVerseDAO
+    - https://github.com/elledaniels/Proof_of_Identity
