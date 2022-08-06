@@ -23,6 +23,11 @@ future and support scientific projects on green energies.
 - Improve the MDAE system over future.
 - Support scientific projects on green energies, specially **Hydrogen**.
 
+## DOCS
+
+- Pitch Presentation: <https://github.com/MDAE-DAO/MDAE/blob/main/docs/MDAE_Pitch_%20Presentation.pdf>
+- White Paper: <https://github.com/MDAE-DAO/MDAE/blob/main/docs/MDAE%20White%20Paper%20v0.1.pdf>
+
 ## INCUBATOR Projects
 
 - **DNS fully decentralized** over Minima where wallets, emails, DApps, webs IoT devices
