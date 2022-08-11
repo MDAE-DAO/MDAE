@@ -1,0 +1,54 @@
+Project planning
+
+2 weeks MDAE
+1 week UPDOI
+----------------------------
+----------MDAE
+----------------------------
+---DAPPS
+
+1. DAO
+Basic functionality very easy for starting, we are gonna add complexity over time.
+
+- Script address to deposit the created tokens (Vault) very easy.
+- Create the two basic tokens gDAE , aDAE and sent to Vault.
+- Create very basic contract to let buy tokens by a third party (Advertisers, users.......).
+	- Hard coded first version, 1 minima let buy 1 token.
+	- Its an exchange contract, receive 1 minima and get 1 choosed token (state variable indicates which one)
+	- Let buy advertiser tokens and profile tokens
+	
+2. ADVERTISER
+	- Let user to configure his token (flashloan contract) first we can use state variables and only use text
+		- Later we can think a way the publicity info is on a web page specify by the token state variable
+	- Set a list of options of what the advertiser can configure about the token
+		- Later we can think on to do it on a group of tokens.
+		
+3. PROFILE
+	- Let a user configure his profile token (flashloan contract)
+	- Set a list of options to configure the profile token as state variables
+		- Later we can thing about encrypt it or hash it.
+		
+4. TRACKER
+	- It is only a MOCK
+	- Specify all options where Advertisers can configure where and how their tokens are gonna be published
+	- Specify options to track information
+	- Specify input/output/ORACLES sources.
+
+---USE CASES
+
+A. Publicity on a web page as a link or on a external DApp using minima or both of them.
+	- The link on a web page using Maxima contact can be the most difficult and tricky as Maxima contact
+	Info changes over time.
+	- The use an external Dapp (that uses minima) can be simpler, as we could develope somekind of mini API
+	that DApps should must import to look only on their nodes for receving specific publicity token.
+	 
+B. Publicity inserted dynamically into a game
+	- Godot Game engine is waiting for a publicity token, when the token arrives to minima node's wallet then
+	the game, if the player is near a publiciy zone for publicity, the game publish the publicity  on the game
+	designated area.
+	- With the experiments I did, it is almost done, 1-2 days of work at most.
+	
+
+----------------------------
+
+
