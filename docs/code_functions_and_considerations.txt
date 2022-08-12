@@ -1,0 +1,144 @@
+# As the quality of the code will be evaluated by the judges we have to consider several factors:
+# - The code should need to be developed in a way of abstraction API , that way we could focus on the interface
+#   without having a code working, we could simulate the return of a functions as a JSON object and the interface could still
+#   work and be tested, letting us working on different aspects on the projects at the same time.
+
+#  - There is a tight agenda to develop the code
+#  - Developing the code in abstraction API will let us change the background/minima/server code without afecting the interface.
+#  - Having an API for every DAPP will let us in the future expose those API's to third parties or services or let the same
+     Dapps of the project using them keeping the front-end code clean.
+
+#  - Working focus in an API way, will let us develop simple code, just collecting the information needed by the API function
+     from the interface and passing to the function call it will produce a clean an easy to understand code from the front-end
+     perspective and decoupling back-end/minima code from front-end.
+
+# - The functions of the API when possible should accept / return JSON Objects to let them later add any kind of extra
+  - information without having to modify the front-end API calls and let us add extra functionality on the back-end/minima
+    easily.
+
+##########################
+##### DAO API   DAO.js
+##########################
+The tokens must be created by hand and send it to the vault (multiple signature contract to extract them( at the end )),
+different vaults for any  kind of token can be set to add extra security.
+The tokens must be transfer from the vault to an script to let people to buy them.
+
+1.- The price can be fixed on every bunch of tokens transfered from the vault to the script hard coding the price on the script,
+which will gave us different addresses on every bunch of transfered tokens on that script, and a new script will be
+executed(created) every time a bunch of tokens is transfered from the vault.
+The DAO should track (if the price is hard coded) every time a script is created what give us a problem, as it will be more
+difficult by the DAO to be decentralized as how the DAO app every client installs on his node will know those new scripts ?
+So, a priory, creating a new script for every bunch of tokens transfered from the vault is not the best choice,
+the script's addresses where the to buy the tokens must be fixed and know since the begining.
+
+
+2.- The prince can be set on every token by state variable, which let the DAO in a near future change the
+price on all the tokens that are on the script (this would imply modify every token and a transaction for each one of them,
+so kind of a flashLoan contract on every token to change his state variable)
+
+3.- The price could also be fixed on a basic ## tokenPrice ## configuration that would be needed to be check every time a buy is done,
+setting the price on the transaction when the buy is done as state variable based on that ## tokenPrice ## configuration, so the
+advantage on this setting is that only changing one token, you change the price of all of them and this could also be
+controlled by some kind of ORACLE.
+
+4.- It is a exchange contract where you pay some minimas and receive some tokens.
+
+# functions:
+
+# Check if script exist and if not execute it and track it
+---->init()
+
+#
+# input:  {"type":"tokenID-tokenName", "amount":number, "destination":"address", "origin_funds":"coind", "external_funds":{"blockchain":"String", "amount":number}}
+# output: {"result":boolean, "message":String}
+
+---->buy_token (JSON object)
+
+
+
+
+##########################
+##### ADVERTISER API   ADVERTISER.js
+##########################
+An advertiser can buy 10k tokens on a DAO to configure the tokens gathered with their publicity, so we have a doubt:
+We need to configure those 10k tokens with the same configuration of publicity, so here are two ways we think it can be done, but we are not sure:
+
+1 : FlasLoan contract that on the same transaction sent the token to himself setting state variables with the information, the tokens are a whole unit coind of 10k tokens.
+So if we do that, then every unit of those tokens the advertiser sent to any place to publish his advertise will be have the state variables setted ?
+
+2: FlasLoan contract that on the same transaction sent the token to himself but setting as state variable anoter token called **ConfigurationTOKEN**, unique for that bunch of 10k tokens of publicity, that way, the advertiser could change the info of any thouse 10k tokens on the fly, but the question is the same, the state variable information set on the transaction with the ConfigurationTOKEN ID will be preserved when a unit of those tokens will be sent to someplace  to publish his advertise ?
+
+---- considerations
+3: The Tokens of advertiser are bought on the DAO, but they are generic to everyone, so no speciall contract can be set on them.
+
+---- Solutions ?
+if sending one unit of those tokens to any place doesn't preserve the state variables what do do ?
+
+---> Create a specific script for those 10k tokens and send the 10k tokens into that script making them that in order to spent them the state variable must be preserved?
+
+
+### Depending on the solutions we chose we can have different functions and aproaches ###
+
+1. Option-1:
+  - A Json Object is given to the function as input with the info introduced from interface and a boolean TRUE is given
+  as (is_state_vars)
+  - The function creates an script configured with the information provided and send the tokens into the script with
+  the configured info as state variables, the script will have to assure that when a token is taken out of the script it
+  contains the same state variables it had before on the new transaction in order it can be spent.
+  - The function returns a Json Object, with a result, a message and the script address.
+
+2. Option-2:
+  - A Json Object is given to the function as input with the info introduced from interface and a boolean FALSE is given
+  as (is_state_vars)
+  - The function creates an script configured with the information provided and send the tokens into the script with
+  the configured info into a new TokenConfiguration, where its tokenID is set as state variable, the script will have
+  to assure that when a token is taken out of the script it contains the same tokenID it had before on the new transaction
+  in order it can be spent.
+  - The function returns a Json Object, with a result, a message and the script address and the
+   tokenId with all configuration set on it.
+
+#functions
+
+#
+# input: {"tokens":[token1, token2, token3,....], "optionsAdvertising":{"type":"String(text, survey, image, video)","source":"url","text":[text1, text2, text3....],"rules":{},targets:[{Object-1},{Object-2},{Object-3}]}}
+# output: {"result":boolean, "message":String, "script":"", "tokenID":"tokenID"}
+
+example possible input Json Onject:
+{
+"tokens":[
+    coinid(token1) can be 10k tokens,
+    coinid(token2),
+    coinid(token3)
+    ],
+"optionsAdvertising": {
+    "type":"text",
+    "text":["This is the first line of publicity", "this is the second line of publicity", "this is a third line link of publicity"],
+    "rules":{
+      "font-size":"12",
+      "position.x": "200",
+      "position.y": "200",
+      "link_click": TRUE,
+      "link_code_verification": FALSE,
+      "reward_viewer":"address",
+      "reward_third_party":"address"
+      "reward_viewer_amount":0.55
+      "reward_third_party_amount"0.012
+    "targets":[
+      {
+      "type":"DApp",
+      "name-id": "1212313-123123-123123",
+      "script_address":"address",
+      "wallet":"address"
+      },
+      {
+      "type":"Game",
+      "script_address":address,
+      }
+    ]
+    },
+},
+----->configure_tokens(JSON object, is_state_vars)
+
+
+@@@@@@@@ Pending to do Profile API
+@@@@@@@@ Pending to do Tracker API
