@@ -304,3 +304,4 @@ send address:0x81EF1C3C244FBE690452B25CA6D24FE1F023028F5A3DF7286BB35B53D3613F1D 
 </result>
 
 success !!! it should be, but is not !!! : send address:0x81EF1C3C244FBE690452B25CA6D24FE1F023028F5A3DF7286BB35B53D3613F1D amount:1 tokenid:0x3D02BDB2BBC139B5AD96AE9B3585FA647A62583A58E8D26DA482E1CCBBD52B66 state:{"1":"[First line publicity]", "2":"[Second line publicity]", "3":"[Third line publicity]"}
+--------
