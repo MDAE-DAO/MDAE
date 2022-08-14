@@ -66,7 +66,9 @@ We need to configure those 10k tokens with the same configuration of publicity, 
 1 : FlasLoan contract that on the same transaction sent the token to himself setting state variables with the information, the tokens are a whole unit coind of 10k tokens.
 So if we do that, then every unit of those tokens the advertiser sent to any place to publish his advertise will be have the state variables setted ?
 
-2: FlasLoan contract that on the same transaction sent the token to himself but setting as state variable anoter token called **ConfigurationTOKEN**, unique for that bunch of 10k tokens of publicity, that way, the advertiser could change the info of any thouse 10k tokens on the fly, but the question is the same, the state variable information set on the transaction with the ConfigurationTOKEN ID will be preserved when a unit of those tokens will be sent to someplace  to publish his advertise ?
+2: FlasLoan contract that on the same transaction sent the token to himself but setting as state variable anoter token called **ConfigurationTOKEN**, unique for that bunch of 10k tokens of publicity,
+that way, the advertiser could change the info of any thouse 10k tokens on the fly, but the question is the same, the state variable information set on the transaction with the ConfigurationTOKEN ID
+will be preserved when a unit of those tokens will be sent to someplace  to publish his advertise ?
 
 ---- considerations
 3: The Tokens of advertiser are bought on the DAO, but they are generic to everyone, so no speciall contract can be set on them.
@@ -76,6 +78,11 @@ if sending one unit of those tokens to any place doesn't preserve the state vari
 
 ---> Create a specific script for those 10k tokens and send the 10k tokens into that script making them that in order to spent them the state variable must be preserved?
 
+---> if you don't create the script holder when the tokens are bought (you could configure them on the same operation of the bought) but lets stay on the option, we want
+to configure them later, so the Advertiiser Dapp could have a send_tokens method that will do a transaction and will force the state variables to be set set with the
+state variables (they have been  configured after the buy on the whole bunch of 10K tokens) , but does not protect the tokens if the Advertiser send them without using
+the Advertiser Dapp and send them using his wallet. So, if we want to grant 100% that the tokens are protected with the info set on them, they should be sent to an script
+that would grant that whatever method for sending them is chosen, the previous state variables must be present, that is what I interpret ? what do you thing ? @MIC Minima Devs
 
 ### Depending on the solutions we chose we can have different functions and aproaches ###
 
@@ -142,3 +149,158 @@ example possible input Json Onject:
 
 @@@@@@@@ Pending to do Profile API
 @@@@@@@@ Pending to do Tracker API
+
+@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+--------  basic tests before doing and dapp ----------------
+@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+------------------------------------------------------------
+1: Simulate the bought of 100 tokens:
+------------------------------------------------------------
+
+-> tokencreate name:gDAE amount:100 decimals:0
+<result>
+"tokenid":"0x3D02BDB2BBC139B5AD96AE9B3585FA647A62583A58E8D26DA482E1CCBBD52B66",
+</result>
+
+------------------------------------------------------------
+2: Configure the tokens with state variables simulating are configured by AdvertiserDapp using
+getaddress, send tokens to that address with send command and some state variables configured
+state:{"1":"[First line publicity]", "2":"[Second line publicity]", "3":"[Third line publicity]"}
+------------------------------------------------------------
+
+->send address:0xA75624C576DB0D737C498706EC7A43E887FD8C3BD2C01A5C373629EE267AC824 amount:100 tokenid:0x3D02BDB2BBC139B5AD96AE9B3585FA647A62583A58E8D26DA482E1CCBBD52B66 state:{"1":"[First line publicity]", "2":"[Second line publicity]", "3":"[Third line publicity]"}
+<result>
+->coins
+{
+  "command":"coins",
+  "status":true,
+  "pending":false,
+  "response":[{
+    "coinid":"0x6572D5EA204DDE5B2337D7BEB271CE6BCC132CFE70CE142382E62FBB7DD1CBD0",
+    "amount":"0.000000000000000000000000000000000000000001",
+    "address":"0xA75624C576DB0D737C498706EC7A43E887FD8C3BD2C01A5C373629EE267AC824",
+    "miniaddress":"MxG0857AZWCATMR1YPNZWC70RM7KGV8GVUZZEUWZ0D5ZDPM57N2CUM84G7P3G0R",
+    "tokenid":"0x3D02BDB2BBC139B5AD96AE9B3585FA647A62583A58E8D26DA482E1CCBBD52B66",
+    "token":{
+      "name":{
+        "name":"gDAE"
+      },
+      "coinid":"0xB317CB0F5EF93CC4709C6625B744BFA5C29CDEC6DBE2AB08A77251715FA83AF0",
+      "total":"100",
+      "decimals":0,
+      "script":"RETURN TRUE",
+      "totalamount":"0.000000000000000000000000000000000000000001",
+      "scale":"44",
+      "created":"8250",
+      "tokenid":"0x3D02BDB2BBC139B5AD96AE9B3585FA647A62583A58E8D26DA482E1CCBBD52B66"
+    },
+    "tokenamount":"100",
+    "storestate":true,
+    "state":[{
+      "port":1,
+      "type":4,
+      "data":"[First line publicity]"
+    },
+    {
+      "port":2,
+      "type":4,
+      "data":"[Second line publicity]"
+    },
+    {
+      "port":3,
+      "type":4,
+      "data":"[Third line publicity]"
+    }],
+    "spent":false,
+    "mmrentry":"10",
+    "created":"8529"
+  },
+</result>
+
+---------------------------------------------------------------------
+3: Create very simple smart contract that grants that every token sent into it,
+can only get out if the state variables are preserved with the same values they were set up,
+and only by the onwer (the advertiser who sent the tokens into the script) by one of his
+node address signedby(publickey(owner node's address)) as his node is the only one that will
+have the private key of the publickey used or any one of the advertiser node, to spent the publicity tokens he bought.
+---------------------------------------------------------------------
+
+script:
+ASSERT SIGNEDBY(0xA73525177A4165E1C93791001D3C6C2A3080E6CFDF8A67C0699C85E70D6B982A)
+ASSERT SAMESTATE ( 1 1 )
+ASSERT SAMESTATE ( 2 2 )
+ASSERT SAMESTATE ( 3 3 )
+RETURN TRUE
+
+------lets test the script and get a clean useful script to use with any of advertiser publickey:
+
+->runscript script:"ASSERT SIGNEDBY(0xA73525177A4165E1C93791001D3C6C2A3080E6CFDF8A67C0699C85E70D6B982A) ASSERT SAMESTATE ( 1 1 ) ASSERT SAMESTATE ( 2 2 ) ASSERT SAMESTATE ( 3 3 ) RETURN TRUE" clean:true state:{"1":"[First line publicity]", "2":"[Second line publicity]", "3":"[Third line publicity]"} prevstate:{"1":"[First line publicity]", "2":"[Second line publicity]", "3":"[Third line publicity]"} signatures:["0xA73525177A4165E1C93791001D3C6C2A3080E6CFDF8A67C0699C85E70D6B982A"]
+
+-----clean script:
+ASSERT SIGNEDBY(0xA73525177A4165E1C93791001D3C6C2A3080E6CFDF8A67C0699C85E70D6B982A) ASSERT SAMESTATE(1 1) ASSERT SAMESTATE(2 2) ASSERT SAMESTATE(3 3) RETURN TRUE
+
+-----script address: "address":"0x1A5AC553629368A542578D21D15E9B1258B378A245766036F3DAB39ECC2A968A"
+
+------registar script al node:
+
+->newscript script:"ASSERT SIGNEDBY(0xA73525177A4165E1C93791001D3C6C2A3080E6CFDF8A67C0699C85E70D6B982A) ASSERT SAMESTATE(1 1) ASSERT SAMESTATE(2 2) ASSERT SAMESTATE(3 3) RETURN TRUE" track:true
+
+<result>
+{
+  "command":"newscript",
+  "params":{
+    "script":"ASSERT SIGNEDBY(0xA73525177A4165E1C93791001D3C6C2A3080E6CFDF8A67C0699C85E70D6B982A) ASSERT SAMESTATE(1 1) ASSERT SAMESTATE(2 2) ASSERT SAMESTATE(3 3) RETURN TRUE",
+    "track":"true"
+  },
+  "status":true,
+  "pending":false,
+  "response":{
+    "script":"ASSERT SIGNEDBY(0xA73525177A4165E1C93791001D3C6C2A3080E6CFDF8A67C0699C85E70D6B982A) ASSERT SAMESTATE(1 1) ASSERT SAMESTATE(2 2) ASSERT SAMESTATE(3 3) RETURN TRUE",
+    "address":"0x1A5AC553629368A542578D21D15E9B1258B378A245766036F3DAB39ECC2A968A",
+    "miniaddress":"MxG080QBB2Y6ZKJD2WK4YSD478YT6ZWB2PNH8W5EPG3DSUQMEFCZAKMH9WBUYSB",
+    "simple":false,
+    "default":false,
+    "publickey":"0x00",
+    "track":true
+  }
+}
+</result>
+
+------------------------------------------------------------
+4: send tokens into script address: 0x1A5AC553629368A542578D21D15E9B1258B378A245766036F3DAB39ECC2A968A
+setting again the states variables as they are set on the token and it does not have any contract to force it must be
+present until they are into the scripts
+------------------------------------------------------------
+
+send address:0x1A5AC553629368A542578D21D15E9B1258B378A245766036F3DAB39ECC2A968A amount:100 tokenid:0x3D02BDB2BBC139B5AD96AE9B3585FA647A62583A58E8D26DA482E1CCBBD52B66 state:{"1":"[First line publicity]", "2":"[Second line publicity]", "3":"[Third line publicity]"}
+<result>
+
+Minima @ 14/08/2022 19:54:05 [110.6 MB] : Transaction Mined : 0x00054AABE29BF8C508F08E508114DF3B778822C043E800697D36D0CA359FEC95
+Minima @ 14/08/2022 19:54:05 [127.8 MB] : NEW Spent Coin : {"coinid":"0x6572D5EA204DDE5B2337D7BEB271CE6BCC132CFE70CE142382E62FBB7DD1CBD0","amount":"0.000000000000000000000000000000000000000001","address":"0xA75624C576DB0D737C498706EC7A43E887FD8C3BD2C01A5C373629EE267AC824","miniaddress":"MxG0857AZWCATMR1YPNZWC70RM7KGV8GVUZZEUWZ0D5ZDPM57N2CUM84G7P3G0R","tokenid":"0x3D02BDB2BBC139B5AD96AE9B3585FA647A62583A58E8D26DA482E1CCBBD52B66","token":{"name":{"name":"gDAE"},"coinid":"0xB317CB0F5EF93CC4709C6625B744BFA5C29CDEC6DBE2AB08A77251715FA83AF0","total":"100","decimals":0,"script":"RETURN TRUE","totalamount":"0.000000000000000000000000000000000000000001","scale":"44","created":"8250","tokenid":"0x3D02BDB2BBC139B5AD96AE9B3585FA647A62583A58E8D26DA482E1CCBBD52B66"},"tokenamount":"100","storestate":true,"state":[{"port":1,"type":4,"data":"[First line publicity]"},{"port":2,"type":4,"data":"[Second line publicity]"},{"port":3,"type":4,"data":"[Third line publicity]"}],"spent":true,"mmrentry":"10","created":"8529"}
+Minima @ 14/08/2022 19:54:05 [127.9 MB] : NEW Unspent Coin : {"coinid":"0x268729DFA363D79EE29CA95049A85FD0DB1C07C9513CB8687CF1135F900089F7","amount":"0.000000000000000000000000000000000000000001","address":"0x1A5AC553629368A542578D21D15E9B1258B378A245766036F3DAB39ECC2A968A","miniaddress":"MxG080QBB2Y6ZKJD2WK4YSD478YT6ZWB2PNH8W5EPG3DSUQMEFCZAKMH9WBUYSB","tokenid":"0x3D02BDB2BBC139B5AD96AE9B3585FA647A62583A58E8D26DA482E1CCBBD52B66","token":{"name":{"name":"gDAE"},"coinid":"0xB317CB0F5EF93CC4709C6625B744BFA5C29CDEC6DBE2AB08A77251715FA83AF0","total":"100","decimals":0,"script":"RETURN TRUE","totalamount":"0.000000000000000000000000000000000000000001","scale":"44","created":"8250","tokenid":"0x3D02BDB2BBC139B5AD96AE9B3585FA647A62583A58E8D26DA482E1CCBBD52B66"},"tokenamount":"100","storestate":true,"state":[{"port":1,"type":4,"data":"[First line publicity]"},{"port":2,"type":4,"data":"[Second line publicity]"},{"port":3,"type":4,"data":"[Third line publicity]"}],"spent":false,"mmrentry":"11","created":"8959"}
+
+</result>
+-----------------------------------------------------------
+5: try to send 1 token out of script without setting the exact same state vars and should fail as dosen't
+meet the contract rules
+-----------------------------------------------------------
+
+fail:    send address:0x81EF1C3C244FBE690452B25CA6D24FE1F023028F5A3DF7286BB35B53D3613F1D amount:1 tokenid:0x3D02BDB2BBC139B5AD96AE9B3585FA647A62583A58E8D26DA482E1CCBBD52B66
+<result>
+
+send address:0x81EF1C3C244FBE690452B25CA6D24FE1F023028F5A3DF7286BB35B53D3613F1D amount:1 tokenid:0x3D02BDB2BBC139B5AD96AE9B3585FA647A62583A58E8D26DA482E1CCBBD52B66
+{
+  "command":"send",
+  "params":{
+    "address":"0x81EF1C3C244FBE690452B25CA6D24FE1F023028F5A3DF7286BB35B53D3613F1D",
+    "amount":"1",
+    "tokenid":"0x3D02BDB2BBC139B5AD96AE9B3585FA647A62583A58E8D26DA482E1CCBBD52B66"
+  },
+  "status":false,
+  "pending":false,
+  "error":"No Coins of tokenid:0x3D02BDB2BBC139B5AD96AE9B3585FA647A62583A58E8D26DA482E1CCBBD52B66 available!"
+}
+
+</result>
+
+success !!! it should be, but is not !!! : send address:0x81EF1C3C244FBE690452B25CA6D24FE1F023028F5A3DF7286BB35B53D3613F1D amount:1 tokenid:0x3D02BDB2BBC139B5AD96AE9B3585FA647A62583A58E8D26DA482E1CCBBD52B66 state:{"1":"[First line publicity]", "2":"[Second line publicity]", "3":"[Third line publicity]"}
