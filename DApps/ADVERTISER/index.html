@@ -8,72 +8,62 @@
 </head>
 <body>
     <style></style>
-    
+
     <h2>Hello World!</h2>
     <p>Current Minima Block Height: <span id="block-height"></span></p>
     <p>Current Node Status: <span id="node-status"></span></p>
-    
+
     <button onclick='runStatus();'>CHECK STATUS</button>
-    
+
     <script type="text/javascript">
-    
+
         function runStatus(){
-            
+
             // run the Minima status command to return information about the node's current state
-            MDS.cmd("status", function(res) {
-                
-                //if the response status is true
-                if (res.status) {
-                    //  convert the JSON object response to a string and format it
-                    const nodeStatus = JSON.stringify(res.response, " ", '\t');
-                    
-                    // show the response on the page
-                    document.getElementById("node-status").innerText = nodeStatus;
-    
-                //if the response status is false
-                }else{
-                    
-                    document.getElementById("node-status").innerText = "Could not retrieve current node Status";    
-        
-                }})
+            MDS.cmd("coins relavant:true", function(res) {
+                MDS.log(JSON.stringify(res));
+                alert(JSON.stringify(res));
+                const nodeStatus = JSON.stringify(res, " ", '\t');
+                document.getElementById("node-status").innerText = nodeStatus;
+              })
             }
-        
-            //Initialise web socket 
+
+            //Initialise web socket
             MDS.init(function(msg){
                 if(msg.event == "inited") {
                     // READY TO RUN CMDS!
                     // run the Minima status command to return information about the node's current state
                     MDS.cmd("status", function(res) {
-        
+
                         if (res.status) {
-                            
+
                             // get the block number from the Status object returned
                             const blockHeight = res.response.chain.block;
-        
-                            document.getElementById("block-height").innerText = blockHeight;    
-        
+
+                            document.getElementById("block-height").innerText = blockHeight;
+
                         }
-                    })          
-        
+                    })
+
                 }else if(msg.event == "NEWBLOCK"){
                 // the chain tip has changed
-        
+
                 }else if(msg.event == "NEWBALANCE"){
-                // user's balance has changed 
-                
-                }else if(msg.event == "MINING"){    
+                // user's balance has changed
+
+                }else if(msg.event == "MINING"){
                 // mining has started or ended
-        
+
                 }else if(msg.event == "MINIMALOG"){
                 // new Minima log message
-        
+
                 }else{
-        
-                    
+
+
                 }
             });
-             
-            
+
+
         </script>
     </body>
     </html>
