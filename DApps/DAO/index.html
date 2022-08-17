@@ -9,8 +9,9 @@
   </head>
   <body>
     <h1>The DAO API</h1>
-    <p class="statusdata">Current Node Version: <span id="version"></span></p>
-    <p class="statusdata">Current blockchain Time: <span id="blockchaintime"></span></p>
+    <p class="statusdata">Current Node Version: <span class="maindata" id="version"></span></p>
+    <p class="statusdata">Current blockchain Time: <span class="maindata" id="blockchaintime"></span></p>
+    <p class="statusdata">Maxima User Name: <span class="maindata" id="maximacontactname"></span></p>
     <div class="wrapper">
       <div class="INF Buytoken">
         <table>
@@ -32,15 +33,20 @@
   			</tr>
   			<tr>
   				<td style=" color:#FFF; text-align:right;">Amount: </td>
-  				<td><input type="number" id='amountofmoney' maxlength='64'></td>
+  				<td><input type="number" id='amount' maxlength='64'></td>
   			</tr>
         <tr>
-  				<td style=" color:#FFF; text-align:right;">Address: </td>
-  				<td><input type="number" id='addressofmoney' maxlength='64'></td>
+  				<td style=" color:#FFF; text-align:right;">Seller Destination Address: </td>
+  				<td><input type="text" id='destinationaddress' maxlength='64'></td>
+  			</tr>
+        <tr>
+  				<td style=" color:#FFF; text-align:right;">Address To Recibe The Tokens: </td>
+  				<td><input type="text" id='ownaddress' maxlength='64'></td>
   			</tr>
   		</table>
       <br>
-      <button type="button" class="Button Buy Token" onclick="sendMoney();">Buy The Token</button>
+      <button type="button" id="buybutton" class="Button Buy Token" onclick="sendMoney();">Buy The Token</button>
+      <button class="button" onclick='AddContact();'>Add Maxima Contact</button>
       </div>
       <div class="INF Tokencreate">
         <h2>CREATE A TOKEN</h2>
@@ -86,11 +92,14 @@
     <div class="Box Statussection">
       <h2>STATUS AND TOOLS SECTION</h2>
       <button class="button" onclick='NewAddress();'>New Address</button>
-      <button class="button" onclick='Scripts();'>Scripts</button>
-      <p>Status:</p>
+      <button class="button" onclick='GetAddress();'>GetAddress</button>
+      <button class="button" onclick='Coins();'>Coins</button>
+      <button class="button" onclick='Contact();'>My Maxima Contact</button>
+      <button class="button" onclick='MaxContacts();'>Max Contacts</button>
       <p><span id="node-status"></span></p>
     </div>
     <script type="text/javascript">
+      document.getElementById("buybutton").disabled = true;
       GetTokens();
       //Get the Tokens available to the dongles
       function GetTokens(){

@@ -108,6 +108,42 @@ function NewAddress(){
   })
 }
 
+function GetAddress(){
+  MDS.cmd("getaddress", function(resp) {
+    if (resp.status) {
+      const nodeStatus = JSON.stringify(resp.response, " ", '\t');
+      document.getElementById("node-status").innerText = nodeStatus;
+    }
+  })
+}
+
+function Coins(){
+  MDS.cmd("coins", function(resp) {
+    if (resp.status) {
+      const nodeStatus = JSON.stringify(resp.response, " ", '\t');
+      document.getElementById("node-status").innerText = nodeStatus;
+    }
+  })
+}
+
+function Contact(){
+  MDS.cmd("maxima", function(resp) {
+    if (resp.status) {
+      const contact = resp.response.contact;
+      document.getElementById("node-status").innerText = contact;
+    }
+  })
+}
+
+function MaxContacts(){
+  MDS.cmd("maxcontacts", function(resp) {
+    if (resp.status) {
+      const contact = resp.response.contact;
+      document.getElementById("node-status").innerText = contact;
+    }
+  })
+}
+
 function Scripts(){
   MDS.cmd("scripts", function(resp) {
     if (resp.status) {
@@ -131,6 +167,12 @@ MDS.init(function(msg){
         document.getElementById("version").innerText = version;
         const blockchaintime = res.response.chain.time;
         document.getElementById("blockchaintime").innerText = blockchaintime;
+      }
+    })
+    MDS.cmd("maxima", function(resp) {
+      if (resp.status) {
+        const maximaname = resp.response.name;
+        document.getElementById("maximacontactname").innerText = maximaname;
       }
     })
   }
