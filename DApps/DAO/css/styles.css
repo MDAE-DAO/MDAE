@@ -52,8 +52,8 @@ span{
 }
 
 .button:active {
-  	opacity: 0.8;
-		font-style: italic;
+  opacity: 0.8;
+	font-style: italic;
 }
 
 .Create{
@@ -70,6 +70,10 @@ span{
 
 .statusdata{
   margin-left: 1%;
+}
+
+.maindata{
+  font-weight: bold;
 }
 
 .Box{
