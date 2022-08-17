@@ -2,57 +2,129 @@
   <head>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <script type="text/javascript" src="js/mds.js"></script>   <!--   The MINIMA MDS JavaScript Library -->
-    <script type="text/javascript" src="js/scripts.js"></script>
+    <script type="text/javascript" src="js/dao.js"></script>
     <link rel="icon" type="image/x-icon" href="images/favicon.ico">
     <link rel="stylesheet" href="css/styles.css">
     <title>The DAO API</title>
   </head>
   <body>
     <h1>The DAO API</h1>
+    <p class="statusdata">Current Node Version: <span id="version"></span></p>
+    <p class="statusdata">Current blockchain Time: <span id="blockchaintime"></span></p>
     <div class="wrapper">
-      <div class="INF MinimaStatus">
-        <h2>MINIMA STATUS</h2>
-        <p class="statusdata">Current Node Version: <span id="version"></span></p>
-        <p class="statusdata">Current blockchain Time: <span id="blockchaintime"></span></p>
+      <div class="INF Buytoken">
+        <table>
+  			<h2>BUY A TOKEN</h2>
+        <p>Select the Token to spend, the Amount and the destination Address</p>
+  			<tr>
+  				<td style="color:#FFF; text-align:right;">Token: </td>
+  				<td>
+  				<select id="tokens">
+  				</select>
+  				</td>
+  			</tr>
+  			<tr>
+  				<td style=" color:#FFF; text-align:right;">Amount: </td>
+  				<td><input type="number" id='amountofmoney' maxlength='64'></td>
+  			</tr>
+        <tr>
+  				<td style=" color:#FFF; text-align:right;">Address: </td>
+  				<td><input type="number" id='addressofmoney' maxlength='64'></td>
+  			</tr>
+  		</table>
+      <br>
+      <button type="button" class="Button Create Token" onclick="sendMoney();">Buy Thee Token</button>
       </div>
-      <div class="INF tokencreate">
+      <div class="INF Tokencreate">
         <h2>CREATE A TOKEN</h2>
-          <p>Here you can create any Token.</p>
+          <p>Here you can create any Token. Choose the name and the amount</p>
           <table style="color:#FFF; border=0;">
             <tr>
-      				<td>Token Name : </td>
+      				<td style="color:#FFF; text-align:right;">Token Name: </td>
       				<td><input type="text" id="TokenName" maxlength="64"></td>
       			</tr>
             <tr>
-              <td style="text-align:right;">Amount : </td>
+              <td style="text-align:right;">Amount: </td>
               <td><input type="number" id="Amount" maxlength="64"></td>
             </tr>
 		      </table>
-          <button class="button CreateToken" onclick='CreateToken();'>CREATE THE TOKEN</button>
+          <br>
+          <button class="button Create Token" onclick='CreateToken();'>Create The Token</button>
       </div>
-      <div class="INF tokenMinima">
+      <div class="INF Tokenminima">
         <h2>MINIMA TOKEN BALANCE</h2>
         <p>Token: <span id="MinimaToken"></span></p>
         <p >Tokenid: <span id="MinimaTokenid"></span></p>
         <p>Coins: <span id="MinimaCoins"></span></p>
         <p>Sendable: <span id="MinimaSendable"></span></p>
         <p>Total: <span id="MinimaTotal"></span></p>
-        <button class="button" onclick='CheckMinimaBalance();'>CHECK MINIMA TOKEN BALANCE</button>
+        <button class="button" onclick='CheckMinimaBalance();'>Update Minima Token Balance</button>
         <p><span id="StatusBalancesMinima"></span></p>
       </div>
-      <div class="INF tokengDAPP">
-        <h2>gDAPP TOKEN BALANCE</h2>
-        <p>Token: <span id="gDAPPToken"></span></p>
-        <p >Tokenid: <span id="gDAPPTokenid"></span></p>
-        <p>Coins: <span id="gDAPPCoins"></span></p>
-        <p>Sendable: <span id="gDAPPSendable"></span></p>
-        <p>Total: <span id="gDAPPTotal"></span></p>
-        <button class="button" onclick='CheckgDAPPBalance();'>CHECK gDAPP TOKEN BALANCE</button>
+      <div class="INF Balance">
+        <h2>TOKEN BALANCE</h2>
+        <tr>
+  				<td style="color:#FFF; text-align:right;">Token : </td>
+  				<td>
+  				<select id="tokens2" onchange="TokenBalance();">
+  				</select>
+  				</td>
+  			</tr>
+        <p>Tokenid: <span id="Tokenid"></span></p>
+        <p>Coins: <span id="Coins"></span></p>
+        <p>Sendable: <span id="Sendable"></span></p>
+        <p>Total: <span id="Total"></span></p>
       </div>
     </div>
-    <div class="Statussection">
-      <h2>STATUS SECTION</h2>
-      <p><span id="node-status">Status:</span></p>
+    <div class="Box Statussection">
+      <h2>STATUS AND TOOLS SECTION</h2>
+      <button class="button" onclick='NewAddress();'>New Address</button>
+      <button class="button" onclick='Scripts();'>Scripts</button>
+      <p>Status:</p>
+      <p><span id="node-status"></span></p>
     </div>
+    <script type="text/javascript">
+      GetTokens();
+      //Get the Tokens available to the dongles
+      function GetTokens(){
+        MDS.cmd("balance",function(result){
+          //Create the select dongles
+          var select = document.getElementById('tokens');
+          while (select.hasChildNodes()) {
+            select.removeChild(select.firstChild);
+          }
+          var select2  = document.getElementById('tokens2');
+          while (select2.hasChildNodes()) {
+            select2.removeChild(select2.firstChild);
+          }
+          //Add each Token
+          balance = result.response;
+          //Add the tokens to the dongle Buy a Token
+          for(var i = 0; i < balance.length; i++) {
+            var opt = document.createElement('option');
+            if(balance[i].tokenid == "0x00"){
+              opt.value = balance[i].tokenid;
+              opt.innerHTML = balance[i].token;
+            }else{
+              opt.value = balance[i].tokenid;
+              opt.innerHTML = balance[i].token.name;
+            }
+            select.appendChild(opt);
+          }
+          //Add tokens to the dongle Token balance
+          for(var i = 0; i < balance.length; i++) {
+            var opt = document.createElement('option');
+            if(balance[i].tokenid == "0x00"){
+              opt.value = balance[i].tokenid;
+              opt.innerHTML = balance[i].token;
+            }else{
+              opt.value = balance[i].tokenid;
+              opt.innerHTML = balance[i].token.name;
+            }
+            select2.appendChild(opt);
+          }
+        });
+      }
+    </script>
   </body>
 </html>

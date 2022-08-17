@@ -30,31 +30,37 @@ function CheckMinimaBalance(){
   })
 }
 
-function CheckgDAPPBalance(){
-  var result = false;
+function onchange(e) {
+    if (e.currentTarget.value === 'refresh') {
+        window.location.reload();
+    }
+}
+
+function TokenBalance(){
   // run the Minima balance command to return information about the node's current balance
   MDS.cmd("balance", function(res) {
     //if the response status is true
     if (res.status) {
       //Count the numberof tokens listed
       balance = res.response;
-      //For each token do...
-		  for(var i = 0; i < balance.length; i++) {
-        //Look for gDAPP token
-        //*****Should be used tokenid when the token will be finally created****
-        if(balance[i].token.name == "gDAPP"){
+      //Grab the token to look for its balance.
+      var select = document.getElementById('tokens2');
+      //var value = select.value;
+      var value = select.options[select.selectedIndex].value;
+      //console.log(value);
+      for(var i = 0; i < balance.length; i++) {
+        //Look for the token
+        if(balance[i].tokenid == value){
           //Return the function value as true and Get the values
-          result = true;
-          var gDAPPToken = balance[i].token.name;
-          document.getElementById("gDAPPToken").innerText = gDAPPToken;
-          var gDAPPTokenid = balance[i].tokenid;
-          document.getElementById("gDAPPTokenid").innerText = gDAPPTokenid;
-          var gDAPPCoins = balance[i].coins;
-          document.getElementById("gDAPPCoins").innerText = gDAPPCoins;
-      	  var gDAPPSendable 	= balance[i].sendable;
-          document.getElementById("gDAPPSendable").innerText = gDAPPSendable;
-          var gDAPPTotal = balance[i].total;
-          document.getElementById("gDAPPTotal").innerText = result;//gDAPPTotal;
+          var Tokenid = balance[i].tokenid;
+          document.getElementById("Tokenid").innerText = Tokenid;
+          var Coins = balance[i].coins;
+          document.getElementById("Coins").innerText = Coins;
+      	  var Sendable 	= balance[i].sendable;
+          document.getElementById("Sendable").innerText = Sendable;
+          var Total = balance[i].total;
+          document.getElementById("Total").innerText = Total;
+          return;
   		  }
       }
     }
@@ -63,7 +69,6 @@ function CheckgDAPPBalance(){
     document.getElementById("StatusBalances").innerText = "Warning: Could not retrieve current Balance Status";
     }
   })
-  return Boolean(result);
 }
 
 function CreateToken(){
@@ -74,28 +79,44 @@ function CreateToken(){
 		alert("Invalid amount..");
 		return;
 	}
-  result = CheckgDAPPBalance();
-  if (result == false){
-  //if the response status is true
-    CreateTokenFunction = "tokencreate name:"+tokenname+" amount:"+tokenamount
-    MDS.cmd(CreateTokenFunction, function(resp) {
-      if (resp.status) {
-        alert("Token Created!");
-        const nodeStatus = JSON.stringify(resp.response, " ", '\t');
-        document.getElementById("node-status").innerText = nodeStatus;
-        MDS.log("TOKEN: "+CreateTokenFunction);
-        MDS.log(JSON.stringify(resp));
-        CheckgDAPPBalance()
-      }
-      //if the response status is false
-      else{
-        const nodeStatus = JSON.stringify(resp.response, " ", '\t');
-        document.getElementById("node-status").innerText = nodeStatus;
-        alert("Could not create the Token");
-      }
-    })
-  }
+  CreateTokenFunction = "tokencreate name:"+tokenname+" amount:"+tokenamount
+  MDS.cmd(CreateTokenFunction, function(resp) {
+    if (resp.status) {
+      alert("Token Created!");
+      const nodeStatus = JSON.stringify(resp.response, " ", '\t');
+      document.getElementById("node-status").innerText = nodeStatus;
+      MDS.log("TOKEN: "+CreateTokenFunction);
+      MDS.log(JSON.stringify(resp));
+      CheckMinimaBalance();
+      GetTokens();
+    }
+    //if the response status is false
+    else{
+      const nodeStatus = JSON.stringify(resp.response, " ", '\t');
+      document.getElementById("node-status").innerText = nodeStatus;
+      alert("Could not create the Token");
+    }
+  })
 }
+
+function NewAddress(){
+  MDS.cmd("newaddress", function(resp) {
+    if (resp.status) {
+      const nodeStatus = JSON.stringify(resp.response, " ", '\t');
+      document.getElementById("node-status").innerText = nodeStatus;
+    }
+  })
+}
+
+function Scripts(){
+  MDS.cmd("scripts", function(resp) {
+    if (resp.status) {
+      const nodeStatus = JSON.stringify(resp.response, " ", '\t');
+      document.getElementById("node-status").innerText = nodeStatus;
+    }
+  })
+}
+
 
 
 //Initialise web socket

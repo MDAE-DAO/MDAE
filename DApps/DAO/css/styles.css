@@ -10,6 +10,18 @@ h1{
   text-align: center;
 }
 
+input{
+  word-wrap: break-word;
+  size: 20;
+  box-sizing: border-box;
+  width: 100%;
+
+}
+
+span{
+  word-wrap: break-word;
+}
+
 .b1{
   text-align: center;
 }
@@ -33,8 +45,7 @@ h1{
 
 .button:hover {
 	 	cursor: pointer;
-    color: #fff;
-		background-color: #16181C;
+		background-color: lightgrey;
   	border-radius: 8px;
   	padding: 8px 8px;
 		border-color: #16181C;
@@ -45,7 +56,7 @@ h1{
 		font-style: italic;
 }
 
-.CreateToken{
+.Create{
   margin-top: 1%;
 }
 
@@ -54,22 +65,14 @@ h1{
   color: #fff;
   border-radius: 5px;
   padding: 2%;
-  //font-size: 150%;
-}
-.main{
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: flex-start;
-  padding-bottom: 1%;
-  border-bottom: blue solid 3px;
-
+  max-width: 99%;
 }
 
 .statusdata{
   margin-left: 1%;
 }
 
-.Statussection{
+.Box{
   background-color: #444;
   color: #fff;
   border-radius: 5px;
@@ -79,7 +82,7 @@ h1{
 
 .wrapper{
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   grid-gap: 10px;
   background-color: #fff;
   color: #444;
