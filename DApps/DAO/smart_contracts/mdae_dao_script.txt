@@ -1,0 +1,87 @@
+--------------------------------------------------------------
+IF SIGNEDBY( PREVSTATE(0) THEN RETURN TRUE ENDIF
+LET tokens_to_buy = PREVSTATE(2)
+LET price_of_tokens = 1 * tokens_to_buy
+
+ASSERT VERIFYOUT( @INPUT PREVSTATE (1) PREVSTATE(2) 0x00 )
+
+/* Send the change back to the Script */
+LET chg = @AMOUNT - tokens_to_buy
+IF chg GT 0 THEN
+    ASSERT VERIFYOUT ( INC(@INPUT) @ADDRESS ( @AMOUNT - amt ) @TOKENID TRUE )
+ENDIF
+RETURN TRUE
+--------------------------------------------------------------
+
+DAO MDAE:
+The contract has two tokens (gDAE and aDAE) to be exchanged by 1 minima for every token a user wants to buy.
+The owner (BOB) of the tokens is the PREVSTATE(0) it is a publickkey of an address of the DAO's node (the original,
+that creates all tokens)
+
+3: Let's say Bob is the owner "PREVSTATE(0)" of the contract and put his address on it "PREVSTATE(1)",
+Bob deposit 10 Tokens on the contract(gDAE). Alice wants those 10 tokens deposited on Bob's contract,
+so Alice has to send a quantity (PREVSTATE(2)) to the address "PREVSTATE(1)" of minimas to the Bob's contract
+where Bob specified his address "PREVSTATE(1)" --> that is where minimas are going to go.
+-So alice has to build a transaction to meet all the criteria and satisy contract rules in order to get
+the 10 tokens deposited on the contract.
+-The price of one token is 1 minima so the script must calculate the amount of minimas required.
+
+--------------------------
+----- setup startup nodes
+Node 1: after genesis:
+java -jar minima.jar -data edenbase1 -test -nop2p -mdsenable
+
+Node 2:
+java -jar minima.jar -data edenbase2 -test -nop2p -port 10001 -connect 127.0.0.1:9001
+--------------------------
+
+@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+----------------------------------------
+second aproach to buy tokens from DAO:
+----------------------------------------
+@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+------> What about this other aproach, node 2 sent the total minimas the tokens cost to the DAO's original address,
+let says 1 token cost 1 minima, so node 2 send 10 minimas and set on his state variables the tokenid what he wants and
+ the wallet address  where it wants to and the number of tokens it wants to. So no contract involve so far, then ,
+ node 1 receives a transaction and this is a balance event change, so it examines the state variables,
+if they are what expected, then the node 1 send the tokens asked directly to the wallet of node 2,
+no contract involved so far. what do you think of it ?
+
+-----> node 1 create 100 tokens gDAE
+->tokencreate name:gDAE amount:100 decimals:0
+"tokenid":"0xC0C5D654002BE1E91872693CB40AD57D0836800ED74226EF357413E33CE00E64",
+
+-----------------
+-----> sending from node2 to node1(dao wallet) info and money to buy tokens gDAE
+-----------------
+
+-----> first send some minimas from node 1 to node 2
+->getaddress on node 2
+"address":"0xB0E211E7411D84DAE106A48A2225695DCFE3F7DC30F5E0A30E8888DA9AD8DF84",
+
+----> second send 10 minimas of node 2 to node 1 configured with state vars to tell node 1(DAO) you want buy tokens
+->getaddress on node 1(DAO_origin) HARDCODED ADDRESS ON THE DAO to simplify searches
+"address":"0x55DA27A0E823BDE3B8A229E432780F931C1D1326E7B8CD356A839E6A6AAB370C"
+
+address:DAO_origin HARDCODED ADDRESS ON THE DAO to simplify searches
+amount:10
+tokenid:minima
+state_vars:
+0:[buy_tokens],
+1:wallet buyer,
+2:token to buy,
+3: amount to buy
+
+->send address:0x55DA27A0E823BDE3B8A229E432780F931C1D1326E7B8CD356A839E6A6AAB370C amount:10 tokenid:0x00 state:{"0":"[buy_tokens]", "1":"0xB0E211E7411D84DAE106A48A2225695DCFE3F7DC30F5E0A30E8888DA9AD8DF84", "2":"0xC0C5D654002BE1E91872693CB40AD57D0836800ED74226EF357413E33CE00E64", "3":"10"}
+
+----> third, !!!!!! very imporant !!!!!!
+----> On event NEWBALANCE, we check if the received token is a minima coin.
+----> If is a minima coin then in order to get the state variables and to know if is a buy_tokens order,
+----> we need to execute "coind address:DAO_origin" ,and parse the results, check it and extract information of
+----> state vars.
+----> we only consider the easy case scenario, where only watch the first coin on the list as it will be the last one
+----> received, on a real case scenario, this order should be check on the sql database if is already executed
+----> if so, then noting to do, if not, then we have to send the tokens to the buyer and register this bought
+----> to the sql database
+
+->coins address:0x55DA27A0E823BDE3B8A229E432780F931C1D1326E7B8CD356A839E6A6AAB370C

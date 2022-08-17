@@ -136,9 +136,51 @@ MDS.init(function(msg){
   }
   else if(msg.event == "NEWBLOCK"){
   // the chain tip has changed
+
   }
   else if(msg.event == "NEWBALANCE"){
-  // user's balance has changed
+  // user's balance has changed(
+    alert("new balance")
+    MDS.log("NEWBALANCE event")
+    MDS.cmd("balance",function(result){
+
+				//Add each contact
+				balance = result.response;
+
+				//Add the contacts
+				for(var i = 0; i < balance.length; i++) {
+          // check if we recived minima tokens and his state variables
+          // contains an order to buy tokens
+					if(balance[i].tokenid == "0x00"){
+            MDS.cmd("coins address:0x55DA27A0E823BDE3B8A229E432780F931C1D1326E7B8CD356A839E6A6AAB370C",function(result){
+              MDS.log("result_coins address: "+ result.respone)
+              var resp = result.response;
+              var coind_received = resp.coinid;
+              var amount_received = resp.amount;
+              var states = resp.state;
+              var operation;
+              var buyer_wallet;
+              var token_to_buy;
+              var amount_to_buy;
+              for(var i = 0; i <resp.state.length; i++) {
+                if (resp.state[i].port == 0) operation = resp.state[i].data;
+                if (resp.state[i].port == 1) buyer_wallet = resp.state[i].data;
+                if (resp.state[i].port == 2) token_to_buy = resp.state[i].data;
+                if (resp.state[i].port == 3) amount_to_buy = resp.state[i].data;
+              }
+              if (operation === "buy_tokens") && amount_to_buy == amount_received && buyer_wallet && token_to_buy{
+                //If all is ok, then excute the sell order using send command or building a transaction
+                MDS.log("Order to buy received and sending the tokens to the buyer")
+                MDS.cmd("send address:"+buyer_wallet" + " tokenid:"+token_to_buy + " amount:" + amount_to_buy,function(result){
+                  alert(result);
+                  // here it goes the send function to send tokens back to the buyer.
+                }
+              }
+            }
+
+					}
+				}
+			});
   }
   else if(msg.event == "MINING"){
   // mining has started or ended
