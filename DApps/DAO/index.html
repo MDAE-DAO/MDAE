@@ -15,11 +15,18 @@
       <div class="INF Buytoken">
         <table>
   			<h2>BUY A TOKEN</h2>
-        <p>Select the Token to buy, the Amount and the destination Address</p>
+        <p>Select the Token to spend, the Amount and the destination Address</p>
   			<tr>
-  				<td style="color:#FFF; text-align:right;">Token: </td>
+  				<td style="color:#FFF; text-align:right;">Token to Spend: </td>
   				<td>
   				<select id="tokens">
+  				</select>
+  				</td>
+  			</tr>
+        <tr>
+  				<td style="color:#FFF; text-align:right;">Token to Buy: </td>
+  				<td>
+  				<select id="tokens3">
   				</select>
   				</td>
   			</tr>
@@ -97,9 +104,13 @@
           while (select2.hasChildNodes()) {
             select2.removeChild(select2.firstChild);
           }
+          var select3  = document.getElementById('tokens3');
+          while (select3.hasChildNodes()) {
+            select3.removeChild(select3.firstChild);
+          }
           //Add each Token
           balance = result.response;
-          //Add the tokens to the dongle Buy a Token
+          //Add the tokens to the dongle Buy a Token (spend)
           for(var i = 0; i < balance.length; i++) {
             var opt = document.createElement('option');
             if(balance[i].tokenid == "0x00"){
@@ -110,6 +121,18 @@
               opt.innerHTML = balance[i].token.name;
             }
             select.appendChild(opt);
+          }
+          //Add tokens to the dongle buy a Token (buy)
+          for(var i = 0; i < balance.length; i++) {
+            var opt = document.createElement('option');
+            if(balance[i].tokenid == "0x00"){
+              opt.value = balance[i].tokenid;
+              opt.innerHTML = balance[i].token;
+            }else{
+              opt.value = balance[i].tokenid;
+              opt.innerHTML = balance[i].token.name;
+            }
+            select3.appendChild(opt);
           }
           //Add tokens to the dongle Token balance
           for(var i = 0; i < balance.length; i++) {
