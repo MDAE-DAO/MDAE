@@ -1,3 +1,12 @@
+/*
+*********The Minima Innovation Challenge Team
+*********DAO API JS
+*********THE TEAM DEVELOPERS************
+*********
+*********
+*/
+
+
 function CheckMinimaBalance(){
   // run the Minima balance command to return information about the node's current balance
   MDS.cmd("balance", function(res) {
@@ -30,11 +39,39 @@ function CheckMinimaBalance(){
   })
 }
 
-function onchange(e) {
-    if (e.currentTarget.value === 'refresh') {
-        window.location.reload();
+function IsAMinimaTokenRecived(){
+  // run the Minima balance command to return information about the node's current balance
+  MDS.cmd("balance", function(res) {
+    //if the response status is true
+    if (res.status) {
+      //Count the numberof tokens listed
+      balance = res.response;
+      //Grab the token to look for its balance.
+      var select = document.getElementById('tokens2');
+      var value = select.options[select.selectedIndex].value;
+      for(var i = 0; i < balance.length; i++) {
+        //Look for the token
+        if(balance[i].tokenid == value){
+          //Return the function value as true and Get the values
+          var Tokenid = balance[i].tokenid;
+          document.getElementById("Tokenid").innerText = Tokenid;
+          var Coins = balance[i].coins;
+          document.getElementById("Coins").innerText = Coins;
+      	  var Sendable 	= balance[i].sendable;
+          document.getElementById("Sendable").innerText = Sendable;
+          var Total = balance[i].total;
+          document.getElementById("Total").innerText = Total;
+          return;
+  		  }
+      }
     }
+    //if the response status is false
+    else{
+    document.getElementById("StatusBalances").innerText = "Warning: Could not retrieve current Balance Status";
+    }
+  })
 }
+
 
 function TokenBalance(){
   // run the Minima balance command to return information about the node's current balance
@@ -170,7 +207,6 @@ function Scripts(){
 }
 
 
-//Initialise web socket
 MDS.init(function(msg){
   if(msg.event == "inited") {
     // READY TO RUN CMDS!
@@ -196,7 +232,6 @@ MDS.init(function(msg){
   }
   else if(msg.event == "NEWBALANCE"){
   // user's balance has changed
-  GetTokens();
   }
   else if(msg.event == "MINING"){
   // mining has started or ended
