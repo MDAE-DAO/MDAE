@@ -1,4 +1,4 @@
-CreateTheTable(){
+function CreateTheTable(){
   //Create the DB if not exists
 	initsql = "CREATE TABLE IF NOT EXISTS `messages` ( "
           +"  `id` IDENTITY PRIMARY KEY, "
@@ -22,7 +22,6 @@ CreateTheTable(){
 	   MDS.log("DAO API Service SQL Inited..");
 	})
 }
-
 /*
 function SendTheTokensInReturn(){
   //First Insert the data to the DB
@@ -54,9 +53,8 @@ function SendTheTokensInReturn(){
 //Main message handler..
 MDS.init(function(msg){
     //Do initialitzation
-    MDS.log(JSON.stringify(msg));
     if(msg.event == "inited"){
-      MDS.log("MY Service Inited..");
+      MDS.log("service.js inited in the background...");
       CreateTheTable();
     }
     //Is a NEWBALANCE message?
