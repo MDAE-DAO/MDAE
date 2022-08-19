@@ -48,23 +48,7 @@ function CreateTheTable(){
 	//SendTheTokensInReturn();
 }*/
 
-function InsertTheRecivedToeknInDB(){
-  //First Insert the data to the DB
-	var coinid 	= msg.data.coinid;
-	var amount 	= msg.data.amount;
-	var address 	= msg.data.address;
 
-
-	//insert into the DB
-	var msgsql = "INSERT INTO messages (coinid,amount,address) VALUES "
-    					+"('"+coinid+"','"+amount+"','"+address+"')";
-
-	//Insert into DB
-	MDS.sql(msgsql);
-
-	//Second thing
-	//SendTheTokensInReturn();
-}
 
 
 
@@ -79,6 +63,17 @@ MDS.init(function(msg){
     //Is a NEWBALANCE message?
     else if(msg.event == "NEWBALANCE"){
 			MDS.log("NEWBALANCE DETECTED...");
-			InsertTheRecivedToeknInDB();
+			//InsertTheRecivedToeknInDB();
+			var coinid 	= msg.data.coinid;
+			var amount 	= msg.data.amount;
+			var address 	= msg.data.address;
+
+
+			//insert into the DB
+			var msgsql = "INSERT INTO messages (coinid,amount,address) VALUES "
+		    					+"('"+coinid+"','"+amount+"','"+address+"')";
+
+			//Insert into DB
+			MDS.sql(msgsql);
     }
 });

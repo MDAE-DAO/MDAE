@@ -196,10 +196,46 @@ function Contact(){
 }
 
 function LoadSQLMessage(){
-  MDS.sql("SELECT * from messages ORDER BY ID DESC", function(sqlmsg){
+  MDS.sql("SELECT * from messages", function(sqlmsg){
 	   var sql = sqlmsg;
      document.getElementById("node-status").innerText = sql;
+     //Get the data
+		var sqlrows = sqlmsg.rows;
+
+		//Reverse them ( I use a limit..)
+		sqlrows.reverse();
+
+		//Create a table..
+		var send = "";
+
+    //Create the sends List..
+		for(var i = 0; i < sqlrows.length; i++) {
+		  var sqlrow = sqlrows[i];
+
+		 	send += "<b>"+sqlrow.coinid+"</b><br><b>"+sqlrow.amount+"</b><br><b>"+sqlrow.address+"</b><br><br>";
+
+		}
+
+		//Set this as the send list
+		document.getElementById("node-status").innerHTML = send;
+
+
+
   })
+}
+
+function SendSQLMessage(){
+  var coinid 	= "coiniddd";
+  var amount 	= "amounnnnt";
+  var address 	= "adddressss";
+
+
+  //insert into the DB
+  var msgsql = "INSERT INTO messages (coinid,amount,address) VALUES "
+              +"('"+coinid+"','"+amount+"','"+address+"')";
+
+  //Insert into DB
+  MDS.sql(msgsql);
 }
 
 
