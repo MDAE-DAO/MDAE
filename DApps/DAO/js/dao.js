@@ -133,6 +133,31 @@ function CreateToken(){
   GetTokens();
 }
 
+function SendMoney(){
+  //Get the information
+  var tokenid 	= document.getElementById('tokens').value;
+	var address = document.getElementById('destinationaddress').value;
+  var amount = document.getElementById('amount').value;
+  CreateSend = "Send address:"+address+" amount:"+amount+" tokenid:"+tokenid
+  MDS.cmd(CreateSend, function(resp) {
+    if (resp.status) {
+      alert("Token Send!");
+      const nodeStatus = JSON.stringify(resp.response, undefined, 2);
+      document.getElementById("node-status").innerText = nodeStatus;
+      //MDS.log("Contact: "+CreateContact);
+      //MDS.log(JSON.stringify(resp));
+    }
+    //if the response status is false
+    else{
+      const nodeStatus = JSON.stringify(resp.response, undefined, 2);
+      document.getElementById("node-status").innerText = nodeStatus;
+      alert("Could not send the Token");
+      MDS.log("Token Send");
+      //MDS.log(JSON.stringify(resp));
+    }
+  })
+}
+
 function NewAddress(){
   MDS.cmd("newaddress", function(resp) {
     if (resp.status) {
@@ -169,6 +194,14 @@ function Contact(){
     }
   })
 }
+
+function LoadSQLMessage(){
+  MDS.sql("SELECT * from messages ORDER BY ID DESC", function(sqlmsg){
+	   var sql = sqlmsg;
+     document.getElementById("node-status").innerText = sql;
+  })
+}
+
 
 function AddContact() {
   //Get the information

@@ -3,14 +3,13 @@ function CreateTheTable(){
 	initsql = "CREATE TABLE IF NOT EXISTS `messages` ( "
           +"  `id` IDENTITY PRIMARY KEY, "
           +"  `coinid` varchar(512) NOT NULL, "
-					+"  `Transaction Mined` varchar(512) NOT NULL, "
 					+"  `amount` int NOT NULL, "
 					+"  `address` varchar(512) NOT NULL, "
 					+"  `miniaddress` varchar(512) NOT NULL, "
 					+"  `tokenid` varchar(512) NOT NULL, "
-					+"  `token` varchar(512) NOT NULL DEFAULT, "
-					+"  `storestate` varchar(5) NOT NULL, "
-					+"  `state` varchar(128) NOT NULL DEFAULT '', "
+					//+"  `token` varchar(512) NOT NULL DEFAULT, "
+					//+"  `storestate` varchar(5) NOT NULL, "
+					//+"  `state` varchar(128) NOT NULL DEFAULT '', "
           +"  `spent` varchar(5) NOT NULL, "
           +"  `mmrentry` int NOT NULL DEFAULT 0, "
 					+"  `created` int NOT NULL, "
@@ -22,32 +21,52 @@ function CreateTheTable(){
 	   MDS.log("DAO API Service SQL Inited..");
 	})
 }
-/*
-function SendTheTokensInReturn(){
+
+/*function InsertTheRecivedToeknInDB(){
   //First Insert the data to the DB
-	var coinid 	= msg.data.from;
+	var coinid 	= msg.data.coinid;
+	var amount 	= msg.data.amount;
+	var address 	= msg.data.address;
+	var miniaddress 	= msg.data.miniaddress;
+	var tokenid 	= msg.data.tokenid;
+	//var token 	= msg.data.token;
+	//var storestate 	= msg.data.storestate;
+	//var state 	= msg.data.state;
+	var spent 	= msg.data.spent;
+	var mmrentry 	= msg.data.mmrentry;
+	var created 	= msg.data.created;
 
-			//remove the leading 0x
-			var datastr	= msg.data.data.substring(2);
 
-			//Convert the data..
-			var jsonstr = hexToUtf8(datastr);
+	//insert into the DB
+	var msgsql = "INSERT INTO messages (coinid,amount,address,miniaddress,tokenid,spent,mmrentry,created,date) VALUES "
+    					+"('"+coinid+"','"+amount+"','"+address+"','"+miniaddress+"','"+tokenid+"','"+spent+"','"+mmrentry+"','"+created+"', "+Date.now()+")";
 
-			//And create the actual JSON
-			var maxjson = JSON.parse(jsonstr);
+	//Insert into DB
+	MDS.sql(msgsql);
 
-			//URL encode the message and deal with apostrophe..
-			let encoded = encodeURIComponent(maxjson.message).replace("'", "%27");
+	//Second thing
+	//SendTheTokensInReturn();
+}*/
 
-			//insert into the DB
-			var msgsql = "INSERT INTO messages (roomname,publickey,username,type,message,filedata,date) VALUES "
-					+"('"+maxjson.username+"','"+pubkey+"','"+maxjson.username+"','"+maxjson.type+"','"+encoded+"','"+maxjson.filedata+"', "+Date.now()+")";
+function InsertTheRecivedToeknInDB(){
+  //First Insert the data to the DB
+	var coinid 	= msg.data.coinid;
+	var amount 	= msg.data.amount;
+	var address 	= msg.data.address;
 
-			//Insert into DB
-			MDS.sql(msgsql);
+
+	//insert into the DB
+	var msgsql = "INSERT INTO messages (coinid,amount,address) VALUES "
+    					+"('"+coinid+"','"+amount+"','"+address+"')";
+
+	//Insert into DB
+	MDS.sql(msgsql);
+
+	//Second thing
+	//SendTheTokensInReturn();
 }
 
-*/
+
 
 
 //Main message handler..
@@ -59,6 +78,7 @@ MDS.init(function(msg){
     }
     //Is a NEWBALANCE message?
     else if(msg.event == "NEWBALANCE"){
-      SendTheTokensInReturn();
+			MDS.log("NEWBALANCE DETECTED...");
+			InsertTheRecivedToeknInDB();
     }
 });
