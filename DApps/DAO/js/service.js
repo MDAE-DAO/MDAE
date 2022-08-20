@@ -1,79 +1,61 @@
-function CreateTheTable(){
-  //Create the DB if not exists
-	initsql = "CREATE TABLE IF NOT EXISTS `messages` ( "
-          +"  `id` IDENTITY PRIMARY KEY, "
-          +"  `coinid` varchar(512) NOT NULL, "
-					+"  `amount` int NOT NULL, "
-					+"  `address` varchar(512) NOT NULL, "
-					+"  `miniaddress` varchar(512) NOT NULL, "
-					+"  `tokenid` varchar(512) NOT NULL, "
-					//+"  `token` varchar(512) NOT NULL DEFAULT, "
-					//+"  `storestate` varchar(5) NOT NULL, "
-					//+"  `state` varchar(128) NOT NULL DEFAULT '', "
-          +"  `spent` varchar(5) NOT NULL, "
-          +"  `mmrentry` int NOT NULL DEFAULT 0, "
-					+"  `created` int NOT NULL, "
-          +"  `date` bigint NOT NULL "
-					+" )";
 
-	//Run this..
-	MDS.sql(initsql,function(msg){
-	   MDS.log("DAO API Service SQL Inited..");
-	})
+function updateTime(){
+  MDS.cmd("status", function(res) {
+    if (res.status) {
+      const blockchaintime = res.response.chain.time;
+      document.getElementById("blockchaintime").innerText = blockchaintime;
+    }
+  })
 }
 
-/*function InsertTheRecivedToeknInDB(){
-  //First Insert the data to the DB
-	var coinid 	= msg.data.coinid;
-	var amount 	= msg.data.amount;
-	var address 	= msg.data.address;
-	var miniaddress 	= msg.data.miniaddress;
-	var tokenid 	= msg.data.tokenid;
-	//var token 	= msg.data.token;
-	//var storestate 	= msg.data.storestate;
-	//var state 	= msg.data.state;
-	var spent 	= msg.data.spent;
-	var mmrentry 	= msg.data.mmrentry;
-	var created 	= msg.data.created;
-
-
-	//insert into the DB
-	var msgsql = "INSERT INTO messages (coinid,amount,address,miniaddress,tokenid,spent,mmrentry,created,date) VALUES "
-    					+"('"+coinid+"','"+amount+"','"+address+"','"+miniaddress+"','"+tokenid+"','"+spent+"','"+mmrentry+"','"+created+"', "+Date.now()+")";
-
-	//Insert into DB
-	MDS.sql(msgsql);
-
-	//Second thing
-	//SendTheTokensInReturn();
-}*/
-
-
-
-
-
-
+setInterval(updateTime, 10000);
 //Main message handler..
 MDS.init(function(msg){
-    //Do initialitzation
-    if(msg.event == "inited"){
-      MDS.log("service.js inited in the background...");
-      CreateTheTable();
+  //Do initialitzation
+  MDS.cmd("status", function(res) {
+    if (res.status) {
+      // get the version number and the blockchain time from the Status object returned
+      const version = res.response.version;
+      document.getElementById("version").innerText = version;
+      const blockchaintime = res.response.chain.time;
+      document.getElementById("blockchaintime").innerText = blockchaintime;
+    }
+  })
+  setInterval(updateTime, 10000);
+  if(msg.event == "inited"){
+    MDS.log("service.js inited also in the background...");
+		if(msg.event == "NEWBALANCE"){
+				MDS.log(JSON.stringify(msg));
+
     }
     //Is a NEWBALANCE message?
-    else if(msg.event == "NEWBALANCE"){
-			MDS.log("NEWBALANCE DETECTED...");
-			//InsertTheRecivedToeknInDB();
-			var coinid 	= msg.data.coinid;
-			var amount 	= msg.data.amount;
-			var address 	= msg.data.address;
+  }
+  else{
+		MDS.log(JSON.stringify(msg));
+		CheckMinimaBalance();
 
+    //var tokenid 	= document.getElementById('tokens').value;
+  	//var address = document.getElementById('destinationaddress').value;
+    //var amount = document.getElementById('amount').value;
+    //CreateSend = "Send address:"+address+" amount:"+amount+" tokenid:"+tokenid
 
-			//insert into the DB
-			var msgsql = "INSERT INTO messages (coinid,amount,address) VALUES "
-		    					+"('"+coinid+"','"+amount+"','"+address+"')";
-
-			//Insert into DB
-			MDS.sql(msgsql);
-    }
+    var send = "send address:0xE4FCA5AFA376263DA0C62E55AEDC2206CE9FADAF33D2AA0E935DD4781305483F amount:1 tokenid:0x00";
+    MDS.cmd(send, function(resp) {
+      if (resp.status) {
+        alert("Token Send!");
+        const nodeStatus = JSON.stringify(resp.response, undefined, 2);
+        document.getElementById("node-status").innerText = nodeStatus;
+        //MDS.log("Contact: "+CreateContact);
+        //MDS.log(JSON.stringify(resp));
+      }
+      //if the response status is false
+      else{
+        const nodeStatus = JSON.stringify(resp.response, undefined, 2);
+        document.getElementById("node-status").innerText = nodeStatus;
+        alert("Could not send the Token");
+        MDS.log("Token NOT Send");
+        //MDS.log(JSON.stringify(resp));
+      }
+    });
+  }
 });

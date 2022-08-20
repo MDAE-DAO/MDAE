@@ -152,7 +152,7 @@ function SendMoney(){
       const nodeStatus = JSON.stringify(resp.response, undefined, 2);
       document.getElementById("node-status").innerText = nodeStatus;
       alert("Could not send the Token");
-      MDS.log("Token Send");
+      MDS.log("Token NOT Send");
       //MDS.log(JSON.stringify(resp));
     }
   })
@@ -224,19 +224,7 @@ function LoadSQLMessage(){
   })
 }
 
-function SendSQLMessage(){
-  var coinid 	= "coiniddd";
-  var amount 	= "amounnnnt";
-  var address 	= "adddressss";
 
-
-  //insert into the DB
-  var msgsql = "INSERT INTO messages (coinid,amount,address) VALUES "
-              +"('"+coinid+"','"+amount+"','"+address+"')";
-
-  //Insert into DB
-  MDS.sql(msgsql);
-}
 
 
 function AddContact() {
@@ -280,15 +268,7 @@ MDS.init(function(msg){
   if(msg.event == "inited") {
     // READY TO RUN CMDS!
     // run the Minima status command to return information about the node's current state
-    MDS.cmd("status", function(res) {
-      if (res.status) {
-        // get the version number and the blockchain time from the Status object returned
-        const version = res.response.version;
-        document.getElementById("version").innerText = version;
-        const blockchaintime = res.response.chain.time;
-        document.getElementById("blockchaintime").innerText = blockchaintime;
-      }
-    })
+
     MDS.cmd("maxima", function(resp) {
       if (resp.status) {
         const maximaname = resp.response.name;
