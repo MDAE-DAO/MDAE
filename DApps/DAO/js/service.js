@@ -8,34 +8,44 @@ function updateTime(){
   })
 }
 
-setInterval(updateTime, 10000);
+
 //Main message handler..
 MDS.init(function(msg){
   //Do initialitzation
-  MDS.cmd("status", function(res) {
-    if (res.status) {
-      // get the version number and the blockchain time from the Status object returned
-      const version = res.response.version;
-      document.getElementById("version").innerText = version;
-      const blockchaintime = res.response.chain.time;
-      document.getElementById("blockchaintime").innerText = blockchaintime;
-    }
-  })
-  setInterval(updateTime, 10000);
+
+
+
+
   if(msg.event == "inited"){
     MDS.log("service.js inited also in the background...");
-		if(msg.event == "NEWBALANCE"){
-				MDS.log(JSON.stringify(msg));
-
-    }
-    //Is a NEWBALANCE message?
+    MDS.cmd("status", function(res) {
+      if (res.status) {
+        // get the version number and the blockchain time from the Status object returned
+        const version = res.response.version;
+        document.getElementById("version").innerText = version;
+        const blockchaintime = res.response.chain.time;
+        document.getElementById("blockchaintime").innerText = blockchaintime;
+        //Keep cheking the blockchain time.
+        setInterval(updateTime, 10000);
+      }
+    })
+    MDS.cmd("maxima", function(resp) {
+      if (resp.status) {
+        const maximaname = resp.response.name;
+        document.getElementById("maximacontactname").innerText = maximaname;
+      }
+    })
   }
-  else{
-		MDS.log(JSON.stringify(msg));
-		CheckMinimaBalance();
+  else if(msg.event == "NEWBLOCK"){
+  // the chain tip has changed
+  }
+  else if(msg.event == "NEWBALANCE"){
+    // user's balance has changed
+    MDS.log(JSON.stringify(msg));
+    CheckMinimaBalance();
 
     //var tokenid 	= document.getElementById('tokens').value;
-  	//var address = document.getElementById('destinationaddress').value;
+    //var address = document.getElementById('destinationaddress').value;
     //var amount = document.getElementById('amount').value;
     //CreateSend = "Send address:"+address+" amount:"+amount+" tokenid:"+tokenid
 
@@ -57,5 +67,13 @@ MDS.init(function(msg){
         //MDS.log(JSON.stringify(resp));
       }
     });
+  }
+  else if(msg.event == "MINING"){
+  // mining has started or ended
+  }
+  else if(msg.event == "MINIMALOG"){
+  // new Minima log message
+  }
+  else{
   }
 });

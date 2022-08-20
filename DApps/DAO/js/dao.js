@@ -262,32 +262,3 @@ function Scripts(){
     }
   })
 }
-
-
-MDS.init(function(msg){
-  if(msg.event == "inited") {
-    // READY TO RUN CMDS!
-    // run the Minima status command to return information about the node's current state
-
-    MDS.cmd("maxima", function(resp) {
-      if (resp.status) {
-        const maximaname = resp.response.name;
-        document.getElementById("maximacontactname").innerText = maximaname;
-      }
-    })
-  }
-  else if(msg.event == "NEWBLOCK"){
-  // the chain tip has changed
-  }
-  else if(msg.event == "NEWBALANCE"){
-  // user's balance has changed
-  }
-  else if(msg.event == "MINING"){
-  // mining has started or ended
-  }
-  else if(msg.event == "MINIMALOG"){
-  // new Minima log message
-  }
-  else{
-  }
-});
