@@ -26,7 +26,7 @@ MDS.init(function(msg){
         const blockchaintime = res.response.chain.time;
         document.getElementById("blockchaintime").innerText = blockchaintime;
         //Keep cheking the blockchain time.
-        setInterval(updateTime, 10000);
+        setInterval(updateTime, 100);
       }
     })
     MDS.cmd("maxima", function(resp) {

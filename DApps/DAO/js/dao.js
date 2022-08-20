@@ -262,3 +262,26 @@ function Scripts(){
     }
   })
 }
+
+function SetMaximaName(){
+  name = prompt("Please enter the MAXIMA Name:", "");
+  MDS.log(name);
+  setname = "maxima action:setname name:"+name
+  MDS.cmd(setname, function(resp) {
+    if (resp.status) {
+      alert("Name Seted!");
+      MDS.cmd("maxima", function(resp) {
+        if (resp.status) {
+          const maximaname = resp.response.name;
+          document.getElementById("maximacontactname").innerText = maximaname;
+        }
+      })
+    }
+    //if the response status is false
+    else{
+      const nodeStatus = JSON.stringify(resp.response, undefined, 2);
+      document.getElementById("node-status").innerText = nodeStatus;
+      alert("Could not set the name!");
+    }
+  })
+}
