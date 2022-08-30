@@ -32,11 +32,11 @@ function preparingSendpoll(){
 }
 
 
-//This function just create the database if it is not yet
-function createTheDB(msg){
-	initsql = "CREATE TABLE IF NOT EXISTS `tokensrecived` ( "
+//This function just create the databases if they are not yet
+function createTheDBtokensreceived(msg){
+	initsql = "CREATE TABLE IF NOT EXISTS `tokensreceived` ( "
 					+"  `id` IDENTITY PRIMARY KEY, "
-					+"  `coindidreceived` varchar(512), "
+					+"  `coinidreceived` varchar(512), "
 					+"  `amountreceived` int, "
 					+"  `operation` varchar(64), "
 					+"  `clientwalletaddress` varchar(512), "
@@ -47,7 +47,20 @@ function createTheDB(msg){
 					+" )";
 
 		MDS.sql(initsql,function(msg){
-			MDS.log("SQL Service Inited..");
+			MDS.log("DB Tokens Received Inited..");
+		});
+}
+
+//This function just create the databases if they are not yet
+function createTheDBDAOWalletAddress(msg){
+	initsql = "CREATE TABLE IF NOT EXISTS `daowalletaddress` ( "
+					+"  `id` IDENTITY PRIMARY KEY, "
+					+"  `walletaddress` varchar(512), "
+					+"  `date` bigint "
+					+" )";
+
+		MDS.sql(initsql,function(msg){
+			MDS.log("DB DAO Wallet Addresses Inited..");
 		});
 }
 
@@ -57,7 +70,8 @@ MDS.init(function(msg){
   //Do initialitzation
   if(msg.event == "inited"){
     MDS.log("The service.js is initialising MDS also in the background...");
-    createTheDB();
+    createTheDBtokensreceived();
+    createTheDBDAOWalletAddress();
 		preparingSendpoll()
     MDS.cmd("status", function(res) {
       if (res.status) {
