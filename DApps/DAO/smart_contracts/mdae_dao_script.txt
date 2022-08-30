@@ -85,3 +85,424 @@ state_vars:
 ----> to the sql database
 
 ->coins address:0x55DA27A0E823BDE3B8A229E432780F931C1D1326E7B8CD356A839E6A6AAB370C
+
+<<<<<<< HEAD
+@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+----------------------------------------
+Third aproach ## ---> Contract on the Token <--- ## or on a script addess DAO ?:
+----------------------------------------
+@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+
+We have seen the problems if we take the aproach to send the tokens into an script and then when the user
+(Advertiser) who install the DAO and register the script cannot see the tokens available on it, as they where
+deposited before he registered the script on his node.
+
+-> One posible solution to that it is deposit a token under demand to the script, once the (Advertiser) has
+installed the DAO and registered the script, he send a fraction of 1 minima to the DAO address setting a state
+variable on it indicating that he wants a number of tokens, once the Original DAO receives the minimas with state
+variables, it transfer that amount of tokens into the script, once that is done, the advertiser can see that
+a number of tokens have been deposited on the script and then he can buy them executing an exchange contract.
+------> Problems:
+        The script is the same for all Advertisers who register the script, so they node will track all tokens
+        that are deposited on the script since they registered the script at least during the las 24 hours, so
+        it can be a huge amount of tokens to track, so this aproach it dosen't seem the best solution.
+
+-> ## The choosen solution: ##
+To avoid the problem of visibililty of the tokens, instead to use an script to deposit the tokens, we used
+a wallet address hardcoded on the DAO app that points to the originalDAO's node (there could also be several
+of them, decentralizing the original DAO between several different nodes, so the original DAO could have
+a list of hardcoded addresses where to buy tokens), that way, instead of the Advertiser to ask
+for a token to be deposited on an script addres, directly ask for buy the token sending the minimas of the
+tokens total of tokens to buy and several state variables set as described on ## SECOND APROACH ## and once the
+minimas have been received on the Original DAO's address and all is checked, the tokens bought are sent to
+the advertiser wallet.
+------> Problems:
+        The whole tokens of the same type must be generated at once so they can have the same tokenid and then act
+        as a full syncronized ecosystem, so, the script that rules the tokens must be set on the tokens itself
+        instead on an script address(to avoid the problems of visibility we have described previsouly).
+
+        This makes the script to build more complex, but every token can act independently and here we must
+        consider how the system is going to deal with the rewards to be received by all parties when a token
+        is spent and the problems that may arise, so lets to consider the followings things to get an an
+        overview of the complexity:
+
+        1.- When the advertiser send the token to the target audience, the token is spent, but this has not
+            to trigger the rewards system of the contract, one condition that needs to be check is that if the
+            token is spent by the Advertiser who bought it, then no action needs to be done and the token
+            must be spent(sent) freely.
+
+        2.- Point of view of Dapp where the token is/are sent, this is a complex case too, lets divide it into
+        two use cases:
+          2.1- If is a final user, the token will be received on the user's node, so there has to be an API
+          advertiser.js that the Dapp has to use to check for the advertiser tokens on the node and then show them
+          into the Dapp as some kind of link or image on the app.
+          - So when the user of the Dapp click on the link a transaction must be trigger after the image or
+          text has ben viewed.
+             -So possible option, use coinexport from to set the data on the token and on the Dapp to spend
+             the token use coinimport and then build a transaction on a exchange contract on advertiser node.
+             you receive a reward in exchange for the token ??? possible ? the reward maybe should be set on a
+             special script to be spent whithout sign it (the coin reward).
+
+             -So possible option, and we need to let all be triggered automatically,so we need the TrackingAPP
+             where Dapps builders and users will register to it with their wallet to receive publicity tokens.
+             So then an API must be available to the AdverstiserAPP and DAO app as an external source input,
+             several of them, where it can be accessed by an external server or as an script solution like
+             depositing tokens into an script of Advertiser when asked to TrackingAPP that will contain the
+             addresses of wallets (users or Dapps) and selected by the types of topics about what kind of Publicity
+             they want to receive, so, the original trackingDAPP will have an sql database, and the petition of
+             information will be triggered for now, like the DAO solution, sending a fraction of minima with the
+             info needed set on state variables and the dapp advertiser will receive a token or several with all wallet
+             addresses setted on it, (when omnia is ready that can be done over omnia or Maxima).
+             MAXIMA could be user here, if there are several tokens to sent to the Advertiser about the wallet
+             addresses where the publicity tokens can be sent, then instead of sending a tokens with the info
+             set on the token's state variables, could be sent over MAXIMA contact's advertiser, that previously
+             his contact should have been sent as state variable on the fraction of minima sent to the trackerDAPP.
+
+             -So the advertiser on a final user case, must register or get an script () address based on
+              the wallet that the user used to register himself on the TrackingDAPP to be able to receive publicity,
+              that way the script will be unique for every user as when the user registers on TrackinAPP
+              this will create the script on user's node, so that, since that moment, the user will always
+              be able to see the tokens of Publicity his node receives and the Advertiser only have
+              to send the publicity token to that script and also the reward to receive, so it will be an
+              exchange contract, where the publicity token will go back to
+              the DAO and the rewards on the script will go to the user's wallet.
+
+            -So the advertiser can be configured on his state variables the rewards amount and type to be required
+             by the contract, that once it is sent to the final user script also must check that the rewards
+             specified on his state variables are sent according the Advertiser will and in case the token is sent
+             back to the DAO those conditions would not be required and once the token is on the final user script,
+             the token could accept the input of a state variable with the wallet of the user where to receive the rewards,
+             and the third party(developers of the Dapp) to receive his rewards also but it could be configured by ADVERTISER
+             so then it couldn't be ncessary..... but then the final user script should only would be as a kind of container
+             that only protect the rewards to be spent when the Token is spent .....but this last part,
+             I am not sure if it can be done....
+
+**Proof of Concept CONTRACT 1 (final user no intermediary):**
+
+-node 1 (DAO):
+  create 10 tokens
+  the tokens must have an script that let the Advertiser to configure it, the script
+  (the exchange contract for the final user)
+  - Create the script into the tokens
+    - conditions
+      - vault address script ** state 0 **
+      - publickey vaullt-1 ** state 1 **
+      - publickey vaullt-2 ** state 2 **
+      - publickey vaullt-3 ** state 3 **
+      - Owner dao address ** state 4 **
+      - Owner dao publickey ** state 5 **
+      - Third party comission ** state 6 ** to be received by DAO when token is spent from the reward amount.
+      - Final user comission ** state 7 ** to be received by DAO when token is spent from the reward amount.
+      - If the rewards are not minimas, then a fix % must be set(according to the values of rewards-**Oracle**?)
+        ** state 8 **
+      - Price of Token ** state 9 **
+      - The tokens cannot be moved(buy) if the ** state 10 ** is not set to advertiser wallet,if state 10
+        is not a valid wallet it will fail.
+--------
+
+-node2 (Advertiser)
+  -buy the tokens to node 1
+  -Advertiser buyer wallet ** state 10 **
+  -Advertiser buyer amount to buy ** state 11 **
+  -Avertiser
+  - Advertiser cannot move the token unless is configured ** state 12 ** [configured], only can be moved to the
+    same address to let do a flashloan contract to configure the token/s
+  - Once the token is configured it can be sent anywhere
+  - Once the token leave the Advertiser node it cannot be configured anymore a state variable
+  ** state 11 ** [sent] must be added.
+  -configure one token for one final user (script - exchange contract)
+  -configure address of intermediary party(if there is one) ** state 8 **
+  -configure address of final user ** state 9 **
+  -configure the script address based on the final user address where the tokens will be sent. ** state 10 **
+  -configure the amount of reward intermediary user(if there is one) ** state 11 **,
+  -and type (if there is intermediary) ** state 12 **
+  -configure the amount of rewards final user ** state 13 **,
+  -configure type  ** state 14 **
+  -send the token and the rewards to the final user script (first, node 3 must have create the script,which is
+  done when the user register his address to the TrackingDapp)
+  -**state vars from 14-29 keep reserved** in case are need for further configurations
+  -Avertising configuration:
+    -type of publicity ** state 30 **
+      -(0:text ** reserved 31-49 state vars **)
+      -(1:web page)
+      -(2:url image)
+      -(3:url survey / text (using reserved text state variables)
+      -(4:actions (Follow twitter/social networks acount, RT, Likes, p)-using reserved text state variables)
+      -(5:conquest using reserver text state vars to set a url or instructions)
+    -**configure the rules/requirements to drive how publicity is managed:**
+      -This part can be very complex and done in multiples ways, and it depends on the type of Publicity
+      to be show or managed, so it may require external actor (Oracles, bots, list of instructions....),
+      so it can be a url that indicates or do all necessary actions to check the all steps are followed,so
+      we can divide into two sections:
+        **1.- section 1 to manage how publicity is shown on the target devices/actors**
+        **2.- section 2 to manage how to detect the publicity is viewed or the steps have been followed**
+      We can use all other state variables to manage the former two sections.
+------------------------------
+
+-node 3 (Final user)
+  -register himself the script for receiving publicity(simulating it does using trackingDapp)
+  -this container script to protect the rewards, must check that an output of one token publicity exists
+  so that way, the rewards could not be extracted if the conditions of publicity token script are not meet.
+  -simulate it reads the Publicity
+  -claims the rewards exchanging the token publicity for the rewards building a transaction to
+  meet the requirements of echange contract on publicity's Token and pays also the comissions to DAO.
+
+
+Final user script:
+ASSERT VERIFYOUT( @INPUT daoAddres 1 tokenPublicity TRUE )
+ASSERT VERIFYOUT( INC(@INPUT) addressUser @AMOUNT 0x00 TRUE )
+RETURN true
+
+
+
+---------------------------------------------
+----------------- SCRIPT --------------------
+---------------------------------------------
+/*  Dao owners let transfer the tokens from the vault to DAO (PREVSTAE 4) where buyers will buy the tokens
+    There is no need to preserve the states (4-5) if there is not a buy
+*/
+
+ASSERT SAMESTATE ( 0 0 )
+ASSERT SAMESTATE ( 1 1 )
+ASSERT SAMESTATE ( 2 2 )
+ASSERT SAMESTATE ( 3 3 )
+
+IF MULTISIG ( 2 PREVSTATE( 1 ) PREVSTATE( 2 ) PREVSTATE( 3 ) ) THEN
+
+    /* The owners can modify comissions of third parties and final users and the owner and publickey DAO
+      STATE ( 4 ) EQ HEX
+      STATE ( 5 ) EQ HEX
+    */
+    ASSERT STATE ( 6 ) GT 0
+    ASSERT STATE ( 7 ) GT 0
+    ASSERT STATE ( 8 ) GT 0
+    ASSERT STATE ( 9 ) GT 0
+
+    /* Transfer the tokens from the vault to the DAO owner */
+    RETURN VERIFYOUT (@INPUT PREVSTATE( 4 ) @AMOUNT @TOKENID TRUE)
+
+ELSE
+
+    /* Only the owners can modify comissions price and owner and publickey of DAO -  so lets avoid it*/
+    ASSERT SAMESTATE ( 4 4 )
+    ASSERT SAMESTATE ( 5 5 )
+    ASSERT SAMESTATE ( 6 6 )
+    ASSERT SAMESTATE ( 7 7 )
+    ASSERT SAMESTATE ( 8 8 )
+    ASSERT SAMESTATE ( 9 9 )
+
+ENDIF
+
+/* BUY Dao owner state 5 let transfer the tokens to buyers in exchange for the minima price * AMOUNT */
+IF SIGNEDBY( PREVSTATE( 5 ) ) THEN
+
+  LET vault = STATE ( 0 )
+  LET dao = STATE ( 4 )
+  LET price = PREVSTATE( 9 )
+  LET buyer = STATE ( 10 )
+  LET amount = STATE ( 11 )
+  LET chgBack = @AMOUNT - amount*price
+  LET chgBackTokens = INC ( @AMOUNT ) - amount
+  /* Check the payed minimas in exchange for tokens are sent to the vault*/
+  ASSERT VERIFYOUT(@INPUT vault amount*price 0x00 TRUE)
+
+  /* Check the total tokens bought are sent to the buyer second input */
+  ASSERT VERIFYOUT( INC( @INPUT ) buyer amount/price @TOKENID TRUE )
+
+  /* Check the changeBack  if there is one is sent to the buyer */
+  IF chgBack GT 0 THEN
+    ASSERT VERIFYOUT(@INPUT vault chgBack 0x00 TRUE)
+  ENDIF
+
+  /* Check the changeBackTokens  if there is one is sent to the DAO's address */
+  IF chgBackTokens GT 0 THEN
+    ASSERT VERIFYOUT( INC(@INPUT) dao chgBackTokens @TOKENID TRUE)
+  ENDIF
+
+  RETURN TRUE
+
+ENDIF
+-------------------------------------------------------------------------
+------------------ END SCRIPT, needs to be clean to be ready to use -----
+-------------------------------------------------------------------------
+
+-----------------------------------
+---- test script parametres on scriptide:
+state:{"0":"0xf00","1":"0xf10","2":"0xf20","3":"0xf30","4":"0xe40","5":"0xe41","6":"2","7":"2","8":"2","9":"1","10":"0xc01","11":"5"}
+prevstate:{"0":"0xf00","1":"0xf10","2":"0xf20","3":"0xf30","4":"0xe40","5":"0xe41","6":"2","7":"2","8":"2","9":"1"}
+signatures:["0x5F549765118028EA41E57710FB500E23FE859AFEEE940C6F7DA9F5B17C3AE4D3"]
+@AMOUNT 10
+@COIND 0x001
+@INPUT 0x001
+@TOKENID ["0x00","0xC0C5D654002BE1E91872693CB40AD57D0836800ED74226EF357413E33CE00E64"]
+
+clean script: "ASSERT SAMESTATE(0 0) ASSERT SAMESTATE(1 1) ASSERT SAMESTATE(2 2) ASSERT SAMESTATE(3 3) IF MULTISIG(2 PREVSTATE(1)PREVSTATE(2)PREVSTATE(3)) THEN ASSERT STATE(6) GT 0 ASSERT STATE(7) GT 0 ASSERT STATE(8) GT 0 ASSERT STATE(9) GT 0 RETURN VERIFYOUT(@INPUT PREVSTATE(4)@AMOUNT @TOKENID TRUE) ELSE ASSERT SAMESTATE(4 4) ASSERT SAMESTATE(5 5) ASSERT SAMESTATE(6 6) ASSERT SAMESTATE(7 7) ASSERT SAMESTATE(8 8) ASSERT SAMESTATE(9 9) ENDIF IF SIGNEDBY(PREVSTATE(5)) THEN LET vault=STATE(0) LET dao=STATE(4) LET price=PREVSTATE(9) LET buyer=STATE(10) LET amount=STATE(11) LET chgback=@AMOUNT-amount*price LET chgbacktokens=INC(@AMOUNT)-amount ASSERT VERIFYOUT(@INPUT vault amount*price 0x00 TRUE) ASSERT VERIFYOUT(INC(@INPUT)buyer amount/price @TOKENID TRUE) IF chgback GT 0 THEN ASSERT VERIFYOUT(@INPUT vault chgback 0x00 TRUE) ENDIF IF chgbacktokens GT 0 THEN ASSERT VERIFYOUT(INC(@INPUT)dao chgbacktokens @TOKENID TRUE) ENDIF RETURN TRUE ENDIF"
+
+script address: 0x9DC3CB50D4F2BBB099BA179D80C6C77BF03B487F7D95CB8D37CD4337718FD2B2
+
+-----------------------------------
+
+#################################################
+################ STEPS to SET TOKENS AND SCRIPTS to work
+#################################################
+1.- Create the multisingature contract first, as we need the address for script 2, we are going to use
+the script ide to accelerate the process, once the script is run, we get a clean script and one script address.
+We need to run that clean script on the console with the command "newscript" , to register the script and get the same script address.
+
+--------------------------------
+Script multi signature VAULT:
+"RETURN MULTISIG ( 2 0xF4F8FA86AFE0781288E7A5625B5BD9395B8DFA04DD9D741F6C38E6FBA32CD8B0 0xB5A82ADB68BB5204DC9CDB1B9C6218CF6E88B9C7B0BAA02B713D7E7E771E3625 0xCEA682FA3CF06907786993B7D8B8B73682EBA9AB20D255A78D2EC9A84ECDFA92 )"
+
+clean script:
+"RETURN MULTISIG(2 0xF4F8FA86AFE0781288E7A5625B5BD9395B8DFA04DD9D741F6C38E6FBA32CD8B0 0xB5A82ADB68BB5204DC9CDB1B9C6218CF6E88B9C7B0BAA02B713D7E7E771E3625 0xCEA682FA3CF06907786993B7D8B8B73682EBA9AB20D255A78D2EC9A84ECDFA92)"
+
+VAULT address script-0: 0x514CBB51231BB15D77F4161658EDBFE48559A6E1B93CAA5ABB9FD9034563E2D8
+
+-> newscript track:true script:"RETURN MULTISIG(2 0xF4F8FA86AFE0781288E7A5625B5BD9395B8DFA04DD9D741F6C38E6FBA32CD8B0 0xB5A82ADB68BB5204DC9CDB1B9C6218CF6E88B9C7B0BAA02B713D7E7E771E3625 0xCEA682FA3CF06907786993B7D8B8B73682EBA9AB20D255A78D2EC9A84ECDFA92)"
+--------------------------------
+
+2.- Create the the tokens of publicity, but those tokens have to incroporate the General script that will
+  run the behavior and the conditions of the tokens when they are going to be spent or configured.
+  So first we need a clean script, and we use the scriptide to get that clean script, once run on the ide,
+  we will get a clean script, then we will need to create the publicity tokens and attach this script with
+  its state variables.
+
+clean script: "ASSERT SAMESTATE(0 0) ASSERT SAMESTATE(1 1) ASSERT SAMESTATE(2 2) ASSERT SAMESTATE(3 3) IF MULTISIG(2 PREVSTATE(1)PREVSTATE(2)PREVSTATE(3)) THEN ASSERT STATE(6) GT 0 ASSERT STATE(7) GT 0 ASSERT STATE(8) GT 0 ASSERT STATE(9) GT 0 RETURN VERIFYOUT(@INPUT PREVSTATE(4)@AMOUNT @TOKENID TRUE) ELSE ASSERT SAMESTATE(4 4) ASSERT SAMESTATE(5 5) ASSERT SAMESTATE(6 6) ASSERT SAMESTATE(7 7) ASSERT SAMESTATE(8 8) ASSERT SAMESTATE(9 9) ENDIF IF SIGNEDBY(PREVSTATE(5)) THEN LET vault=STATE(0) LET dao=STATE(4) LET price=PREVSTATE(9) LET buyer=STATE(10) LET amount=STATE(11) LET chgback=@AMOUNT-amount*price LET chgbacktokens=INC(@AMOUNT)-amount ASSERT VERIFYOUT(@INPUT vault amount*price 0x00 TRUE) ASSERT VERIFYOUT(INC(@INPUT)buyer amount/price @TOKENID TRUE) IF chgback GT 0 THEN ASSERT VERIFYOUT(@INPUT vault chgback 0x00 TRUE) ENDIF IF chgbacktokens GT 0 THEN ASSERT VERIFYOUT(INC(@INPUT)dao chgbacktokens @TOKENID TRUE) ENDIF RETURN TRUE ENDIF"
+
+script address: 0x9DC3CB50D4F2BBB099BA179D80C6C77BF03B487F7D95CB8D37CD4337718FD2B2
+owner DAO address-4: 0x7B4547BC4AE5291E9A2B9C0A788B54B6B0EA377AEBBAD2B1BFB9BB725079825D
+owner DAO publickey-5: 0x2FDE9021C9ADEADB15E86BAEAAF7D3B50F39C06B4EB5D9BDEA0CF2407F70C750
+
+-> tokencreate name:"aDAE" amount:1000 decimals:0 state:{"0":"0x514CBB51231BB15D77F4161658EDBFE48559A6E1B93CAA5ABB9FD9034563E2D8","1":"0xF4F8FA86AFE0781288E7A5625B5BD9395B8DFA04DD9D741F6C38E6FBA32CD8B0","2":"0xB5A82ADB68BB5204DC9CDB1B9C6218CF6E88B9C7B0BAA02B713D7E7E771E3625","3":"0xCEA682FA3CF06907786993B7D8B8B73682EBA9AB20D255A78D2EC9A84ECDFA92","4":"0x7B4547BC4AE5291E9A2B9C0A788B54B6B0EA377AEBBAD2B1BFB9BB725079825D","5":"0x2FDE9021C9ADEADB15E86BAEAAF7D3B50F39C06B4EB5D9BDEA0CF2407F70C750","6":"2","7":"2","8":"2","9":"1"} script:"ASSERT SAMESTATE(0 0) ASSERT SAMESTATE(1 1) ASSERT SAMESTATE(2 2) ASSERT SAMESTATE(3 3) IF MULTISIG(2 PREVSTATE(1)PREVSTATE(2)PREVSTATE(3)) THEN ASSERT STATE(6) GT 0 ASSERT STATE(7) GT 0 ASSERT STATE(8) GT 0 ASSERT STATE(9) GT 0 RETURN VERIFYOUT(@INPUT PREVSTATE(4)@AMOUNT @TOKENID TRUE) ELSE ASSERT SAMESTATE(4 4) ASSERT SAMESTATE(5 5) ASSERT SAMESTATE(6 6) ASSERT SAMESTATE(7 7) ASSERT SAMESTATE(8 8) ASSERT SAMESTATE(9 9) ENDIF IF SIGNEDBY(PREVSTATE(5)) THEN LET vault=STATE(0) LET dao=STATE(4) LET price=PREVSTATE(9) LET buyer=STATE(10) LET amount=STATE(11) LET chgback=@AMOUNT-amount*price LET chgbacktokens=INC(@AMOUNT)-amount ASSERT VERIFYOUT(@INPUT vault amount*price 0x00 TRUE) ASSERT VERIFYOUT(INC(@INPUT)buyer amount/price @TOKENID TRUE) IF chgback GT 0 THEN ASSERT VERIFYOUT(@INPUT vault chgback 0x00 TRUE) ENDIF IF chgbacktokens GT 0 THEN ASSERT VERIFYOUT(INC(@INPUT)dao chgbacktokens @TOKENID TRUE) ENDIF RETURN TRUE ENDIF"
+---------------------------------------
+
+3. Send from node 2 to DAO(node 1) order to buy tokens, sending the minimas and the amount of a token to buy
+
+address:DAO_origin: 0x7B4547BC4AE5291E9A2B9C0A788B54B6B0EA377AEBBAD2B1BFB9BB725079825D
+amount:10
+tokenid:minima
+state_vars:
+0:[buy_tokens],
+1:wallet buyer: 0xB0E211E7411D84DAE106A48A2225695DCFE3F7DC30F5E0A30E8888DA9AD8DF84
+2:token to buy id: 0xF182A3DBA5131DF6071C02C31D3813F7F56179F38ECEF472F55940AB60D81432
+3: amount to buy: 10
+
+->send address:0x7B4547BC4AE5291E9A2B9C0A788B54B6B0EA377AEBBAD2B1BFB9BB725079825D amount:10 tokenid:0x00 state:{"0":"[buy_tokens]", "1":"0xB0E211E7411D84DAE106A48A2225695DCFE3F7DC30F5E0A30E8888DA9AD8DF84", "2":"0xF182A3DBA5131DF6071C02C31D3813F7F56179F38ECEF472F55940AB60D81432", "3":"10"}
+
+4.- Create a manual transaction to buy a token, the scenario is: the tokens are created with the previous script,
+  the tokens are on the DAO not the VAULT, the transaction is done simulating the DAO receives an order of
+  buy tokens and on the NEWBALANCE event this transaction should be built and fired.
+  Notice that the script conditions must be meet, so every state variable that script conditions required
+  must be set when building the transaction.The state variables some of them are related directly to your
+  node DAO original(in a real case scenario, there would only be one node DAO-or several on a more decentralized version)
+  NOTE:
+    - state var 10 is the other node address (the buyer wallet) where the tokens bought will be sent
+    - state var 11 is the amount of tokens to buy by the buyer.
+    - coinid 1 is the minimas sent by the buyer to the DAO to buy the tokens with state vars info set.
+      must be signedby the public address where the coins are before sendig them to vault.
+    - coinid 2 is the tokens the buyer wants to buy
+      so the node 2 will sent the minimas to buy the tokens to the node 1 (DAO) and the transaction
+      will use the coinid of the minimas sent by the buyer, and the coinid of the token to buy
+
+->txncreate id:buy1
+->txnstate id:buy1 port:0 value:"0x514CBB51231BB15D77F4161658EDBFE48559A6E1B93CAA5ABB9FD9034563E2D8"
+->txnstate id:buy1 port:1 value:"0xF4F8FA86AFE0781288E7A5625B5BD9395B8DFA04DD9D741F6C38E6FBA32CD8B0"
+->txnstate id:buy1 port:2 value:"0xB5A82ADB68BB5204DC9CDB1B9C6218CF6E88B9C7B0BAA02B713D7E7E771E3625"
+->txnstate id:buy1 port:3 value:"0xCEA682FA3CF06907786993B7D8B8B73682EBA9AB20D255A78D2EC9A84ECDFA92"
+->txnstate id:buy1 port:4 value:"0x7B4547BC4AE5291E9A2B9C0A788B54B6B0EA377AEBBAD2B1BFB9BB725079825D"
+->txnstate id:buy1 port:5 value:"0x2FDE9021C9ADEADB15E86BAEAAF7D3B50F39C06B4EB5D9BDEA0CF2407F70C750"
+->txnstate id:buy1 port:6 value:"2"
+->txnstate id:buy1 port:7 value:"2"
+->txnstate id:buy1 port:8 value:"2"
+->txnstate id:buy1 port:9 value:"1"
+->txnstate id:buy1 port:10 value:"0xB0E211E7411D84DAE106A48A2225695DCFE3F7DC30F5E0A30E8888DA9AD8DF84"
+->txnstate id:buy1 port:11 value:"10"
+->txninput id:buy1 coinid:0x4E5748773F27AFE5CB5E853BB02AC40C41B8F1CD68A67E59D2C78D71BC4ADA50
+->txninput id:buy1 coinid:0xCA8DF928BCA7E3056A40BBA3F690F79C4FD9D471CF75E14281219893410276A0
+->txnoutput id:buy1 amount:10 address:0x514CBB51231BB15D77F4161658EDBFE48559A6E1B93CAA5ABB9FD9034563E2D8 tokenid:0x00 storestate:false
+->txnoutput id:buy1 amount:10 address:0xB0E211E7411D84DAE106A48A2225695DCFE3F7DC30F5E0A30E8888DA9AD8DF84 tokenid:0xF182A3DBA5131DF6071C02C31D3813F7F56179F38ECEF472F55940AB60D81432 storestate:true
+->txnbasics id:buy1
+->txnsign id:buy1 publickey:0x485757B8AB7A78B95A663E36ED508865F6B30FB3042ABF06E56B5F66839EB702
+->txnsign id:buy1 publickey:0x2FDE9021C9ADEADB15E86BAEAAF7D3B50F39C06B4EB5D9BDEA0CF2407F70C750
+->txnpost id:buy1
+
+
+
+
+0x2039657C1E3C72B8D0F4E914B5B7A8BD1E413FA4F133FB74A3548621708A629F
+->txncreate id:buy1
+->txnstate id:buy1 port:0 value:"0x514CBB51231BB15D77F4161658EDBFE48559A6E1B93CAA5ABB9FD9034563E2D8"
+->txnstate id:buy1 port:1 value:"0xF4F8FA86AFE0781288E7A5625B5BD9395B8DFA04DD9D741F6C38E6FBA32CD8B0"
+->txnstate id:buy1 port:2 value:"0xB5A82ADB68BB5204DC9CDB1B9C6218CF6E88B9C7B0BAA02B713D7E7E771E3625"
+->txnstate id:buy1 port:3 value:"0xCEA682FA3CF06907786993B7D8B8B73682EBA9AB20D255A78D2EC9A84ECDFA92"
+->txnstate id:buy1 port:4 value:"0x7B4547BC4AE5291E9A2B9C0A788B54B6B0EA377AEBBAD2B1BFB9BB725079825D"
+->txnstate id:buy1 port:5 value:"0x2FDE9021C9ADEADB15E86BAEAAF7D3B50F39C06B4EB5D9BDEA0CF2407F70C750"
+->txnstate id:buy1 port:6 value:"2"
+->txnstate id:buy1 port:7 value:"2"
+->txnstate id:buy1 port:8 value:"2"
+->txnstate id:buy1 port:9 value:"1"
+->txnstate id:buy1 port:10 value:"0xB0E211E7411D84DAE106A48A2225695DCFE3F7DC30F5E0A30E8888DA9AD8DF84"
+->txnstate id:buy1 port:11 value:"10"
+->txninput id:buy1 coinid:0x2039657C1E3C72B8D0F4E914B5B7A8BD1E413FA4F133FB74A3548621708A629F
+->txninput id:buy1 coinid:0xCA8DF928BCA7E3056A40BBA3F690F79C4FD9D471CF75E14281219893410276A0
+->txnoutput id:buy1 amount:10 address:0x514CBB51231BB15D77F4161658EDBFE48559A6E1B93CAA5ABB9FD9034563E2D8 tokenid:0x00 storestate:false
+->txnoutput id:buy1 amount:10 address:0xB0E211E7411D84DAE106A48A2225695DCFE3F7DC30F5E0A30E8888DA9AD8DF84 tokenid:0xF182A3DBA5131DF6071C02C31D3813F7F56179F38ECEF472F55940AB60D81432 storestate:true
+->txnbasics id:buy1
+->txnsign id:buy1 publickey:0x485757B8AB7A78B95A663E36ED508865F6B30FB3042ABF06E56B5F66839EB702
+->txnsign id:buy1 publickey:0x2FDE9021C9ADEADB15E86BAEAAF7D3B50F39C06B4EB5D9BDEA0CF2407F70C750
+->txnpost id:buy1
+
+
+ASSERT SAMESTATE(0 0) ASSERT SAMESTATE(1 1) ASSERT SAMESTATE(2 2) ASSERT SAMESTATE(3 3) IF MULTISIG(2 PREVSTATE(1)PREVSTATE(2)PREVSTATE(3)) THEN ASSERT STATE(6) GT 0 ASSERT STATE(7) GT 0 ASSERT STATE(8) GT 0 ASSERT STATE(9) GT 0 RETURN VERIFYOUT(@INPUT PREVSTATE(4) @AMOUNT @TOKENID TRUE) ELSE ASSERT SAMESTATE(4 4) ASSERT SAMESTATE(5 5) ASSERT SAMESTATE(6 6) ASSERT SAMESTATE(7 7) ASSERT SAMESTATE(8 8) ASSERT SAMESTATE(9 9) ENDIF IF SIGNEDBY(PREVSTATE(5)) THEN LET vault=STATE(0) LET dao=STATE(4) LET price=PREVSTATE(9) LET buyer=STATE(10) LET amount=STATE(11) LET chgback=@AMOUNT-amount*price LET chgbacktokens=INC(@AMOUNT)-amount ASSERT VERIFYOUT(@INPUT vault amount*price 0x00 TRUE) ASSERT VERIFYOUT(INC(@INPUT)buyer amount/price @TOKENID TRUE) IF chgback GT 0 THEN ASSERT VERIFYOUT(@INPUT vault chgback 0x00 TRUE) ENDIF IF chgbacktokens GT 0 THEN ASSERT VERIFYOUT(INC(@INPUT)dao chgbacktokens @TOKENID TRUE) ENDIF RETURN TRUE ENDIF
+
+
+
+
+`
+txncheck id:buy1
+Minima @ 29/08/2022 13:08:24 [344.9 MB] : Token Script FAIL input:1 ASSERT SAMESTATE(0 0) ASSERT SAMESTATE(1 1) ASSERT SAMESTATE(2 2) ASSERT SAMESTATE(3 3) IF MULTISIG(2 PREVSTATE(1)PREVSTATE(2)PREVSTATE(3)) THEN ASSERT STATE(6) GT 0 ASSERT STATE(7) GT 0 ASSERT STATE(8) GT 0 ASSERT STATE(9) GT 0 RETURN VERIFYOUT(@INPUT PREVSTATE(4)@AMOUNT @TOKENID TRUE) ELSE ASSERT SAMESTATE(4 4) ASSERT SAMESTATE(5 5) ASSERT SAMESTATE(6 6) ASSERT SAMESTATE(7 7) ASSERT SAMESTATE(8 8) ASSERT SAMESTATE(9 9) ENDIF IF SIGNEDBY(PREVSTATE(5)) THEN LET vault=STATE(0) LET dao=STATE(4) LET price=PREVSTATE(9) LET buyer=STATE(10) LET amount=STATE(11) LET chgback=@AMOUNT-amount*price LET chgbacktokens=INC(@AMOUNT)-amount ASSERT VERIFYOUT(@INPUT vault amount*price 0x00 TRUE) ASSERT VERIFYOUT(INC(@INPUT)buyer amount/price @TOKENID TRUE) IF chgback GT 0 THEN ASSERT VERIFYOUT(@INPUT vault chgback 0x00 TRUE) ENDIF IF chgbacktokens GT 0 THEN ASSERT VERIFYOUT(INC(@INPUT)dao chgbacktokens @TOKENID TRUE) ENDIF RETURN TRUE ENDIF
+{
+  "command":"txncheck",
+  "params":{
+    "id":"buy1"
+  },
+  "status":true,
+  "pending":false,
+  "response":{
+    "coins":[{
+      "tokenid":"0x00",
+      "input":"10",
+      "output":"10",
+      "difference":"0"
+    },
+    {
+      "tokenid":"0xF182A3DBA5131DF6071C02C31D3813F7F56179F38ECEF472F55940AB60D81432",
+      "input":"0.00000000000000000000000000000000000000001",
+      "output":"0.0000000000000000000000000000000000000000001",
+      "difference":"0.0000000000000000000000000000000000000000099"
+    }],
+    "tokens":2,
+    "inputs":2,
+    "outputs":2,
+    "burn":"0.0000000000000000000000000000000000000000099",
+    "validamounts":true,
+    "signatures":2,
+    "valid":{
+      "basic":true,
+      "signatures":true,
+      "mmrproofs":true,
+      "scripts":false
+    }
+  }
+}
+`
+
+
+
+
+https://telegram.me/manybot
+https://medium.com/javarevisited/sending-a-message-to-a-telegram-channel-the-easy-way-eb0a0b32968
+https://www.dignited.com/25296/how-to-create-telegram-bot-for-telegram-channel/
+          https://api.telegram.org/bot[BOT_API_KEY]/sendMessage?chat_id=[MY_CHANNEL_NAME]&text=[MY_MESSAGE_TEXT]
+
+          https://api.telegram.org/bot5743770519:AAEVKbcOafrfbd2bRPXMFH09EbBxYyDcTe4/sendMessage?chat_id=@minima_test2&text=ieeeep_newTOKEN

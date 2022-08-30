@@ -305,3 +305,141 @@ send address:0x81EF1C3C244FBE690452B25CA6D24FE1F023028F5A3DF7286BB35B53D3613F1D 
 
 success !!! it should be, but is not !!! : send address:0x81EF1C3C244FBE690452B25CA6D24FE1F023028F5A3DF7286BB35B53D3613F1D amount:1 tokenid:0x3D02BDB2BBC139B5AD96AE9B3585FA647A62583A58E8D26DA482E1CCBBD52B66 state:{"1":"[First line publicity]", "2":"[Second line publicity]", "3":"[Third line publicity]"}
 --------
+
+@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ trying elias solution @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+->tokencreate name:aDAE amount:100 decimals:0
+"tokenid":"0x71664A6F9F832212E995DDD1C2B964251B5FEBB37F0BABA74AB612F783F33169"
+
+->newscript script:"RETURN SIGNEDBY(0x8CC58927AC06AD97BB1D11A42473AFCEF9C547038AFA94148C3BF9B9FB9662FF) AND SAMESTATE(1 1) AND SAMESTATE(2 2) AND SAMESTATE(3 3)" track:true
+{
+  "command":"newscript",
+  "params":{
+    "script":"RETURN SIGNEDBY(0x8CC58927AC06AD97BB1D11A42473AFCEF9C547038AFA94148C3BF9B9FB9662FF) AND SAMESTATE(1 1) AND SAMESTATE(2 2) AND SAMESTATE(3 3)",
+    "track":"true"
+  },
+  "status":true,
+  "pending":false,
+  "response":{
+    "script":"RETURN SIGNEDBY(0x8CC58927AC06AD97BB1D11A42473AFCEF9C547038AFA94148C3BF9B9FB9662FF) AND SAMESTATE(1 1) AND SAMESTATE(2 2) AND SAMESTATE(3 3)",
+    "address":"0x97D3A853BAB3E09193D793F426D067DC31EDC946EB67CF03F869BA0469182902",
+    "miniaddress":"MxG084NQEK57EYJS28P7YSJUGJD0PUS67MSWHNBCV7G7U39N826W6190AFEPPTW",
+    "simple":false,
+    "default":false,
+    "publickey":"0x00",
+    "track":true
+  }
+}
+
+send address:0x97D3A853BAB3E09193D793F426D067DC31EDC946EB67CF03F869BA0469182902 amount:100 tokenid:0x71664A6F9F832212E995DDD1C2B964251B5FEBB37F0BABA74AB612F783F33169 state:{"1":"[First line publicity]", "2":"[Second line publicity]", "3":"[Third line publicity]"}
+
+Minima @ 15/08/2022 14:44:51 [134.3 MB] : Transaction Mined : 0x00054525E978372908CC8259E0D36E69AAE99221CE8D538B84446B1AFF2A64F9
+Minima @ 15/08/2022 14:44:51 [151.5 MB] : NEW Spent Coin : {"coinid":"0x811E592271B04B11EEDFD1521693CF919FB55D66A53F1B52BBB810EA5925D40B","amount":"0.000000000000000000000000000000000000000001","address":"0xDE3021DD5B2ECA934DF9C6B76B677F1E05C7004DD7D3B0A0CCD7AD8DF81EB22C","miniaddress":"MxG086U60GTQMPEPA9KRUE6MTYMEVZU0N3G0JENQEZA1J6NYM6VG7YW5HPJ2S1S","tokenid":"0x71664A6F9F832212E995DDD1C2B964251B5FEBB37F0BABA74AB612F783F33169","token":{"name":{"name":"aDAE"},"coinid":"0x811E592271B04B11EEDFD1521693CF919FB55D66A53F1B52BBB810EA5925D40B","total":"100","decimals":0,"script":"RETURN TRUE","totalamount":"0.000000000000000000000000000000000000000001","scale":"44","created":"10823","tokenid":"0x71664A6F9F832212E995DDD1C2B964251B5FEBB37F0BABA74AB612F783F33169"},"tokenamount":"100","storestate":true,"state":[],"spent":true,"mmrentry":"12","created":"10823"}
+Minima @ 15/08/2022 14:44:51 [151.6 MB] : NEW Unspent Coin : {"coinid":"0xE02BB55CDAA162F7710AD446666ADA63CE1EDA943B8BF4C803DEA10F409A872A","amount":"0.000000000000000000000000000000000000000001","address":"0x97D3A853BAB3E09193D793F426D067DC31EDC946EB67CF03F869BA0469182902","miniaddress":"MxG084NQEK57EYJS28P7YSJUGJD0PUS67MSWHNBCV7G7U39N826W6190AFEPPTW","tokenid":"0x71664A6F9F832212E995DDD1C2B964251B5FEBB37F0BABA74AB612F783F33169","token":{"name":{"name":"aDAE"},"coinid":"0x811E592271B04B11EEDFD1521693CF919FB55D66A53F1B52BBB810EA5925D40B","total":"100","decimals":0,"script":"RETURN TRUE","totalamount":"0.000000000000000000000000000000000000000001","scale":"44","created":"10823","tokenid":"0x71664A6F9F832212E995DDD1C2B964251B5FEBB37F0BABA74AB612F783F33169"},"tokenamount":"100","storestate":true,"state":[{"port":1,"type":4,"data":"[First line publicity]"},{"port":2,"type":4,"data":"[Second line publicity]"},{"port":3,"type":4,"data":"[Third line publicity]"}],"spent":false,"mmrentry":"14","created":"10866"}
+
+
+fails:
+send address:0x01A7040B3C39C03AF393EBBF1E8B32C69E29CE5936F80FC57835FFA3314A02E3 amount:1 tokenid:0x71664A6F9F832212E995DDD1C2B964251B5FEBB37F0BABA74AB612F783F33169
+
+success:
+send address:0x01A7040B3C39C03AF393EBBF1E8B32C69E29CE5936F80FC57835FFA3314A02E3 amount:1 tokenid:0x71664A6F9F832212E995DDD1C2B964251B5FEBB37F0BABA74AB612F783F33169 state:{"1":"[First line publicity]", "2":"[Second line publicity]", "3":"[Third line publicity]"}
+
+@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ EXPORT TOKENS solution
+
+->tokens tokenid:0x71664A6F9F832212E995DDD1C2B964251B5FEBB37F0BABA74AB612F783F33169 action:export
+{
+  "command":"tokens",
+  "params":{
+    "tokenid":"0x71664A6F9F832212E995DDD1C2B964251B5FEBB37F0BABA74AB612F783F33169",
+    "action":"export"
+  },
+  "status":true,
+  "pending":false,
+  "response":{
+    "tokenid":"0x71664A6F9F832212E995DDD1C2B964251B5FEBB37F0BABA74AB612F783F33169",
+    "data":"0x00000020811E592271B04B11EEDFD1521693CF919FB55D66A53F1B52BBB810EA5925D40B0000000B52455455524E205452554500012C2C01640000000F7B226E616D65223A2261444145227D00022A47"
+  }
+}
+
+
+
+-----> setting up node 2 to import the exported TOKENS
+
+java -jar minima.jar -data edenbase2 -test -nop2p -clean -port 10001 -connect 127.0.0.1:9001
+
+->tokens action:import data:0x00000020811E592271B04B11EEDFD1521693CF919FB55D66A53F1B52BBB810EA5925D40B0000000B52455455524E205452554500012C2C01640000000F7B226E616D65223A2261444145227D00022A47
+{
+  "command":"tokens",
+  "params":{
+    "action":"import",
+    "data":"0x00000020811E592271B04B11EEDFD1521693CF919FB55D66A53F1B52BBB810EA5925D40B0000000B52455455524E205452554500012C2C01640000000F7B226E616D65223A2261444145227D00022A47"
+  },
+  "status":true,
+  "pending":false,
+  "response":{
+    "token":{
+      "name":{
+        "name":"aDAE"
+      },
+      "coinid":"0x811E592271B04B11EEDFD1521693CF919FB55D66A53F1B52BBB810EA5925D40B",
+      "total":"100",
+      "decimals":0,
+      "script":"RETURN TRUE",
+      "totalamount":"0.000000000000000000000000000000000000000001",
+      "scale":"44",
+      "created":"10823",
+      "tokenid":"0x71664A6F9F832212E995DDD1C2B964251B5FEBB37F0BABA74AB612F783F33169"
+    }
+  }
+}
+
+------> trying "send" command of imported token
+getaddress
+{
+  "command":"getaddress",
+  "status":true,
+  "pending":false,
+  "response":{
+    "script":"RETURN SIGNEDBY(0xA15958A88F0CDB5A8435F6F7265FFCC4B8391F148417C6832D1314AB1866E59B)",
+    "address":"0xD65A1935D04E284E317B198E10D9EBE8C66753F24D145017C010E064C2606226",
+    "miniaddress":"MxG086MB8CJBK2E51732UZPHZ8DJQV8ZPJY7SWD2H81FG0GS1WC4Z324RMQ5K5D",
+    "simple":true,
+    "default":true,
+    "publickey":"0xA15958A88F0CDB5A8435F6F7265FFCC4B8391F148417C6832D1314AB1866E59B",
+    "track":true
+  }
+}
+
+send address:0xD65A1935D04E284E317B198E10D9EBE8C66753F24D145017C010E064C2606226 amount:1 tokenid:0x71664A6F9F832212E995DDD1C2B964251B5FEBB37F0BABA74AB612F783F33169
+{
+  "command":"send",
+  "params":{
+    "address":"0xD65A1935D04E284E317B198E10D9EBE8C66753F24D145017C010E064C2606226",
+    "amount":"1",
+    "tokenid":"0x71664A6F9F832212E995DDD1C2B964251B5FEBB37F0BABA74AB612F783F33169"
+  },
+  "status":false,
+  "pending":false,
+  "error":"No Coins of tokenid:0x71664A6F9F832212E995DDD1C2B964251B5FEBB37F0BABA74AB612F783F33169 available!"
+}
+
+
+------> trying "spend tokens building a manual transaction from imported tokens of exported
+------> tokens from other node, where the tokens where into script with signedby, and the script has been
+------> executed also in the new node where the transaction is build "
+** !!! None of the parameters has shown any error, but the transaction was not signed by the other node, however
+       the error message once the transaction has been posted, not mention anything about signatures problem,
+       so, another doubt is that the exported tokens were into an script with stete variables setted with values
+       so, when imported those tokens what happen with those state variables, as they are part of the script conditions
+       that must be satisfy in order to spent the tokens !!!! *
+
+txncreate id:test1
+txninput id:test1 coindid:0x811E592271B04B11EEDFD1521693CF919FB55D66A53F1B52BBB810EA5925D40B address:0x97D3A853BAB3E09193D793F426D067DC31EDC946EB67CF03F869BA0469182902 amount:1
+txnoutput id:test1 address:0xBF9960C15BCA2E09CD27D79BC7C924E1D011B2A6C2D2F4ECC61A52CEF36240F1 amount:1
+txnbasics id:test1
+txnsign id:test1  publickey:auto
+txnpost id:test1
+
+Minima @ 16/08/2022 00:01:28 [155.6 MB] : Transaction Mined : 0x00002AC8B7C4086C399E82449036284AED549DF1AB965E7707AC7B2467D485AC
+Minima @ 16/08/2022 00:01:28 [155.8 MB] : Transaction error : Inputs LESS than Outputs
+Minima @ 16/08/2022 00:01:28 [155.9 MB] : Invalid Transaction Inputs and Outputs.. {"inputs":[{"coinid":"0x01","amount":"1","address":"0x97D3A853BAB3E09193D793F426D067DC31EDC946EB67CF03F869BA0469182902","miniaddress":"MxG084NQEK57EYJS28P7YSJUGJD0PUS67MSWHNBCV7G7U39N826W6190AFEPPTW","tokenid":"0x71664A6F9F832212E995DDD1C2B964251B5FEBB37F0BABA74AB612F783F33169","token":null,"storestate":true,"state":[],"spent":false,"mmrentry":"0","created":"0"}],"outputs":[{"coinid":"0x00","amount":"1","address":"0xD65A1935D04E284E317B198E10D9EBE8C66753F24D145017C010E064C2606226","miniaddress":"MxG086MB8CJBK2E51732UZPHZ8DJQV8ZPJY7SWD2H81FG0GS1WC4Z324RMQ5K5D","tokenid":"0x00","token":null,"storestate":true,"state":[],"spent":false,"mmrentry":"0","created":"0"}],"state":[],"linkhash":"0x00","transactionid":"0xE55AC66FAC34790AA8B7747C7ED8C0A60B477A5F3F9E11708654C65353760AA9"}
+Minima @ 16/08/2022 00:01:28 [155.9 MB] : TxPoW FAILS Basic checks from 0x00 0x00002AC8B7C4086C399E82449036284AED549DF1AB965E7707AC7B2467D485AC
