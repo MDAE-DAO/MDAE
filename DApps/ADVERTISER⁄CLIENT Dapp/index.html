@@ -7,10 +7,10 @@
     <link rel="icon" type="image/x-icon" href="images/favicon.ico">
     <link rel="stylesheet" href="css/styles.css">
     <meta charset="utf-8">
-    <title>The DAO API</title>
+    <title>The DAO Dapp</title>
   </head>
   <body>
-    <h1>The DAO API</h1>
+    <h1>The DAO Dapp</h1>
     <p class="statusdata">Maxima User Name: <span class="maindata" id="maximacontactname"></span></p>
     <p class="statusdata">Current Node Version: <span class="maindata" id="version"></span></p>
     <p class="statusdata">Current blockchain Time: <span class="maindata" id="blockchaintime"></span></p>
@@ -50,8 +50,8 @@
       </div>
       <div class="INF Buytoken">
         <table>
-  			<h2>BUY A TOKEN</h2>
-        <p>Select the Token to spend, the Amount and the destination Address.</p>
+  			<h2>SEND TOKENS</h2>
+        <p>Select the Token to send, the Amount and the destination Address.</p>
   			<tr>
   				<td style="color:#FFF; text-align:right;">Token to Spend: </td>
   				<td>
@@ -137,20 +137,20 @@
     <div class="Box Statussection">
       <h2>STATUS AND TOOLS SECTION</h2>
       <button class="button" onclick='NewAddress();'>New Address</button>
-      <button class="button" onclick='GetAddress();'>GetAddress</button>
+      <button class="button" onclick='GetAddress();'>Get Address</button>
       <button class="button" onclick='MainWalletAddress();'>Main Wallet Address</button>
       <button class="button" onclick='Coins();'>Coins</button>
       <button class="button" onclick='Scripts();'>Scripts</button>
       <button class="button" onclick='Contact();'>Maxima</button>
       <button class="button" onclick='SetMaximaName();'>Set a Maxima Name</button>
-      <button class="button" onclick='ListtokensrecivedDB();'>List Tokensrecived DB</button>
-      <button class="button" onclick='SendTheTokensToTheBuyer();'>SendTheTokensToTheBuyer</button>
-      <button class="button" onclick='newBalanceEvent();'>WhatIsHappening</button>
-
-
+      <button class="button" onclick='ListtokensrecivedDB();'>List DB Transactions</button>
       <pre id="status-object"></pre>
       <div class="visualconsole"></div>
     </div>
+    <div class="Box Credits">
+      <p style="text-align: center;">Developed by Minima Innovation Challenge Team</p>
+    </div>
+
 
 
 
@@ -167,9 +167,6 @@
           var contact = result.response.contacts;
           if (result.status) {
             if(contact.length==0){
-        			//document.getElementById("StatusBalances").innerText = "There Isn't Any Maxima Contacts Yet";
-              document.getElementById("status-object").innerText = "Warning: Could not retrieve current Balance Status";
-
         			return;
         		}
             else{

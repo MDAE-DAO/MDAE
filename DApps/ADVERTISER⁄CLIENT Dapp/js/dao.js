@@ -94,7 +94,7 @@ function MinimaBalance(){
 }
 
 //This function just list any Token Balance
-function TokenBalance(){
+function TokenBalance2(){
   // run the Minima balance command to return information about the node's current balance
   MDS.cmd("balance", function(res) {
     //if the response status is true
@@ -117,12 +117,13 @@ function TokenBalance(){
           var Total = balance[i].total;
           document.getElementById("Total").innerText = Total;
           return;
+
   		  }
       }
     }
     //if the response status is false
     else{
-    document.getElementById("Status-object").innerText = "Warning: Could not retrieve current Balance Status";
+      document.getElementById("Status-object").innerText = "Warning: Could not retrieve current Balance Status";
     }
   });
 }
@@ -210,7 +211,7 @@ function GetAddress(){
 //This function just shows the main wallet address
 
 function MainWalletAddress(){
-  document.getElementById("status-object").innerText = DAO_WALLET_ADDRESS;
+  document.getElementById("status-object").innerText = "Actual DAO Wallet Address: "+DAO_WALLET_ADDRESS;
 }
 
 //This function just list the coins
@@ -298,7 +299,7 @@ function checkTokenReceived(coin, sqlmsg){
   var sqlrows = sqlmsg.rows;
   for(let k = 0; k < sqlrows.length; k++) {
     var sqlrow = sqlrows[k];
-    if (sqlrow.COINDIDRECEIVED == coin.coinid){
+    if (sqlrow.COINIDRECEIVED == coin.coinid){
       MDS.log("The Transaction ALREADY EXISTS with the Following coinid:"+coin.coinid);
       if(sqlrow.TRXDONE == "1"){
         MDS.log("..and the Transaction WAS Processed with Following Data: "+sqlrow.DATE);
@@ -351,7 +352,7 @@ function searchSQL(coins){
   let bool = tokenFromClient(coin);
   MDS.log(bool);
   if (bool){
-    MDS.sql("SELECT * from tokensrecived WHERE coindidreceived='"+coin.coinid+"'", function(sqlmsg){
+    MDS.sql("SELECT * from tokensrecived WHERE coinidreceived='"+coin.coinid+"'", function(sqlmsg){
       if (sqlmsg.status) {
         COUNT = COUNT-1;
         checkTokenReceived(coin, sqlmsg);
@@ -381,7 +382,7 @@ function RegisterTransactionInDB(coin) {
     if (coin.state[i].port == 3) client_amount_desired = coin.state[i].data;
   }
   var trx_done = 0;
-  var fullsql = "INSERT INTO tokensrecived (coindidreceived,amountreceived,operation,clientwalletaddress,clienttokenid,clientamountdesired,trxdone,date) VALUES "
+  var fullsql = "INSERT INTO tokensrecived (coinidreceived,amountreceived,operation,clientwalletaddress,clienttokenid,clientamountdesired,trxdone,date) VALUES "
 			+"('"+coin.coinid+"','"+coin.amount+"','"+operation+"','"+client_wallet_address+"','"+client_token_id+"','"+client_amount_desired+"','"+trx_done+"',"+Date.now()+")";
 
 	MDS.sql(fullsql, function(resp){
@@ -427,7 +428,7 @@ function SendTheTokensToTheBuyer(coin){
       if (res.status) {
         MDS.log("The Tokens HAS BEEN SENT to Following Client Address: "+client_wallet_address);
         //actualitzate the DB as the tokens has been send
-        MDS.sql("UPDATE tokensrecived SET trxdone=1 WHERE coindidreceived='"+coin.coinid+"'", function(resp){
+        MDS.sql("UPDATE tokensrecived SET trxdone=1 WHERE coinidreceived='"+coin.coinid+"'", function(resp){
           if (resp.status) {
             MDS.log("Transaction Updated in the Data Base");
             MDS.log("CLIENT TRANSACTION PROCESS ENDED CORRECTLY");

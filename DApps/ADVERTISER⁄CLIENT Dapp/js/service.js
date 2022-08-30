@@ -36,7 +36,7 @@ function preparingSendpoll(){
 function createTheDB(msg){
 	initsql = "CREATE TABLE IF NOT EXISTS `tokensrecived` ( "
 					+"  `id` IDENTITY PRIMARY KEY, "
-					+"  `coindidreceived` varchar(512), "
+					+"  `coinidreceived` varchar(512), "
 					+"  `amountreceived` int, "
 					+"  `operation` varchar(64), "
 					+"  `clientwalletaddress` varchar(512), "
