@@ -6,8 +6,62 @@
 *********
 */
 
+//    <script type="text/javascript" src="js/service.js"></script>
 
-function CheckMinimaBalance(){
+
+var DAO_WALLET_ADDRESS = "0x9D90EE44464722B25EA05EBC443755FB81D8AAB1077726D5A2A09010BD041184";
+var SENDPOLLUID ="";
+var GLOBAL = 0;
+var COUNT = 0;
+
+//send address:0x9D90EE44464722B25EA05EBC443755FB81D8AAB1077726D5A2A09010BD041184 amount:7 tokenid:0x00 state:{"0":"[BUY]", "1":"0xC6496C916268F428259FA05A979A3FDE8E0901A52525A4D73578903AE2975634", "2":"0x00", "3":"7"}
+
+
+/////*****MAXIMA SECTION
+
+//This function just list the Maxima contacts
+function Contact(){
+  MDS.cmd("maxima", function(resp) {
+    if (resp.status) {
+      var contact = JSON.stringify(resp.response, undefined, 2);
+      document.getElementById("").innerText = contact;
+    }
+  });
+}
+
+//This function add a Maxima contact
+function AddContact() {
+  //Get the information
+  var contactname 	= document.getElementById('namecontact').value;
+	var publickey = document.getElementById('publickeycontact').value;
+  var contactid = document.getElementById('idcontact').value;
+  CreateContact = "maxcontacts action:add contact:"+contactid+" publickey:"+publickey
+  MDS.cmd(CreateContact, function(resp) {
+    if (resp.status) {
+      alert("Contact Created!");
+      var nodeStatus = JSON.stringify(resp.response, undefined, 2);
+      document.getElementById("status-object").innerText = nodeStatus;
+      //MDS.log("Contact: "+CreateContact);
+      //MDS.log(JSON.stringify(resp));
+      Getcontacts();
+    }
+    //if the response status is false
+    else{
+      var nodeStatus = JSON.stringify(resp, undefined, 2);
+      document.getElementById("status-object").innerText = nodeStatus;
+      alert("Could not create the Contact");
+      //MDS.log("Contact: "+CreateContact);
+      //MDS.log(JSON.stringify(resp));
+    }
+  });
+}
+
+
+
+//*****BALANCE SECTION
+
+//This function just list the Minima Token Balance
+function MinimaBalance(){
   // run the Minima balance command to return information about the node's current balance
   MDS.cmd("balance", function(res) {
   //if the response status is true
@@ -36,43 +90,10 @@ function CheckMinimaBalance(){
     else{
       document.getElementById("StatusBalances").innerText = "Warning: Could not retrieve current Balance Status";
     }
-  })
+  });
 }
 
-function IsAMinimaTokenRecived(){
-  // run the Minima balance command to return information about the node's current balance
-  MDS.cmd("balance", function(res) {
-    //if the response status is true
-    if (res.status) {
-      //Count the numberof tokens listed
-      balance = res.response;
-      //Grab the token to look for its balance.
-      var select = document.getElementById('tokens2');
-      var value = select.options[select.selectedIndex].value;
-      for(var i = 0; i < balance.length; i++) {
-        //Look for the token
-        if(balance[i].tokenid == value){
-          //Return the function value as true and Get the values
-          var Tokenid = balance[i].tokenid;
-          document.getElementById("Tokenid").innerText = Tokenid;
-          var Coins = balance[i].coins;
-          document.getElementById("Coins").innerText = Coins;
-      	  var Sendable 	= balance[i].sendable;
-          document.getElementById("Sendable").innerText = Sendable;
-          var Total = balance[i].total;
-          document.getElementById("Total").innerText = Total;
-          return;
-  		  }
-      }
-    }
-    //if the response status is false
-    else{
-    document.getElementById("StatusBalances").innerText = "Warning: Could not retrieve current Balance Status";
-    }
-  })
-}
-
-
+//This function just list any Token Balance
 function TokenBalance(){
   // run the Minima balance command to return information about the node's current balance
   MDS.cmd("balance", function(res) {
@@ -101,11 +122,40 @@ function TokenBalance(){
     }
     //if the response status is false
     else{
-    document.getElementById("StatusBalances").innerText = "Warning: Could not retrieve current Balance Status";
+    document.getElementById("Status-object").innerText = "Warning: Could not retrieve current Balance Status";
     }
-  })
+  });
 }
 
+
+
+//***** BUY AND SEND TOKEN SECTION
+
+//This function send a token to anyone
+function SendMoney(){
+  //Get the information
+  var tokenid 	= document.getElementById('tokens').value;
+	var address = document.getElementById('destinationaddress').value;
+  var amount = document.getElementById('amount').value;
+  CreateSend = "Send address:"+address+" amount:"+amount+" tokenid:"+tokenid
+  MDS.cmd(CreateSend, function(resp) {
+    if (resp.status) {
+      alert("Token Send!");
+      var nodeStatus = JSON.stringify(resp.response, undefined, 2);
+      document.getElementById("status-object").innerText = nodeStatus;
+    }
+    //if the response status is false
+    else{
+      var nodeStatus = JSON.stringify(resp, undefined, 2);
+      document.getElementById("status-object").innerText = nodeStatus;
+      alert("Could not send the Token");
+      MDS.log("Token NOT Send");
+      //MDS.log(JSON.stringify(resp));
+    }
+  });
+}
+
+//This function create a new token
 function CreateToken(){
   //Get the information
   var tokenname 	= document.getElementById('TokenName').value;
@@ -118,151 +168,72 @@ function CreateToken(){
   MDS.cmd(CreateTokenFunction, function(resp) {
     if (resp.status) {
       alert("Token Created!");
-      const nodeStatus = JSON.stringify(resp.response, undefined, 2);
-      document.getElementById("node-status").innerText = nodeStatus;
+      var nodeStatus = JSON.stringify(resp.response, undefined, 2);
+      document.getElementById("status-object").innerText = nodeStatus;
       MDS.log("TOKEN: "+CreateTokenFunction);
       MDS.log(JSON.stringify(resp));
     }
     //if the response status is false
     else{
-      const nodeStatus = JSON.stringify(resp.response, undefined, 2);
-      document.getElementById("node-status").innerText = nodeStatus;
+      var nodeStatus = JSON.stringify(resp, undefined, 2);
+      document.getElementById("status-object").innerText = nodeStatus;
       alert("Could not create the Token");
     }
-  })
+  });
   GetTokens();
 }
 
-function SendMoney(){
-  //Get the information
-  var tokenid 	= document.getElementById('tokens').value;
-	var address = document.getElementById('destinationaddress').value;
-  var amount = document.getElementById('amount').value;
-  CreateSend = "Send address:"+address+" amount:"+amount+" tokenid:"+tokenid
-  MDS.cmd(CreateSend, function(resp) {
-    if (resp.status) {
-      alert("Token Send!");
-      const nodeStatus = JSON.stringify(resp.response, undefined, 2);
-      document.getElementById("node-status").innerText = nodeStatus;
-      //MDS.log("Contact: "+CreateContact);
-      //MDS.log(JSON.stringify(resp));
-    }
-    //if the response status is false
-    else{
-      const nodeStatus = JSON.stringify(resp.response, undefined, 2);
-      document.getElementById("node-status").innerText = nodeStatus;
-      alert("Could not send the Token");
-      MDS.log("Token NOT Send");
-      //MDS.log(JSON.stringify(resp));
-    }
-  })
-}
 
+
+//***** STAUS AND TOOLS SECTION
+
+//This function just create a new address
 function NewAddress(){
   MDS.cmd("newaddress", function(resp) {
     if (resp.status) {
-      const nodeStatus = JSON.stringify(resp.response, undefined, 2);
-      document.getElementById("node-status").innerText = nodeStatus;
+      var nodeStatus = JSON.stringify(resp.response, undefined, 2);
+      document.getElementById("status-object").innerText = nodeStatus;
     }
   })
 }
 
+//This function just get an address
 function GetAddress(){
   MDS.cmd("getaddress", function(resp) {
     if (resp.status) {
-      const nodeStatus = JSON.stringify(resp.response, undefined, 2);
-      document.getElementById("node-status").innerText = nodeStatus;
+      var nodeStatus = JSON.stringify(resp.response, undefined, 2);
+      document.getElementById("status-object").innerText = nodeStatus;
     }
-  })
+  });
 }
 
+//This function just shows the main wallet address
+
+function MainWalletAddress(){
+  document.getElementById("status-object").innerText = DAO_WALLET_ADDRESS;
+}
+
+//This function just list the coins
 function Coins(){
   MDS.cmd("coins", function(resp) {
     if (resp.status) {
-      const nodeStatus = JSON.stringify(resp.response, undefined, 2);
-
-      document.getElementById("node-status").innerText = nodeStatus;
+      var nodeStatus = JSON.stringify(resp.response, undefined, 2);
+      document.getElementById("status-object").innerText = nodeStatus;
     }
-  })
+  });
 }
 
-function Contact(){
-  MDS.cmd("maxima", function(resp) {
-    if (resp.status) {
-      const contact = JSON.stringify(resp.response, undefined, 2);
-      document.getElementById("node-status").innerText = contact;
-    }
-  })
-}
-
-function LoadSQLMessage(){
-  MDS.sql("SELECT * from messages", function(sqlmsg){
-	   var sql = sqlmsg;
-     document.getElementById("node-status").innerText = sql;
-     //Get the data
-		var sqlrows = sqlmsg.rows;
-
-		//Reverse them ( I use a limit..)
-		sqlrows.reverse();
-
-		//Create a table..
-		var send = "";
-
-    //Create the sends List..
-		for(var i = 0; i < sqlrows.length; i++) {
-		  var sqlrow = sqlrows[i];
-
-		 	send += "<b>"+sqlrow.coinid+"</b><br><b>"+sqlrow.amount+"</b><br><b>"+sqlrow.address+"</b><br><br>";
-
-		}
-
-		//Set this as the send list
-		document.getElementById("node-status").innerHTML = send;
-
-
-
-  })
-}
-
-
-
-
-function AddContact() {
-  //Get the information
-  var contactname 	= document.getElementById('namecontact').value;
-	var publickey = document.getElementById('publickeycontact').value;
-  var contactid = document.getElementById('idcontact').value;
-  CreateContact = "maxcontacts action:add contact:"+contactid+" publickey:"+publickey
-  MDS.cmd(CreateContact, function(resp) {
-    if (resp.status) {
-      alert("Contact Created!");
-      const nodeStatus = JSON.stringify(resp.response, undefined, 2);
-      document.getElementById("node-status").innerText = nodeStatus;
-      //MDS.log("Contact: "+CreateContact);
-      //MDS.log(JSON.stringify(resp));
-      Getcontacts();
-    }
-    //if the response status is false
-    else{
-      const nodeStatus = JSON.stringify(resp.response, undefined, 2);
-      document.getElementById("node-status").innerText = nodeStatus;
-      alert("Could not create the Contact");
-      //MDS.log("Contact: "+CreateContact);
-      //MDS.log(JSON.stringify(resp));
-    }
-  })
-}
-
-
+//This function just list the scritps
 function Scripts(){
   MDS.cmd("scripts", function(resp) {
     if (resp.status) {
-      const nodeStatus = JSON.stringify(resp.response, undefined, 2);
-      document.getElementById("node-status").innerText = nodeStatus;
+      var nodeStatus = JSON.stringify(resp.response, undefined, 2);
+      document.getElementById("status-object").innerText = nodeStatus;
     }
-  })
+  });
 }
 
+//This function set a Maxima name
 function SetMaximaName(){
   name = prompt("Please enter the MAXIMA Name:", "");
   MDS.log(name);
@@ -272,16 +243,216 @@ function SetMaximaName(){
       alert("Name Seted!");
       MDS.cmd("maxima", function(resp) {
         if (resp.status) {
-          const maximaname = resp.response.name;
+          var maximaname = resp.response.name;
           document.getElementById("maximacontactname").innerText = maximaname;
         }
-      })
+      });
     }
     //if the response status is false
     else{
-      const nodeStatus = JSON.stringify(resp.response, undefined, 2);
-      document.getElementById("node-status").innerText = nodeStatus;
+      var nodeStatus = JSON.stringify(resp.response, undefined, 2);
+      document.getElementById("status-object").innerText = nodeStatus;
       alert("Could not set the name!");
     }
-  })
+  });
+}
+
+//This function lists ALL the tokensrecived Data Base
+function ListtokensrecivedDB(){
+  MDS.sql("SELECT * FROM tokensrecived",function(sqlmsg){
+    if (sqlmsg.status) {
+      var nodeStatus = JSON.stringify(sqlmsg, undefined, 2);
+      document.getElementById("status-object").innerText = nodeStatus;
+      MDS.log(JSON.stringify(sqlmsg));
+    }
+  });
+}
+
+
+
+//***** NEWBALANCE Recive and then send SECTION
+
+//This function get a sendpoll uid
+function GetSendpolluid(){
+  MDS.cmd("sendpoll action:list", function(res){
+    if (res.status) {
+      var suid = res.response.commands;
+      var uid = suid[0];
+      SENDPOLLUID = uid.uid;
+    }
+    else{
+      var nodeStatus = JSON.stringify(res, undefined, 2);
+      document.getElementById("status-object").innerText = nodeStatus;
+      MDS.log(JSON.stringify(res));
+    }
+  });
+}
+
+function checkTokenReceived(coin, sqlmsg){
+  //MDS.log(JSON.stringify(sqlmsg));
+  if (sqlmsg.count == 0){
+    MDS.log("NEW CLIENT TRANSACTION HAS BEEN DETECTED.."+coin.coinid);
+    RegisterTransactionInDB(coin);
+    return;
+  }
+  var sqlrows = sqlmsg.rows;
+  for(let k = 0; k < sqlrows.length; k++) {
+    var sqlrow = sqlrows[k];
+    if (sqlrow.COINDIDRECEIVED == coin.coinid){
+      MDS.log("The Transaction ALREADY EXISTS with the Following coinid:"+coin.coinid);
+      if(sqlrow.TRXDONE == "1"){
+        MDS.log("..and the Transaction WAS Processed with Following Data: "+sqlrow.DATE);
+        return;
+      }
+      else {
+        //This flag can show if a transaction has not been processed yet
+        MDS.log("..but the Transaction WAS NEVER Processed when it was Registered with Data: "+sqlrow.DATA);
+        //Houston We Have a Problem!
+        return;
+      }
+    }
+  }
+}
+
+function tokenFromClient (coin){
+  //Checking if this is a transaction with a client state variables
+  var operation ="";
+  for(let j = 0; j < coin.state.length; j++) {
+    if (coin.state[j].port == 0) operation = coin.state[j].data;
+  }
+  MDS.log("It's a Client Transaction?");
+  if (operation == "[BUY]" || operation == "[SELL]") {
+    return true
+  }else{
+    return false
+  }
+}
+
+function newBalanceEvent(){
+  //Load a sendpoll
+  GetSendpolluid()
+  var command = "coins address:"+DAO_WALLET_ADDRESS;
+  MDS.cmd(command, function(result){
+    if (result.status){
+      var coins = result.response;
+      COUNT = coins.length
+      COUNT = COUNT-1;
+      MDS.log("TOTAL Coins Number to Check: "+COUNT);
+      searchSQL(coins);
+    }
+  });
+}
+
+function searchSQL(coins){
+  var coin = coins[COUNT];
+  MDS.log("Coin Countdown: "+COUNT);
+  MDS.log("Current coinid Checking: "+coin.coinid);
+  //let fromclient
+  let bool = tokenFromClient(coin);
+  MDS.log(bool);
+  if (bool){
+    MDS.sql("SELECT * from tokensrecived WHERE coindidreceived='"+coin.coinid+"'", function(sqlmsg){
+      if (sqlmsg.status) {
+        COUNT = COUNT-1;
+        checkTokenReceived(coin, sqlmsg);
+        if (COUNT >= 0){
+          searchSQL(coins);
+        }
+      }
+    });
+  }else{
+    COUNT = COUNT-1;
+    if (COUNT >= 0){
+      searchSQL(coins);
+    }
+  }
+}
+
+//This function register all the transaction data in the DB
+function RegisterTransactionInDB(coin) {
+  MDS.log("Registering the Transaction in the DB..");
+  var client_wallet_address;
+  var client_token_id;
+  var client_amount_desired;
+  for(var i = 0; i < coin.state.length; i++) {
+    if (coin.state[i].port == 0) operation = coin.state[i].data;
+    if (coin.state[i].port == 1) client_wallet_address = coin.state[i].data;
+    if (coin.state[i].port == 2) client_token_id = coin.state[i].data;
+    if (coin.state[i].port == 3) client_amount_desired = coin.state[i].data;
+  }
+  var trx_done = 0;
+  var fullsql = "INSERT INTO tokensrecived (coindidreceived,amountreceived,operation,clientwalletaddress,clienttokenid,clientamountdesired,trxdone,date) VALUES "
+			+"('"+coin.coinid+"','"+coin.amount+"','"+operation+"','"+client_wallet_address+"','"+client_token_id+"','"+client_amount_desired+"','"+trx_done+"',"+Date.now()+")";
+
+	MDS.sql(fullsql, function(resp){
+    MDS.log(JSON.stringify(resp));
+		if (resp.status) {
+      MDS.log("Transaction Registered Correctly in the DB with the Following coinid: "+coin.coinid);
+      //Now is time to Process the transacion and Send the tokens to the Buyer
+      SendTheTokensToTheBuyer(coin);
+    }
+    else {
+      MDS.log("Transaction NOT Inserted in the DB");
+      //We sould register that problem into another DataBase. It allow to check the transacions who has not been processet although they should have been processed
+    }
+	});
+}
+
+//This function sends the tokens to the buyer once all has been checked
+function SendTheTokensToTheBuyer(coin){
+
+  MDS.log("Preparing the Transaction with the Following coind: "+coin.coinid);
+  //MDS.log(JSON.stringify(coin));
+  //Note that the state variables has changed and adapted to the client database.
+  var operation;
+  var client_wallet_address;
+  var client_token_id;
+  var client_amount_desired;
+  for(var z = 0; z < coin.state.length; z++) {
+    if (coin.state[z].port == 0) operation = coin.state[z].data;
+    if (coin.state[z].port == 1) client_wallet_address = coin.state[z].data;
+    if (coin.state[z].port == 2) client_token_id = coin.state[z].data;
+    if (coin.state[z].port == 3) client_amount_desired = coin.state[z].data;
+  }
+  MDS.log("Client Operation to Process: "+operation);
+  if (operation == "[BUY]"){
+    if (coin.amount == client_amount_desired){
+      //*****Note that for now the exchage rate between tokens is 1:1******
+      MDS.log("Transaction Checked with the Following coinid: "+coin.coinid);
+      MDS.log("Sending the Tokens to the Client with the Following Client Address: "+client_wallet_address)
+      statevariables = "{\"0\":\"[BUY]\", \"1\":\""+client_wallet_address+"\", \"2\":\""+client_token_id+"\", \"3\":\""+client_amount_desired+"\"}";
+      command = "sendpoll address:"+client_wallet_address+" amount:"+client_amount_desired+" tokenid:"+client_token_id+" state:"+statevariables+" uid:"+SENDPOLLUID;
+      //command = "send address:"+client_wallet_address+" amount:"+client_amount_desired+" tokenid:"+client_token_id+" state:"+statevariables;
+      MDS.cmd(command, function(res){
+      if (res.status) {
+        MDS.log("The Tokens HAS BEEN SENT to Following Client Address: "+client_wallet_address);
+        //actualitzate the DB as the tokens has been send
+        MDS.sql("UPDATE tokensrecived SET trxdone=1 WHERE coindidreceived='"+coin.coinid+"'", function(resp){
+          if (resp.status) {
+            MDS.log("Transaction Updated in the Data Base");
+            MDS.log("CLIENT TRANSACTION PROCESS ENDED CORRECTLY");
+          }
+        });
+      }
+      else{
+          var nodeStatus = JSON.stringify(res, undefined, 2);
+          document.getElementById("status-coin").innerText = nodeStatus;
+          MDS.log(JSON.stringify(res));
+        }
+      });
+    }
+  }
+}
+
+
+//***** SERVICE.JS FUNCTIONS SECTION
+
+//This function just update the Blockchain time
+function updateTime(){
+  MDS.cmd("status", function(res) {
+    if (res.status) {
+      const blockchaintime = res.response.chain.time;
+      document.getElementById("blockchaintime").innerText = blockchaintime;
+    }
+  });
 }
