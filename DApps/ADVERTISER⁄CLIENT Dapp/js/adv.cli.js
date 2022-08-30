@@ -1,6 +1,6 @@
 /*
 *********The Minima Innovation Challenge Team
-*********DAO API JS
+*********ADV-CLI Dapp JS
 *********THE TEAM DEVELOPERS************
 *********
 *********
