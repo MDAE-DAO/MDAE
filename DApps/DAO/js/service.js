@@ -1,23 +1,64 @@
+/*
+*********The Minima Innovation Challenge Team
+*********service.js
+*********THE TEAM DEVELOPERS************
+*********
+*********
+*/
 
-function updateTime(){
-  MDS.cmd("status", function(res) {
+//This function just create the sendpoll if it is not yet
+function preparingSendpoll(){
+  MDS.cmd("sendpoll action:list", function(res){
     if (res.status) {
-      const blockchaintime = res.response.chain.time;
-      document.getElementById("blockchaintime").innerText = blockchaintime;
+      MDS.log("Number of sendpoll: "+res.response.total);
+      if (res.response.total == 0){
+        MDS.log("Creating a uid sendpoll");
+				MDS.cmd("sendpoll action:add", function(res){
+			    if (res.status) {}
+			    else{
+			      var nodeStatus = JSON.stringify(res, undefined, 2);
+			      document.getElementById("status-object").innerText = nodeStatus;
+			      MDS.log(JSON.stringify(res));
+			    }
+			  });
+      }
     }
-  })
+    else{
+      var nodeStatus = JSON.stringify(res, undefined, 2);
+      document.getElementById("status-object").innerText = nodeStatus;
+      MDS.log(JSON.stringify(res));
+    }
+  });
+}
+
+
+//This function just create the database if it is not yet
+function createTheDB(msg){
+	initsql = "CREATE TABLE IF NOT EXISTS `tokensrecived` ( "
+					+"  `id` IDENTITY PRIMARY KEY, "
+					+"  `coindidreceived` varchar(512), "
+					+"  `amountreceived` int, "
+					+"  `operation` varchar(64), "
+					+"  `clientwalletaddress` varchar(512), "
+					+"  `clienttokenid` varchar(512), "
+					+"  `clientamountdesired` int, "
+					+"  `trxdone` int, "
+					+"  `date` bigint "
+					+" )";
+
+		MDS.sql(initsql,function(msg){
+			MDS.log("SQL Service Inited..");
+		});
 }
 
 
 //Main message handler..
 MDS.init(function(msg){
   //Do initialitzation
-
-
-
-
   if(msg.event == "inited"){
-    MDS.log("service.js inited also in the background...");
+    MDS.log("The service.js is initialising MDS also in the background...");
+    createTheDB();
+		preparingSendpoll()
     MDS.cmd("status", function(res) {
       if (res.status) {
         // get the version number and the blockchain time from the Status object returned
@@ -41,32 +82,9 @@ MDS.init(function(msg){
   }
   else if(msg.event == "NEWBALANCE"){
     // user's balance has changed
-    MDS.log(JSON.stringify(msg));
-    CheckMinimaBalance();
-
-    //var tokenid 	= document.getElementById('tokens').value;
-    //var address = document.getElementById('destinationaddress').value;
-    //var amount = document.getElementById('amount').value;
-    //CreateSend = "Send address:"+address+" amount:"+amount+" tokenid:"+tokenid
-
-    var send = "send address:0xE4FCA5AFA376263DA0C62E55AEDC2206CE9FADAF33D2AA0E935DD4781305483F amount:1 tokenid:0x00";
-    MDS.cmd(send, function(resp) {
-      if (resp.status) {
-        alert("Token Send!");
-        const nodeStatus = JSON.stringify(resp.response, undefined, 2);
-        document.getElementById("node-status").innerText = nodeStatus;
-        //MDS.log("Contact: "+CreateContact);
-        //MDS.log(JSON.stringify(resp));
-      }
-      //if the response status is false
-      else{
-        const nodeStatus = JSON.stringify(resp.response, undefined, 2);
-        document.getElementById("node-status").innerText = nodeStatus;
-        alert("Could not send the Token");
-        MDS.log("Token NOT Send");
-        //MDS.log(JSON.stringify(resp));
-      }
-    });
+    MDS.log("New Balance Detected");
+		//Process the new event detected
+    newBalanceEvent();
   }
   else if(msg.event == "MINING"){
   // mining has started or ended
