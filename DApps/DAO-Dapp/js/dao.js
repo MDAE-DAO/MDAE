@@ -249,15 +249,22 @@ function setMaximaName(){
 function mainWalletAddress(){
   MDS.sql("SELECT * from daowalletaddress",function(sqlmsg){
     if (sqlmsg.status) {
-
       var sqlrows = sqlmsg.rows;
-        MDS.log(sqlrows.length);
-      DAO_WALLET_ADDRESS = sqlrows.WALLETADDRESS;
+      //Takes the last address recorded
+      let i = (sqlrows.length -1);
+      var sqlrow = sqlrows[i];
+      var nodeStatus = JSON.stringify(sqlrow, undefined, 2);
+      DAO_WALLET_ADDRESS = sqlrow.WALLETADDRESS;
       document.getElementById("walletaddress").innerText = DAO_WALLET_ADDRESS;
+      var nodeStatus = JSON.stringify(sqlrow, undefined, 2);
+      document.getElementById("status-object").innerText = nodeStatus;
+
     }else{
       var nodeStatus = JSON.stringify(sqlmsg, undefined, 2);
       document.getElementById("status-object").innerText = nodeStatus;
+      MDS.log(JSON.stringify(sqlmsg));
     }
+
   });
 }
 
@@ -276,7 +283,7 @@ function setDAOWalletAddress() {
         MDS.log("DAO Wallet Address has Changed Correctly in the DB with the Following address: "+address);
         alert("DAO Wallet Address has Changed Correctly");
         DAO_WALLET_ADDRESS = address;
-        //mainWalletAddress();
+        mainWalletAddress();
       }
       else {
         MDS.log("The Address Change HAS NOT BEEN Inserted in the DB");
@@ -290,6 +297,10 @@ function setDAOWalletAddress() {
 function listtokensreceivedDB(){
   MDS.sql("SELECT * FROM tokensreceived",function(sqlmsg){
     if (sqlmsg.status) {
+      var nodeStatus = JSON.stringify(sqlmsg, undefined, 2);
+      document.getElementById("status-object").innerText = nodeStatus;
+      MDS.log(JSON.stringify(sqlmsg));
+    }else{
       var nodeStatus = JSON.stringify(sqlmsg, undefined, 2);
       document.getElementById("status-object").innerText = nodeStatus;
       MDS.log(JSON.stringify(sqlmsg));

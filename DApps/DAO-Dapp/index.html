@@ -14,7 +14,7 @@
     <p class="statusdata">Maxima User Name: <span class="maindata" id="maximacontactname"></span></p>
     <p class="statusdata">Current Node Version: <span class="maindata" id="version"></span></p>
     <p class="statusdata">Current Blockchain Time: <span class="maindata" id="blockchaintime"></span></p>
-    <p class="statusdata">Current Wallet Address: <span class="maindata" id="walletaddress"></span></p>
+    <p class="statusdata">Current Wallet Address: <span style="font-size: 0.8em;" class="maindata" id="walletaddress"></span></p>
     <div class="wrapper">
       <div class="INF contacts">
         <h2>MAXIMA CONTACTS</h2>
@@ -134,10 +134,10 @@
 
     <script type="text/javascript">
       //document.getElementById("buybutton").disabled = true;
-      //Initialise the dongles
+      //Initialise the dongles and data
       Getcontacts();
       GetTokens();
-
+      mainWalletAddress();
       //Send the Contacts available to the dongles
       function Getcontacts() {
         MDS.cmd("maxcontacts", function(result) {
