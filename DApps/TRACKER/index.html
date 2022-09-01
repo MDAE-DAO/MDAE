@@ -1,79 +1,217 @@
 <html>
-
-<head>
-    <!--   The MINIMA MDS JavaScript Library -->
+  <head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <script type="text/javascript" src="js/mds.js"></script>
-    <link rel="icon" type="image/x-icon" href="favicon.ico">
-    <title>Hello World #2</title>
-</head>
-<body>
-    <style></style>
-    
-    <h2>Hello World!</h2>
-    <p>Current Minima Block Height: <span id="block-height"></span></p>
-    <p>Current Node Status: <span id="node-status"></span></p>
-    
-    <button onclick='runStatus();'>CHECK STATUS</button>
-    
+    <script type="text/javascript" src="js/service.js"></script>
+    <script type="text/javascript" src="js/dao.js"></script>
+    <link rel="icon" type="image/x-icon" href="images/favicon.ico">
+    <link rel="stylesheet" href="css/styles.css">
+    <meta charset="utf-8">
+    <title>The DAO Dapp</title>
+  </head>
+  <body>
+    <h1>The TRAKER Dapp</h1>
+    <p class="statusdata">Maxima User Name: <span class="maindata" id="maximacontactname"></span></p>
+    <p class="statusdata">Current Node Version: <span class="maindata" id="version"></span></p>
+    <p class="statusdata">Current Blockchain Time: <span class="maindata" id="blockchaintime"></span></p>
+    <p class="statusdata">Current Wallet Address: <span style="font-size: 0.8em;" class="maindata" id="walletaddress"></span></p>
+    <div class="wrapper">
+      <div class="INF contacts">
+        <h2>MAXIMA CONTACTS</h2>
+        <table class="">
+          <tr>
+            <td style="color:#FFF; text-align:right;">List of Contacts: </td>
+            <td>
+              <select id="contactslist"></select>
+            </td>
+          </tr>
+        </table>
+        <p>Name: <span id="contactname"></span></p>
+        <p>PublicKey: <span id="contactpublickey"></span></p>
+        <p>Current Address: <span id="contactid"></span></p>
+      </div>
+      <div class="INF Createcontact">
+        <h2>ADD CONTACT</h2>
+        <p>Here you can add a Maxima Contact.</p>
+        <table class="">
+          <tr>
+            <td style="color:#FFF; text-align:right;">PublicKey: </td>
+    				<td><input type="text" id='publickeycontact'></td>
+          </tr>
+          <tr>
+            <td style="color:#FFF; text-align:right;">Contact Id: </td>
+    				<td><input type="text" id='idcontact'></td>
+    			</tr>
+          <tr>
+            <td>
+              <button class="button" onclick='addContact();'>Add Contact</button>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="INF Buytoken">
+        <table>
+  			<h2>SEND TOKENS MANUALLY</h2>
+        <p>Fill in the fiels and send Tokens.</p>
+  			<tr>
+  				<td style="color:#FFF; text-align:right;">Token to Send: </td>
+  				<td>
+  				  <select id="tokens"></select>
+  				</td>
+  			</tr>
+  			<tr>
+  				<td style=" color:#FFF; text-align:right;">Amount: </td>
+  				<td><input type="number" id='amount' maxlength='64'></td>
+  			</tr>
+        <tr>
+  				<td style=" color:#FFF; text-align:right;">Address to Send: </td>
+  				<td><input type="text" id='destinationaddress' maxlength='66'></td>
+  			</tr>
+  		</table>
+      <br>
+      <button type="button" id="buybutton" class="Button" onclick="sendTokens();">Send Tokens</button>
+      </div>
+      <div class="INF Tokencreate">
+        <h2>LIST OF DAO DAAP'S </h2>
+          <p>Fill in the fiels and create any Token.</p>
+          <table style="color:#FFF; border=0;">
+            <tr>
+      				<td style="color:#FFF; text-align:right;">Dapp's List: </td>
+              <td><select id="daoapps" onchange="daodapslist();"></td>
+      			</tr>
+            <tr>
+              <td style="text-align:right;">Token: </td>
+              <td><input type="number" id="toeknacumulated" maxlength="64"></td>
+            </tr>
+            <tr>
+              <td style="text-align:right;">Amount accumulated: </td>
+              <td><input type="number" id="amountacumulated" maxlength="64"></td>
+            </tr>
+		      </table>
+      </div>
+      <div class="INF Tokenminima">
+        <h2>MINIMA TOKEN BALANCE</h2>
+        <p>Token: <span id="MinimaToken"></span></p>
+        <p >Tokenid: <span id="MinimaTokenid"></span></p>
+        <p>Coins: <span id="MinimaCoins"></span></p>
+        <p>Sendable: <span id="MinimaSendable"></span></p>
+        <p>Total Minima's Amount: <span id="MinimaTotal"></span></p>
+        <button class="button" onclick='minimaBalance();'>Update Minima Balance</button>
+        <p><span id="StatusBalancesMinima"></span></p>
+      </div>
+      <div class="INF Balance">
+        <h2>TOKEN BALANCE</h2>
+        <tr>
+  				<td style="color:#FFF; text-align:right;">Token : </td>
+  				<td>
+  				<select id="tokens2" onchange="tokenBalance();">
+  				</select>
+  				</td>
+  			</tr>
+        <p>Tokenid: <span id="Tokenid"></span></p>
+        <p>Coins: <span id="Coins"></span></p>
+        <p>Sendable: <span id="Sendable"></span></p>
+        <p>Total Token's Amount: <span id="Total"></span></p>
+      </div>
+    </div>
+    <div class="Box Statussection">
+      <h2>STATUS AND TOOLS SECTION</h2>
+      <button class="button" onclick='newAddress();'>New Address</button>
+      <button class="button" onclick='getAddress();'>Get Address</button>
+      <button class="button" onclick='coins();'>Coins</button>
+      <button class="button" onclick='mainWalletAddress();'>Show DAO Wallet Address</button>
+      <button class="button" onclick='setDAOWalletAddress();'>Set DAO Wallet Address</button>
+      <button class="button" onclick='contact();'>Maxima</button>
+      <button class="button" onclick='setMaximaName();'>Set Maxima Name</button>
+      <button class="button" onclick='listtokensreceivedDB();'>List DB Transactions</button>
+      <pre id="status-object"></pre>
+      <div class="visualconsole"></div>
+    </div>
+    <div class="Box Credits">
+      <p style="text-align: center;">Developed by Minima Innovation Challenge Team</p>
+    </div>
+
+
+
+
     <script type="text/javascript">
-    
-        function runStatus(){
-            
-            // run the Minima status command to return information about the node's current state
-            MDS.cmd("status", function(res) {
-                
-                //if the response status is true
-                if (res.status) {
-                    //  convert the JSON object response to a string and format it
-                    const nodeStatus = JSON.stringify(res.response, " ", '\t');
-                    
-                    // show the response on the page
-                    document.getElementById("node-status").innerText = nodeStatus;
-    
-                //if the response status is false
-                }else{
-                    
-                    document.getElementById("node-status").innerText = "Could not retrieve current node Status";    
-        
-                }})
+      //document.getElementById("buybutton").disabled = true;
+      //Initialise the dongles and data
+      Getcontacts();
+      GetTokens();
+      mainWalletAddress();
+      //Send the Contacts available to the dongles
+      function Getcontacts() {
+        MDS.cmd("maxcontacts", function(result) {
+          //MDS.log(JSON.stringify(result));
+          var contact = result.response.contacts;
+          if (result.status) {
+            if(contact.length==0){
+        			return;
+        		}
+            else{
+              //Create the select dongles
+              var select = document.getElementById('contactslist');
+              while (select.hasChildNodes()) {
+                select.removeChild(select.firstChild);
+              }
+              //Add each Token
+              contact = result.response.contacts;
+              //Add the contacts to the dongle list contacts
+              for(var i = 0; i < contact.length; i++) {
+                var opt = document.createElement('option');
+                opt.value = contact[i].id;
+                opt.innerHTML = contact[i].extradata.name;
+                document.getElementById("contactname").innerText = contact[i].extradata.name;
+                document.getElementById("contactpublickey").innerText = contact[i].publickey;
+                document.getElementById("contactid").innerText = contact[i].currentaddress;
+                select.appendChild(opt);
+              }
             }
-        
-            //Initialise web socket 
-            MDS.init(function(msg){
-                if(msg.event == "inited") {
-                    // READY TO RUN CMDS!
-                    // run the Minima status command to return information about the node's current state
-                    MDS.cmd("status", function(res) {
-        
-                        if (res.status) {
-                            
-                            // get the block number from the Status object returned
-                            const blockHeight = res.response.chain.block;
-        
-                            document.getElementById("block-height").innerText = blockHeight;    
-        
-                        }
-                    })          
-        
-                }else if(msg.event == "NEWBLOCK"){
-                // the chain tip has changed
-        
-                }else if(msg.event == "NEWBALANCE"){
-                // user's balance has changed 
-                
-                }else if(msg.event == "MINING"){    
-                // mining has started or ended
-        
-                }else if(msg.event == "MINIMALOG"){
-                // new Minima log message
-        
-                }else{
-        
-                    
-                }
-            });
-             
-            
-        </script>
-    </body>
-    </html>
+          }
+        })
+      }
+
+      //Send the Tokens available to the dongles
+      function GetTokens(){
+        MDS.cmd("balance",function(result){
+          //Create the select dongles
+          var select = document.getElementById('tokens');
+          while (select.hasChildNodes()) {
+            select.removeChild(select.firstChild);
+          }
+          var select2  = document.getElementById('tokens2');
+          while (select2.hasChildNodes()) {
+            select2.removeChild(select2.firstChild);
+          }
+          //Add each Token
+          balance = result.response;
+          //Add the tokens to the dongle Buy a Token (spend)
+          for(var i = 0; i < balance.length; i++) {
+            var opt = document.createElement('option');
+            if(balance[i].tokenid == "0x00"){
+              opt.value = balance[i].tokenid;
+              opt.innerHTML = balance[i].token;
+            }else{
+              opt.value = balance[i].tokenid;
+              opt.innerHTML = balance[i].token.name;
+            }
+            select.appendChild(opt);
+          }
+          //Add tokens to the dongle Token balance
+          for(var i = 0; i < balance.length; i++) {
+            var opt = document.createElement('option');
+            if(balance[i].tokenid == "0x00"){
+              opt.value = balance[i].tokenid;
+              opt.innerHTML = balance[i].token;
+            }else{
+              opt.value = balance[i].tokenid;
+              opt.innerHTML = balance[i].token.name;
+            }
+            select2.appendChild(opt);
+          }
+        });
+      }
+    </script>
+  </body>
+</html>
