@@ -8,11 +8,10 @@
 
 //
 
-/**
- * Here is where the developer needs to set his wallet address
- */
+
 var DEVELOPER_WALLET_ADDRESS = "";
 var USER_WALLET_ADDRESS = "";
+var DAO_WALLET_ADDRESS = "";
 
 function createtheDB (){
   //Create the DB if not exists
@@ -42,6 +41,19 @@ function createtheDB (){
   });
 }
 
+function sendInfototheDAO() {
+  var operation;
+  for(var z = 0; z < coin.state.length; z++) {
+    if (coin.state[z].port == 0) operation = "NEWCLIENTDAPP";
+    if (coin.state[z].port == 1) developer_wallet_address = DEVELOPER_WALLET_ADDRESS;
+    if (coin.state[z].port == 2) user_wallet_addres = USER_WALLET_ADDRESS;
+  }
+  statevariables = "{\"0\":\"[NEWCLIENTDAPP]\", \"1\":\""+developer_wallet_address+"\", \"2\":\""+user_wallet_addres+"\"}";
+  command = "sendpoll address:"+DAO_WALLET_ADDRESS+" amount:"+client_amount_desired+" tokenid:"+client_token_id+" state:"+statevariables+" uid:"+SENDPOLLUID;
+
+
+}
+
 function istheFirstTimeRuning(){
   MDS.sql("SELECT * from api", function(sqlmsg){
     if (sqlmsg.status) {
@@ -59,8 +71,12 @@ function istheFirstTimeRuning(){
   });
 }
 
-//This function grab the developer address
+//This function send a portion of minima to the developer's trakerDAPP and wait an automatic response about his address
 function developerAddress(){
+
+}
+
+function daoAdress() {
 
 }
 
