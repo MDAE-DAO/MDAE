@@ -45,3 +45,19 @@ la gestió i surten mes problemes.
       token esta ja configurat amb la wallet de la DAPP i la Wallet del usuari final i el token esta dintre
       el script unic format per la wallet DAPP+wallet usuari , quan el Token es gasta/s'envia al DAO,el propi
       token es el que s'encarrega de verificar que tots els rewards es paguen a totes les parts implicades.
+
+    - Altres alternatives i problemes:
+      - Els Publicista podria enviar els tokens nomes a la wallet de la DAPP(desarolladors) (script unic), pero aleshores
+        sorgeixien problemes:
+        - Que impedeix que qualsevol persona que instala la DAPP gasti aquests tokens (estan en un script on
+          cada usuari els pot veure a partir de que instalen la DAPP)?
+        - Problemes de saturacio pel gran nombre de tokens rebuts i el tracking, ja que cada persona que
+          instala la APP pasa a fer un tracking de tots els tokens que es reben en el script.
+        - Problemes de visibilitat, les noves DAPPs instalades no veurean els tokens que ja hi havia.
+        - Problemes de concurrencia, si els tokens no estan al usuari final, aleshores pot pasar
+          que quan la APP mostra un token de publicitat aquest token sigui mostrat a varios usuaris
+          a la vegada, aleshores nomes un d'ells seria capaç de rebre els rewards
+        - Com escull la DAPP a quin usuari mostrar la publicitat i a quin no, un usuari pot no desitjar
+           veure publiciat de un determinat tipus o DAPP.
+        - Es podria mostrar publiciat en funció del TokenProfile , (no esta implementat i esta pensat perque
+          sigui el usuari si escull o no enviar la informació del seu token Profile).
