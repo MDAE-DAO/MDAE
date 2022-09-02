@@ -1,0 +1,287 @@
+@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+----------------------------------------
+Fourth aproach ## ---> Contract on the Token <--- Solves all problems of visibility, concurrency and ownership:
+----------------------------------------
+@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+
+We have seen the problems if we take the aproach to send the tokens into an script and then when the user
+(Advertiser) who install the DAO and register the script cannot see the tokens available on it, as they where
+deposited before he registered the script on his node, and the same happens in the case a user wants to buy
+tokens that are into script on the DAO, and the huge amount of tokens that would be tracked by all the nodes
+implied with the script aproach and the concurrency problems that may arise.
+
+To follow the other aproaches studied before taking this solution, you need to watch the document:
+mdae_dao_script_problem_tests.txt which describe the aproaches and the tests done as well as the MDAE channel on
+the discord Minima server MIC section.
+
+
+####################
+- ADVERTISER BUY TOKENS - ## The choosen solution: ##
+####################
+
+To avoid the problem of visibililty of the tokens, instead to use an script to deposit the tokens, we used
+a wallet address hardcoded on the DAO app that points to the originalDAO's node (there could also be several
+of them, decentralizing the original DAO between several different nodes, so the original DAO could have
+a list of hardcoded addresses where to buy tokens) or in the future gather that list from an external source,
+that way, instead of the Advertiser to ask for a token to be deposited into an script addres, directly ask for buy
+the tokens, sending the total minimas needed to buy the tokens desired, to rule that behavior state variables
+will be used set as described on ## SECOND APROACH ## and once the minimas have been received on the Original DAO's
+address and all is checked, the tokens bought are sent to the advertiser wallet and the transaction is register on
+the SQL database to avoid double buy problem.
+
+Procedure:
+ - Advertiser send the minimas to the wallet's DAO (original) needed to buy the desired token and all info needed to
+ make the process possible.
+
+  state_vars:
+    0:[buy_tokens],
+    1:wallet buyer,
+    2:token to buy,
+    3: amount to buy
+
+
+######################
+- MDAE SCRIPT OF TOKENS and How the system works - ## The choosen solution: ##
+######################
+
+  The whole tokens of the same type must be generated at once so they can have the same tokenid and then act
+  as a full syncronized ecosystem, so, the script that rules the tokens must be set on the tokens itself
+  instead on an script address(to avoid the problems of we described previsouly).
+
+  This makes the script to build more complex, but every token can act independently and here we must
+  consider how the system is going to deal with the rewards to be received by all parties when a token
+  is spent and the problems that may arise, so lets to consider the followings things to get an an
+  overview of the complexity:
+
+  0.  DAO_Dapp it holds the tokens and several service as descrived on the MDAE project, but for the proof of Concept
+      it will only hold the tokens to be bought by Advertiser's and send them to the VAULT (A multisig script) in the first
+      place, then according to the demand the tokens of the VAULT will be moved to the DAO and splitted to avoid the problems of how
+      UTXO system works as well as, on every bought of tokens, the minimas received are also sent to the VAULT and the
+      DAO it also runs a background service on service.js that manages the buy of tokens when the DApp is not open
+      on the Node where it is running.
+
+  1.- When the advertiser has bought tokens he must configure them according to the campaign he wants to do,
+      he will get that information from the TrackerDAPP, where users and developers register their addresses and
+      DApps in order to be able to receive publicity.
+
+      - The Adverstier using Advertiser_Dapp must configure the tokens of a particular campaign with all the information
+      needed as state variables, until the token is not configured it cannot be sent to anyone.
+
+      - Once the token is configured, the Advertiser must send the tokens of the campaing to the final users scripts,
+      (every final user will have a unique script based on his wallet address and if there is a third party like a DAPP,
+      the wallet of this DAPP(the developer)) as well as the rewards every party must receive when the token's Publicity
+      is watched.
+
+      - After a period of time,if the token of publicity has not been watched by final user, the Advertiser can claim
+      the token(s) back and the rewards related to it/them and then configure them again for another campaing.
+
+      - (If the exact amounts of rewards are not sent and the coinid of them is not tracked on state variables, then
+      it may arise problems with the burn mechanism, as a final user may have several tokens and rewards on the same script,
+      and when the token is spent it should spent the exactly rewards related to the token that were sent ), on this
+      proof of concept we are not going to consider this scenario in order to simplify things.
+
+
+  3.- TrackerDAPP This is de DApp that advertisers, developers of DApps and users would use to register their wallets or
+      would gather information in case of Advertisers or let final users to watch the publicity tokens that are on
+      their node.
+      Two possibilities:
+
+          1.- The TrackerDAPP will have the DAO wallet address hardcoded, as the DAO_Dapp have a service.js running in background
+              it would also be used to save all data registered by TrackerDAPP.
+
+          2-  The TrackerDAPP will have a wallet hardcoded and another DAPP(running on other node) that give support to TrackerDAPP
+              that will have a service.js that will run in background and saves all data users, developers registers on SQL
+              database as DAO_DApp does, as well as give information to Advertisers when they ask interachangin tokens with
+              state variables(fractions of minimas).
+
+      - Register users and Dapps of developers.
+
+        - DApp (developer):
+          The developer register his DApp with the wallet where he want to receive the rewards, the Name of the Dapp
+          and the utility of his DApp (sports, news, technology, games, .....)
+
+          Every developer DApp must include tracker.js API, that it must register the wallet of the developer and the wallet of
+          the user, as with the wallet of the developer and the wallet of the user who has installed the DAPP, the API know if
+          the user's node has received publicity tokens to be shown on this DAPP, as with these two wallets it generates
+          a unique script address the same way the Advertiser will use the two wallets to know where to send the token and
+          the rewards asociated with it.
+
+        - Final User:
+          The final user register his wallet where to receive the rewards that will come from watching publicity tokens.
+          The final user also specify what topics he is interested on (sports, news, technology, games....)
+          The final user also specify on which DApps, he has installed, wants to receive publicity.
+
+        - The trackerDAPP will let to the final user to watch the publicity tokens that has been received on his node,
+          as a tab or a popup, where the app show the tokens received and the user choose one token to watch his publicity.
+
+        -Advertiser User:
+          Will ask for information of users, dapps, and topics, and the TrackerDapp will use (DAO or other DAPP support)
+          background services to ask and deliver that information directly to the Advertiser with a fraction of a minima with all
+          info set as state variables. (this is a proof of concept, on a real system, Omnia could be used to transfer This
+          information on a batch of tokens sent, as it can be very large amount of data, Maxima could also be considered, but it has problems too, but
+          the must common aproach is to use an external service to deliver that data)
+
+      -API tracker:
+          It is a simple javascript, that the DAPPS that want to show token's publicity on the DAPP must include,
+          the API when the app started for first time, uses the hardcoded developers address and ask for the user's wallet
+          and with these two addresses register a unique script on the user node where the Advertisers will sent the
+          publicity tokens and the rewards asociated with it.
+
+          Then the API only checks for a NEWBALANCE event and checks if there is a publicity's token on this script's
+          address and if one is found, the publicity of the token is shown in the part of the DAPP designed to show
+          the publicity or a popup or whatever option is choosed.
+
+          The API also checks if the publiciy is watched (easy option for now, it is clicked) and then trigger
+          a javascript function that builds a transaction satisying all conditions set on the publicity token
+          sending back to the DAO.
+
+    4. Final user script.
+      As we said earlier, the Advertisers sent the publicity tokens and rewards to the final user, on a script
+      that is unique as is built with the user wallet or a combination of user wallet and Dapp(developer) address.
+      So this script only controls that a token of publicity must be sent back to the DAO and the minima rewards
+      must be sent to the VAULT as the user cannot extract the rewards manually, the rest of payment rewards and
+      the comissions of the DAO will be checked by the TOKEN's script but the transaction must specify everyone of
+      those requirements , otherwise it will fail.
+
+    5. SCRIPT MDAE:
+ -------------------------------------------------------------------------
+      - Firs part 1 ## BUY TOKENS ##:
+ -------------------------------------------------------------------------
+      /*  Dao owners let transfer the tokens from the vault to DAO address (PREVSTAE 4) where buyers will buy the tokens
+          There is no need to preserve the states (4-5) if there is not a buy
+      */
+
+      ASSERT SAMESTATE ( 0 0 )
+      ASSERT SAMESTATE ( 1 1 )
+      ASSERT SAMESTATE ( 2 2 )
+      ASSERT SAMESTATE ( 3 3 )
+
+      IF MULTISIG ( 2 PREVSTATE( 1 ) PREVSTATE( 2 ) PREVSTATE( 3 ) ) THEN
+
+          /* The owners can modify comissions of third parties and final users */
+
+          ASSERT STATE ( 6 ) GT 0
+          ASSERT STATE ( 7 ) GT 0
+          ASSERT STATE ( 8 ) GT 0
+          ASSERT STATE ( 9 ) GT 0
+
+          /* Transfer the tokens from the vault to the DAO owner */
+          RETURN VERIFYOUT (@INPUT STATE( 4 ) @AMOUNT @TOKENID TRUE)
+
+      ENDIF
+
+      /* Only the owners can modify comissions price and owner and publickey of DAO -  so lets avoid it for the others*/
+      ASSERT SAMESTATE ( 4 4 )
+      ASSERT SAMESTATE ( 5 5 )
+      ASSERT SAMESTATE ( 6 6 )
+      ASSERT SAMESTATE ( 7 7 )
+      ASSERT SAMESTATE ( 8 8 )
+      ASSERT SAMESTATE ( 9 9 )
+
+      /* BUY Dao owner state 5 let transfer the tokens to buyers in exchange for the minima price * AMOUNT */
+      IF SIGNEDBY( PREVSTATE( 5 ) ) THEN
+
+        LET vault = STATE ( 0 )
+        LET dao = STATE ( 4 )
+        LET price = PREVSTATE( 9 )
+        LET buyer = STATE ( 10 )
+        LET amount = STATE ( 11 )
+        LET chgBack = @AMOUNT - amount*price
+        LET chgBackTokens = GETINAMT( 1 ) - amount
+
+        /* Check the payed minimas in exchange for tokens are sent to the vault*/
+        ASSERT VERIFYOUT(@INPUT vault amount*price 0x00 TRUE)
+
+        /* Check the total tokens bought are sent to the buyer second input */
+        ASSERT VERIFYOUT( GETINAMT( 1 ) buyer amount/price @TOKENID TRUE )
+
+        /* Check the changeBack  if there is one is sent to the buyer */
+        IF chgBack GT 0 THEN
+          ASSERT VERIFYOUT(@INPUT vault chgBack 0x00 TRUE)
+        ENDIF
+
+        /* Check the changeBackTokens  if there is one is sent to the DAO's address */
+        IF chgBackTokens GT 0 THEN
+          ASSERT VERIFYOUT( GETINAMT( 1 ) dao chgBackTokens @TOKENID TRUE)
+        ENDIF
+
+        RETURN TRUE
+
+      ENDIF
+  -----------------------------------------------------------------
+
+    6.- Meaning and Setting the script variables
+      - DAO:
+        create n tokens
+        the tokens must have an script that let the Advertiser to configure it, the script
+        (the exchange contract for the final user)
+        - Create the script into the tokens
+          - conditions
+            - vault address script ** state 0 **
+            - publickey vaullt-1 ** state 1 **
+            - publickey vaullt-2 ** state 2 **
+            - publickey vaullt-3 ** state 3 **
+            - Owner dao address ** state 4 **
+            - Owner dao publickey ** state 5 **
+            - Third party comission ** state 6 ** to be received by DAO when token is spent from the reward amount.
+            - Final user comission ** state 7 ** to be received by DAO when token is spent from the reward amount.
+            - If the rewards are not minimas, then a fix % must be set(according to the values of rewards-**Oracle**?)
+              ** state 8 **
+            - Price of Token ** state 9 **
+            - buyer ** state 10 ** and amount ** state 11 ** must be set when the transaction is built.
+
+      -----------------------------------------------------------
+
+      7.- Generating VAULT script address:
+
+          Two publickeys are necessary to withdrow funds from the VAULT, the publickeys can be for now from the same nodes
+          but in a real case they will be from three different people and nodes.
+
+      -> newscript track:true script:"RETURN MULTISIG(2 0xF4F8FA86AFE0781288E7A5625B5BD9395B8DFA04DD9D741F6C38E6FBA32CD8B0 0xB5A82ADB68BB5204DC9CDB1B9C6218CF6E88B9C7B0BAA02B713D7E7E771E3625 0xCEA682FA3CF06907786993B7D8B8B73682EBA9AB20D255A78D2EC9A84ECDFA92)"
+
+      response:
+      VAULT script ` {
+          "script":"RETURN MULTISIG(2 0xF4F8FA86AFE0781288E7A5625B5BD9395B8DFA04DD9D741F6C38E6FBA32CD8B0 0xB5A82ADB68BB5204DC9CDB1B9C6218CF6E88B9C7B0BAA02B713D7E7E771E3625 0xCEA682FA3CF06907786993B7D8B8B73682EBA9AB20D255A78D2EC9A84ECDFA92)",
+          "address":"0x514CBB51231BB15D77F4161658EDBFE48559A6E1B93CAA5ABB9FD9034563E2D8",
+          "miniaddress":"MxG082H9WTY28ZRM5ENFT0M2PCERFV4GYCQDZDP7WY5YESVR41KAZV2R1M96Y1H",
+          "simple":false,
+          "default":false,
+          "publickey":"0x00",
+          "track":true
+        }]
+      }
+
+    -----------------------------------------------------------
+
+      8.- Transaction instructions to execute the buy of n tokens.
+          Note:
+          -The change back amounts must also been calculated and be included on the transactions as
+          outputs, otherwise all amount of inputs that exceeds of the necessary quanity will be burn and not returned
+          back to the owner of it, those cases are not done on the following example as I used the exact amount in order
+          not to deal with change back, but it must be calculated and set on the transaction.
+
+          -Note the coins to use on automated system, must be get from the command coins , watch if the coin contains
+          enough quantity of minimas or Tokens, if none is found that meet the requirements then several input Coins
+          must be used until the amount needed is met.
+
+          ->txncreate id:buy2
+          ->txnstate id:buy2 port:0 value:"0x514CBB51231BB15D77F4161658EDBFE48559A6E1B93CAA5ABB9FD9034563E2D8"
+          ->txnstate id:buy2 port:1 value:"0xF4F8FA86AFE0781288E7A5625B5BD9395B8DFA04DD9D741F6C38E6FBA32CD8B0"
+          ->txnstate id:buy2 port:2 value:"0xB5A82ADB68BB5204DC9CDB1B9C6218CF6E88B9C7B0BAA02B713D7E7E771E3625"
+          ->txnstate id:buy2 port:3 value:"0xCEA682FA3CF06907786993B7D8B8B73682EBA9AB20D255A78D2EC9A84ECDFA92"
+          ->txnstate id:buy2 port:4 value:"0x7B4547BC4AE5291E9A2B9C0A788B54B6B0EA377AEBBAD2B1BFB9BB725079825D"
+          ->txnstate id:buy2 port:5 value:"0x2FDE9021C9ADEADB15E86BAEAAF7D3B50F39C06B4EB5D9BDEA0CF2407F70C750"
+          ->txnstate id:buy2 port:6 value:"2"
+          ->txnstate id:buy2 port:7 value:"2"
+          ->txnstate id:buy2 port:8 value:"2"
+          ->txnstate id:buy2 port:9 value:"1"
+          ->txnstate id:buy2 port:10 value:"0xB0E211E7411D84DAE106A48A2225695DCFE3F7DC30F5E0A30E8888DA9AD8DF84"
+          ->txnstate id:buy2 port:11 value:"10"
+          ->txninput id:buy2 coinid:0x4E5748773F27AFE5CB5E853BB02AC40C41B8F1CD68A67E59D2C78D71BC4ADA50
+          ->txninput id:buy2 coinid:0x323029868A6715A51DD500951E015D696F7D7AE6CB480801D21209FE2725CAB5
+          ->txnoutput id:buy2 amount:10 address:0x514CBB51231BB15D77F4161658EDBFE48559A6E1B93CAA5ABB9FD9034563E2D8 tokenid:0x00 storestate:false
+          ->txnoutput id:buy2 amount:10 address:0xB0E211E7411D84DAE106A48A2225695DCFE3F7DC30F5E0A30E8888DA9AD8DF84 tokenid:0xB39BA80EBAB948DD4BB0C56A9AA27C886D723798E87B897845F77328EBAC4E33 storestate:true
+          ->txnbasics id:buy2
+          ->txnsign id:buy2 publickey:0x485757B8AB7A78B95A663E36ED508865F6B30FB3042ABF06E56B5F66839EB702
+          ->txnsign id:buy2 publickey:0x2FDE9021C9ADEADB15E86BAEAAF7D3B50F39C06B4EB5D9BDEA0CF2407F70C750
+          ->txnpost id:buy2
