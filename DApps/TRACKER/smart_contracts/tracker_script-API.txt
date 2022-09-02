@@ -1,0 +1,47 @@
+
+1. API considerations
+
+He estat pensant en mes detall la api per mostrar la publicitat, i tot el que no sigui un usuari final es complica
+la gestió i surten mes problemes.
+
+1. Cas simple (usuari final -> totalment descentralizat)
+
+  - Usuari Final
+    - Usuari final es registra trackingDAPP (Amb les caract de publicitat que vol rebre), no especifica
+    cap dapp a traves de la qual vol rebre publicitat.
+    - Es genera un script unic al node del usuari on s'enviaran els tokens.
+    - Advertiser DAPP te accces a la wallet on el usuari final s'ha registrat i amb aixo tambe pot saber
+      la url unica del script on enviar els tokens al usuari final.
+    - Advertiser DAPP en funcio de la campanya, envia directament els tokens al usuari final(script)
+    - Advertiser DAPP guarda el tokenID i el coinid enviats ( per poder recuperar-los pasat un temps si
+      encare no han sigut gastats/visualitzats)
+    - Cas facil:
+        - El usuari fa servir la TrackingDAPP per veure el tokens de publicitat que li han arribat al seu
+        node, simplmenet la DAPP te una opcio que es veure els tokens rebuts (Al registrar-se s'ha generat
+        a traves de la wallet utilizada un script unic on estaran els tokens de publicitat a consumir)
+        - No cal fer cap API, la tracking DAPP ja et permet veure la publcitat.
+        - El token ja te tota la informació per gestionar els rewards i les condicions que s'han de complir.
+          el reward es rebut pel desarollador de la trackingDAPP i el DAO
+
+  -2. Cas Dificil:
+    - Els desarolladors de una DAPP la registren a la Tracking DAPP (walllet i tipus App que es )
+    - El usuari final instala una DAPP que sera capaç de rebre publicitat (Wallet i ID de la DAPP disponibles)
+    - El usuari final es registra a la Tracking DAPP i escull les DAPP que fa servir i on vol rebre
+      publicitat, es genera un script per cada combinació de wallet usuari i wallet de DAPP al node del usuari.
+      A partir del moment que un usuari que es registre ja sera capaç de veure tots els tokens que se li enviin al
+      script.
+    - Al AvertiserDAPP , fa servir la informació del usuari i les Dapp registrades a TrackingDAPP per
+      enviar els seus tokens al usuari final script unic (dapp wallet+wallet usuari final).
+      Se suposa que el usuari ja te instalada la DAPP.
+    - Aqui es necesaria una API, que cada DAPP registrada faria servir per mostrar la publicitat que es
+      rebuda pel usuari final dintre la propia DAPP.
+    - publicity.js API que qualsevol DAPP hauria de incloure, la API controla si el usuari final a proporcionat
+      la wallet on rebre la publicitat(previament registrada a TrackerDapp) amb aixo, ja coneix la script addresse
+      on els publicitstes enviaran els tokens de publicitat.
+    - La API nomes ha de mirar el NEWBALANCE event (ja que fa tracking del script, detectera qualsevol token
+      enviat al usuari final que fa servir la APP) i només ha de mostrar en un popup o en una secció de la DAPP,
+      que podria ser un DIV, la publiciat del token.
+    - Quan el usuari fa click sobre la publicitat(cas facil), la API genera una transacció, com que el
+      token esta ja configurat amb la wallet de la DAPP i la Wallet del usuari final i el token esta dintre
+      el script unic format per la wallet DAPP+wallet usuari , quan el Token es gasta/s'envia al DAO,el propi
+      token es el que s'encarrega de verificar que tots els rewards es paguen a totes les parts implicades.
