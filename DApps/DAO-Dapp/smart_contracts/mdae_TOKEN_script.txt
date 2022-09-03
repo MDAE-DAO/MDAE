@@ -315,7 +315,8 @@ Procedure:
   -------------------------------------------------------------------------
     - Second part  ## CONFIGURE TOKENS ## :
   -------------------------------------------------------------------------
-      /* BUY Dao owner state 5 let transfer the tokens to buyers in exchange for the minima price * AMOUNT */
+
+      /* Configure the tokens bough (12) in an a flashloan kind of contract */
       IF SIGNEDBY( PREVSTATE( 12 ) ) THEN
         ASSERT SAMESTATE ( 10 10 )
         ASSERT SAMESTATE ( 11 11 )
@@ -323,16 +324,32 @@ Procedure:
 
         /* check if the token is not configured (0) Once configured state(13 is set to 1)
           -Flash Loan contract, the token/s are sent to the same addres with the configured state
-           variables, so must check that state variables to configure the tokens are set
+           variables, so must check that state variables to configure the tokens are set, and
+           also must let modify them if they are configured (0,1) values, so when trying to
+           send the tokens to the target users the state variable will be set to the value of 2.
+           We also check:
+             -if intermediary reward (14) must be 0 or greater than 0
+             -if intermediary type reward (15) is a minima token or other token checking his length
+             -final user reward (16) must be greater than 0
+             -if final user type reward (17) is a minima token or other token checking his length
+             -if values of type of publicity (18) are between 0 and 6
+             -if (19) length is greater than 0 as must cointain values according to type of publicity(18)
+
         */
-        IF STATE (13) EQ 0
-          ASSERT LEN ()
+        IF STATE (13) EQ 0 OR STATE (13) EQ 1
+          ASSERT STATE (14) EQ 0 OR STATE (14) GT 0
+          ASSERT LEN ( STATE (15) ) EQ 4 OR LEN ( STATE (15) ) EQ 64 OR LEN ( STATE (15) ) EQ 0
+
+          ASSERT STATE (16) GT 0
+          ASSERT LEN ( STATE (17) ) EQ 4 OR LEN ( STATE (17) ) EQ 64
+
+          ASSERT STATE (18) GTE 0 AND ASSERT STATE (18) LTE 6
+          ASSERT STATE (19) GT 0
+          
           ASSERT VERIFYOUT( @INPUT @ADDRESS @AMOUNT @TOKENID )
           RETURN TRUE
         ENDIF
 
-        /* check if the token is configured and not needs to be modified */
-        IF STATE (13)
       ENDIF
   -----------------------------------------------------------------
 
@@ -345,22 +362,21 @@ Procedure:
               - amount of tokens bought ** state 10 ** ?? still not sure if it will be necessary ??
               - addres of buyer(Advertiser) ** state 11 **
               - publickey of buyer(Advertiser) ** state 12 **
-              - 1 (CONFIGURED) or 0 (NOT CONFIGURED) ** state 13 ** the token is configured and can be sent or modified again
+              - 1 (CONFIGURED) or 0 (NOT CONFIGURED) or 2(SENDING TOKENS) ** state 13 ** the token is configured and can be sent or modified again
               - Amount of reward intermediary party (if there is one) must receive ** state 14 **
-              -and type (if there is intermediary) ** state 12 **
-              -configure the amount of rewards final user ** state 13 **,
-              -configure type  ** state 14 **
-              -send the token and the rewards to the final user script (first, node 3 must have create the script,which is
-              done when the user register his address to the TrackingDapp)
-              -**state vars from 14-29 keep reserved** in case are need for further configurations
+              -and type (if there is intermediary) ** state 15 **
+              -configure the amount of rewards final user ** state 16 **,
+              -configure type final user reward ** state 17 **
               -Avertising configuration:
-                -type of publicity ** state 30 **
-                  -(0:text ** reserved 31-49 state vars **)
+                -type of publicity ** state 18 **
+                  -(0:text ** reserved 19-.... state vars **)
                   -(1:web page)
                   -(2:url image)
                   -(3:url survey / text (using reserved text state variables)
                   -(4:actions (Follow twitter/social networks acount, RT, Likes, p)-using reserved text state variables)
                   -(5:conquest using reserver text state vars to set a url or instructions)
+                  -(6:others) using reserver text state vars, external sources and rules
+                -Content according to type of publicity ** state 19 **
                 -**configure the rules/requirements to drive how publicity is managed:**
                   -This part can be very complex and done in multiples ways, and it depends on the type of Publicity
                   to be show or managed, so it may require external actor (Oracles, bots, list of instructions....),
