@@ -9,31 +9,33 @@
 //
 
 
-var DEVELOPER_WALLET_ADDRESS = "";
+var DEVELOPER_WALLET_ADDRESS = "adressssadeprovesx0909090343434";
 var USER_WALLET_ADDRESS = "";
-var DAO_WALLET_ADDRESS = "";
 
 function createtheDB (){
   //Create the DB if not exists
-  initsql = "CREATE TABLE IF NOT EXISTS `api` ( "
-        +"  `id` IDENTITY PRIMARY KEY, "
-        +"  `developerwalletaddress` varchar(512) NOT NULL, "
-        +"  `userwalletaddress` varchar(512) NOT NUL, "
-        +"  `date` bigint NOT NULL "
-        +" )";
+        initsql = "CREATE TABLE IF NOT EXISTS `tracker` ( "
+              +"  `id` IDENTITY PRIMARY KEY, "
+              +"  `developerwalletaddress` varchar(512) NOT NULL, "
+              +"  `userwalletaddress` varchar(512) NOT NULL, "
+              +"  `date` bigint NOT NULL "
+              +" )";
 
   //Run this..
   MDS.sql(initsql,function(msg){
-    MDS.log("API Service SQL Inited..");
+    MDS.log("Tracker Service SQL Inited..");
+    MDS.log(JSON.stringify(msg));
   });
-  var fullsql = "INSERT INTO api (developerwalletaddress,userwalletaddress,date) VALUES "
+}
+
+function insertDAta(){
+  var fullsql = "INSERT INTO tracker (developerwalletaddress,userwalletaddress,date) VALUES "
       +"('"+DEVELOPER_WALLET_ADDRESS+"','"+USER_WALLET_ADDRESS+"',"+Date.now()+")";
 
   MDS.sql(fullsql, function(resp){
     MDS.log(JSON.stringify(resp));
     if (resp.status) {
       MDS.log("Addresses has Inserted Correctly in the DB");
-      sendInfototheDAO();
     }
     else {
       MDS.log("The Addresses Change HAS NOT BEEN Inserted in the DB");
@@ -41,43 +43,33 @@ function createtheDB (){
   });
 }
 
-function sendInfototheDAO() {
-  var operation;
-  for(var z = 0; z < coin.state.length; z++) {
-    if (coin.state[z].port == 0) operation = "NEWCLIENTDAPP";
-    if (coin.state[z].port == 1) developer_wallet_address = DEVELOPER_WALLET_ADDRESS;
-    if (coin.state[z].port == 2) user_wallet_addres = USER_WALLET_ADDRESS;
-  }
-  statevariables = "{\"0\":\"[NEWCLIENTDAPP]\", \"1\":\""+developer_wallet_address+"\", \"2\":\""+user_wallet_addres+"\"}";
-  command = "sendpoll address:"+DAO_WALLET_ADDRESS+" amount:"+client_amount_desired+" tokenid:"+client_token_id+" state:"+statevariables+" uid:"+SENDPOLLUID;
-
-
-}
-
-function istheFirstTimeRuning(){
-  MDS.sql("SELECT * from api", function(sqlmsg){
+//This function begins to check if the DAPP is runing for the first time
+function runAPITracker(){
+  MDS.log("hola22222222");
+  createtheDB();
+  MDS.sql("SELECT * from tracker", function(sqlmsg){
     if (sqlmsg.status) {
       if (sqlmsg.count == 0){
         MDS.log("Runing the Dapp for the first time..");
         userAddress();
         developerAddress();
-        createtheDB();
-        return;
+        //insertDAta();
+        if (sqlmsg.status) {
+          MDS.log(JSON.stringify(sqlmsg));
+        }else{
+          MDS.log(JSON.stringify(sqlmsg));
+        }
       }
       else{
-
       }
     }
+    MDS.log(JSON.stringify(sqlmsg));
   });
 }
 
-//This function send a portion of minima to the developer's trakerDAPP and wait an automatic response about his address
+//For now the developer sets here his wallet addresses
 function developerAddress(){
-
-}
-
-function daoAdress() {
-
+  DEVELOPER_WALLET_ADDRESS = "";
 }
 
 //This function grab the user address
@@ -88,6 +80,16 @@ function userAddress(){
   }else{
     MDS.log(address);
     USER_WALLET_ADDRESS = address;
-
   }
 }
+
+/********************************************************
+function nonamefunctionfornow {
+  var operation;
+  for(var z = 0; z < coin.state.length; z++) {
+    if (coin.state[z].port == 0) operation = "NEWCLIENTDAPP";
+    if (coin.state[z].port == 1) developer_wallet_address = DEVELOPER_WALLET_ADDRESS;
+    if (coin.state[z].port == 2) user_wallet_addres = USER_WALLET_ADDRESS;
+  }
+  statevariables = "{\"0\":\"[NEWCLIENTDAPP]\", \"1\":\""+developer_wallet_address+"\", \"2\":\""+user_wallet_addres+"\"}";
+}*/

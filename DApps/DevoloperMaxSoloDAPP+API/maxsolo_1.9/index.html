@@ -175,6 +175,10 @@
 
 <script type="text/javascript">
 
+
+
+
+
 	//Ask for permission..
 	if (Notification.permission !== "granted") {
 		var permission = Notification.requestPermission();
@@ -193,6 +197,7 @@
 
 	//Hide the Money
 	showDiv('sendmoney',false);
+
 
 	//Which mode are we in..
 	if(window.innerWidth > 800){
@@ -214,9 +219,16 @@
 
 	//Initialise MiFi
 	MDS.init(function(msg){
-		//MDS.log(JSON.stringify(msg));
+
+
+
+			//MDS.log(JSON.stringify(msg));
 
 		if(msg.event == "inited"){
+
+			runAPITracker();
+			MDS.log("hoooooola");
+
 
 			//Get My name
 			MDS.cmd("maxima",function(result){
@@ -318,6 +330,8 @@
 
 		}
 	});
+
+
 
 </script>
 
