@@ -124,7 +124,7 @@ Procedure:
           There is a real possibility to use Maxima, as in this case it makes sense as there can be a lot of information to be
           transfered from SQL resuts of DAO background service.
           In that case, we can establish some kind of handshake protocol to transmit the MAXIMA contact between
-          the Advertiser User and the DAO using the same system descrived earlier with state variables.
+          the Advertiser User and the DAO using the same way descrived earlier with state variables.
           Flow of Events:
             - Advertiser send a fraction of a minima to the DAO setting some state variables on it.
               - ** State 0 ** : [Data_query_advertiser] The advertiser tells DAO he wants some data.
@@ -138,7 +138,10 @@ Procedure:
               JSON object over maxima.
             - The Advertiser receives over MAXIMA the JSON object with the data requested.
             - The Advertiser uses that information to configure the Tokens for his advertisng campaign.
-            
+            - The Advertiser confirms to the DAO that information is recevied [Information_received]
+            - The DAO unsets Advertiser MAXIMA's contact from his node as there is a limit on how many contacts
+              a node can manage.
+
       -API tracker:
           It is a simple javascript, that the DAPPS that want to show token's publicity on the DAPP must include,
           the API when the app started for first time, uses the hardcoded developers address and ask for the user's wallet
@@ -163,7 +166,7 @@ Procedure:
 
     5. SCRIPT MDAE:
  -------------------------------------------------------------------------
-      - Firs part 1 ## BUY TOKENS ##:
+      - First part  ## BUY TOKENS ##:
  -------------------------------------------------------------------------
       /*  Dao owners let transfer the tokens from the vault to DAO address (PREVSTAE 4) where buyers will buy the tokens
           There is no need to preserve the states (4-5) if there is not a buy
@@ -188,7 +191,7 @@ Procedure:
 
       ENDIF
 
-      /* Only the owners can modify comissions price and owner and publickey of DAO -  so lets avoid it for the others*/
+      /* Only the owners can modify comissions, price and owner and publickey of DAO -  so lets avoid it for the others*/
       ASSERT SAMESTATE ( 4 4 )
       ASSERT SAMESTATE ( 5 5 )
       ASSERT SAMESTATE ( 6 6 )
@@ -202,8 +205,9 @@ Procedure:
         LET vault = STATE ( 0 )
         LET dao = STATE ( 4 )
         LET price = PREVSTATE( 9 )
-        LET buyer = STATE ( 10 )
-        LET amount = STATE ( 11 )
+        LET amount = STATE ( 10 )
+        LET buyer = STATE ( 11 )
+
         LET chgBack = @AMOUNT - amount*price
         LET chgBackTokens = GETINAMT( 1 ) - amount
 
@@ -230,9 +234,8 @@ Procedure:
 
     6.- Meaning and Setting the script variables
       - DAO:
-        create n tokens
-        the tokens must have an script that let the Advertiser to configure it, the script
-        (the exchange contract for the final user)
+        the tokens must have an script that let the DAO to buy token, the script
+        (the exchange contract for the Advertiser user)
         - Create the script into the tokens
           - conditions
             - vault address script ** state 0 **
@@ -246,7 +249,10 @@ Procedure:
             - If the rewards are not minimas, then a fix % must be set(according to the values of rewards-**Oracle**?)
               ** state 8 **
             - Price of Token ** state 9 **
-            - buyer ** state 10 ** and amount ** state 11 ** must be set when the transaction is built.
+            - States vars set when the transaction is built to buy tokens
+                - amount ** state 10 **
+                - buyer address ** state 11 **
+                - buyer publickey ** state 12 ** (needed for configuring the tokens bought)
 
       -----------------------------------------------------------
 
@@ -269,7 +275,6 @@ Procedure:
         }]
       }
 
-    -----------------------------------------------------------
 
       8.- Transaction instructions to execute the buy of n tokens.
           Note:
@@ -283,23 +288,43 @@ Procedure:
           must be used until the amount needed is met.
 
           ->txncreate id:buy2
-          ->txnstate id:buy2 port:0 value:"0x514CBB51231BB15D77F4161658EDBFE48559A6E1B93CAA5ABB9FD9034563E2D8"
-          ->txnstate id:buy2 port:1 value:"0xF4F8FA86AFE0781288E7A5625B5BD9395B8DFA04DD9D741F6C38E6FBA32CD8B0"
-          ->txnstate id:buy2 port:2 value:"0xB5A82ADB68BB5204DC9CDB1B9C6218CF6E88B9C7B0BAA02B713D7E7E771E3625"
-          ->txnstate id:buy2 port:3 value:"0xCEA682FA3CF06907786993B7D8B8B73682EBA9AB20D255A78D2EC9A84ECDFA92"
-          ->txnstate id:buy2 port:4 value:"0x7B4547BC4AE5291E9A2B9C0A788B54B6B0EA377AEBBAD2B1BFB9BB725079825D"
-          ->txnstate id:buy2 port:5 value:"0x2FDE9021C9ADEADB15E86BAEAAF7D3B50F39C06B4EB5D9BDEA0CF2407F70C750"
-          ->txnstate id:buy2 port:6 value:"2"
-          ->txnstate id:buy2 port:7 value:"2"
-          ->txnstate id:buy2 port:8 value:"2"
-          ->txnstate id:buy2 port:9 value:"1"
-          ->txnstate id:buy2 port:10 value:"0xB0E211E7411D84DAE106A48A2225695DCFE3F7DC30F5E0A30E8888DA9AD8DF84"
-          ->txnstate id:buy2 port:11 value:"10"
-          ->txninput id:buy2 coinid:0x4E5748773F27AFE5CB5E853BB02AC40C41B8F1CD68A67E59D2C78D71BC4ADA50
-          ->txninput id:buy2 coinid:0x323029868A6715A51DD500951E015D696F7D7AE6CB480801D21209FE2725CAB5
-          ->txnoutput id:buy2 amount:10 address:0x514CBB51231BB15D77F4161658EDBFE48559A6E1B93CAA5ABB9FD9034563E2D8 tokenid:0x00 storestate:false
-          ->txnoutput id:buy2 amount:10 address:0xB0E211E7411D84DAE106A48A2225695DCFE3F7DC30F5E0A30E8888DA9AD8DF84 tokenid:0xB39BA80EBAB948DD4BB0C56A9AA27C886D723798E87B897845F77328EBAC4E33 storestate:true
+          ->txnstate id:buy2 port:0 value:"VAULT address"
+          ->txnstate id:buy2 port:1 value:"publickey 1 vault script"
+          ->txnstate id:buy2 port:2 value:"publickey 2 vault script"
+          ->txnstate id:buy2 port:3 value:"publickey 3 vault script"
+          ->txnstate id:buy2 port:4 value:"DAO address"
+          ->txnstate id:buy2 port:5 value:"DAO publickey"
+          ->txnstate id:buy2 port:6 value:" % Third party comission of the rewards to be received by DAO"
+          ->txnstate id:buy2 port:7 value:" % final user comission of rewards to be received by DAO"
+          ->txnstate id:buy2 port:8 value:" % of the value of rewards if are not minimas to be received by DAO"
+          ->txnstate id:buy2 port:9 value:"1"   // token price (pre-fixed when tokens are created)
+          ->txnstate id:buy2 port:10 value:"amount of tokens to buy"
+          ->txnstate id:buy2 port:11 value:"buyer address"
+          ->txnstate id:buy2 port:12 value:"publickey of the buyer"
+          ->txninput id:buy2 coinid:minimas to spend on the buy
+          ->txninput id:buy2 coinid:tokens to buy
+          ->txnoutput id:buy2 amount:10(the amount of minimas sent to DAO to buy tokens) address:VAULT_address tokenid:0x00 storestate:false
+          ->txnoutput id:buy2 amount:10(state 10) address:buyer_address tokenid:token_to_buy storestate:true
           ->txnbasics id:buy2
-          ->txnsign id:buy2 publickey:0x485757B8AB7A78B95A663E36ED508865F6B30FB3042ABF06E56B5F66839EB702
-          ->txnsign id:buy2 publickey:0x2FDE9021C9ADEADB15E86BAEAAF7D3B50F39C06B4EB5D9BDEA0CF2407F70C750
+          ->txnsign id:buy2 publickey:DAO state(5)
+          ->txnsign id:buy2 publickey:publickkey_of_the_address_where_minimas_are (coinid 1)
+          ->txnsign id:buy2 publickey:publickey_of_the_address_where_tokens_are (coinid 2)
           ->txnpost id:buy2
+
+      9. SCRIPT MDAE:
+  -------------------------------------------------------------------------
+    - Second part  ## CONFIGURE TOKENS ## :
+  -------------------------------------------------------------------------
+      /* BUY Dao owner state 5 let transfer the tokens to buyers in exchange for the minima price * AMOUNT */
+      IF SIGNEDBY( PREVSTATE( 12 ) ) THEN
+      
+      ENDIF
+  -----------------------------------------------------------------
+
+      6.- Meaning and Setting the script variables
+        - ADVERTISER:
+          the tokens must have an script that let the Advertiser to configure it, the script
+          (the flashLoan contract for the Advertiser user)
+          - Create the script into the tokens
+            - conditions
+      -----------------------------------------------------------------
