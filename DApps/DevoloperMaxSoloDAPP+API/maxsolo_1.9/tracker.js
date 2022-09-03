@@ -9,7 +9,7 @@
 //
 
 
-var DEVELOPER_WALLET_ADDRESS = "adressssadeprovesx0909090343434";
+var DEVELOPER_WALLET_ADDRESS = "";
 var USER_WALLET_ADDRESS = "";
 
 function createtheDB (){
@@ -24,7 +24,7 @@ function createtheDB (){
   //Run this..
   MDS.sql(initsql,function(msg){
     MDS.log("Tracker Service SQL Inited..");
-    MDS.log(JSON.stringify(msg));
+    processData();
   });
 }
 
@@ -43,19 +43,15 @@ function insertDAta(){
   });
 }
 
-//This function begins to check if the DAPP is runing for the first time
-function runAPITracker(){
-  MDS.log("hola22222222");
-  createtheDB();
+function processData(){
   MDS.sql("SELECT * from tracker", function(sqlmsg){
     if (sqlmsg.status) {
       if (sqlmsg.count == 0){
         MDS.log("Runing the Dapp for the first time..");
         userAddress();
         developerAddress();
-        //insertDAta();
+        insertDAta();
         if (sqlmsg.status) {
-          MDS.log(JSON.stringify(sqlmsg));
         }else{
           MDS.log(JSON.stringify(sqlmsg));
         }
@@ -63,13 +59,17 @@ function runAPITracker(){
       else{
       }
     }
-    MDS.log(JSON.stringify(sqlmsg));
   });
+}
+
+//This function begins to check if the DAPP is runing for the first time
+function runAPITracker(){
+  createtheDB();
 }
 
 //For now the developer sets here his wallet addresses
 function developerAddress(){
-  DEVELOPER_WALLET_ADDRESS = "";
+  DEVELOPER_WALLET_ADDRESS = "adressssadeprovesx0909090343434";
 }
 
 //This function grab the user address
@@ -78,7 +78,6 @@ function userAddress(){
   if (address == null || address == "") {
     alert("Could not set the address!");
   }else{
-    MDS.log(address);
     USER_WALLET_ADDRESS = address;
   }
 }
