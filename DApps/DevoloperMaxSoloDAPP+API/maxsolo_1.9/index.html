@@ -13,12 +13,12 @@
 
 	<!--   Utils -->
 	<script type="text/javascript" src="utils.js"></script>
-	
+
 	<!--  STYLE -->
 	<link rel="stylesheet" type="text/css" href="maxsolo.css">
 
 <!--  This is where the API is linked to the DAPP -->
-<script type="text/javascript" src="api.js"></script>
+<script type="text/javascript" src="tracker.js"></script>
 
 	<title>MAXSOLO</title>
 </head>
@@ -175,6 +175,10 @@
 
 <script type="text/javascript">
 
+
+
+
+
 	//Ask for permission..
 	if (Notification.permission !== "granted") {
 		var permission = Notification.requestPermission();
@@ -193,6 +197,7 @@
 
 	//Hide the Money
 	showDiv('sendmoney',false);
+
 
 	//Which mode are we in..
 	if(window.innerWidth > 800){
@@ -214,9 +219,18 @@
 
 	//Initialise MiFi
 	MDS.init(function(msg){
-		//MDS.log(JSON.stringify(msg));
+
+
+
+			//MDS.log(JSON.stringify(msg));
 
 		if(msg.event == "inited"){
+
+			/************** This Section launch the runAPITracker **********/
+			runAPITracker();
+			/************** This Section launch the runAPITracker **********/
+
+
 
 			//Get My name
 			MDS.cmd("maxima",function(result){
@@ -318,6 +332,8 @@
 
 		}
 	});
+
+
 
 </script>
 
