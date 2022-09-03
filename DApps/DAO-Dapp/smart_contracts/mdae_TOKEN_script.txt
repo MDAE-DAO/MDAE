@@ -119,8 +119,26 @@ Procedure:
           background services to ask and deliver that information directly to the Advertiser with a fraction of a minima with all
           info set as state variables. (this is a proof of concept, on a real system, Omnia could be used to transfer This
           information on a batch of tokens sent, as it can be very large amount of data, Maxima could also be considered, but it has problems too, but
-          the must common aproach is to use an external service to deliver that data)
+          the must common aproach is to use an external service to deliver that data).
 
+          There is a real possibility to use Maxima, as in this case it makes sense as there can be a lot of information to be
+          transfered from SQL resuts of DAO background service.
+          In that case, we can establish some kind of handshake protocol to transmit the MAXIMA contact between
+          the Advertiser User and the DAO using the same system descrived earlier with state variables.
+          Flow of Events:
+            - Advertiser send a fraction of a minima to the DAO setting some state variables on it.
+              - ** State 0 ** : [Data_query_advertiser] The advertiser tells DAO he wants some data.
+              - ** State 1-5 ** : [data1, data2, data2....] a list of data the advertiser wants (topic, users, dapps,)
+              - ** State 6-10** : [Maxima data contact] The Advertiser's Maxima contact splitted into several state vars if the size of it
+                overflows the size of one state variable.
+            - The DAO get the MAXIMA's contact of the advertiser and sets his contact.
+            - The DAO send a MAXIMA message to Advertiser [Confirm connection] and waits for the answer of ADVERTISER
+            - The DAO receives MAXIMA message [connection established] from Advertiser.
+            - The DAO gets all data requestes by the Advertiser and encapsulate it on a JSON object and send the
+              JSON object over maxima.
+            - The Advertiser receives over MAXIMA the JSON object with the data requested.
+            - The Advertiser uses that information to configure the Tokens for his advertisng campaign.
+            
       -API tracker:
           It is a simple javascript, that the DAPPS that want to show token's publicity on the DAPP must include,
           the API when the app started for first time, uses the hardcoded developers address and ask for the user's wallet
