@@ -7,25 +7,34 @@ body {
 	src: url('./Manrope-Regular.ttf');
 }
 
+.advertiser{
+  padding: 8px 8px;
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+  width: 50%;
+  position:relative;
+}
+
 .sidebartable {
-	
+
 		border: 1px solid #EDEDED;
   	border-radius: 8px;
   	padding: 8px 8px;
-  	
-  	position:absolute;
+
+  	position:relative;
 		top:0;
 		bottom:0;
-		left: 0; 
-  	right: 0; 
+		left: 0;
+  	right: 0;
   	margin-top: auto;
   	margin-bottom: auto;
-  	margin-left: auto; 
+  	margin-left: auto;
   	margin-right: auto;
   	z-index:0;
   	width:80%;
   	height:80%;
-  
+
 }
 
 .nosidebartable {
@@ -46,7 +55,7 @@ body {
 .sidebarroom {
     border: 0.5px solid #EDEDED;
   	border-radius: 8px;
-  	
+
   	width:100%;
   	height:40px;
 		padding: 8px;
@@ -64,7 +73,7 @@ body {
   	padding: 8px 8px;
   	vertical-align:top;
   	font-size: 14px;
-  	
+
 }
 
 .chatwindow{
@@ -72,7 +81,7 @@ body {
 	height:100%;
 	vertical-align:top;
 	overflow-y: auto;
-	word-break: break-word;	
+	word-break: break-word;
 }
 
 .chatline{
@@ -131,12 +140,12 @@ body {
 		position:absolute;
 		top:0;
 		bottom:0;
-		left: 0; 
-  	right: 0; 
+		left: 0;
+  	right: 0;
   	margin-top: auto;
   	margin-bottom: auto;
-  	margin-left: auto; 
-  	margin-right: auto; 
+  	margin-left: auto;
+  	margin-right: auto;
     background-color: #fff;
     border: 0.5px solid #EDEDED;
   	border-radius: 10px;

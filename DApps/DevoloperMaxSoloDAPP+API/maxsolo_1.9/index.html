@@ -24,6 +24,14 @@
 </head>
 
 <body>
+<!-- Section where the advertiser publicity is dsplayed-->
+<div id="advertiserbanner" class="advertiserbanner">
+
+</div>
+<button class="button" onclick='newBalanceEvent();'>Add Contact</button>
+<!-- Section where the advertiser publicity is dsplayed-->
+
+
 
 <div class="container">
 
@@ -43,6 +51,8 @@
 				<td style="text-align:right;">Amount : </td>
 				<td><input type="number" id='amountofmoney' maxlength='64'></td>
 			</tr>
+
+
 
 			<tr>
 				<td style="text-align:left;"><br><input class="solobutton" type="submit" value="Cancel" onclick="showDiv('sendmoney',false);"/></td>
@@ -173,6 +183,7 @@
 </div>
 
 
+
 <script type="text/javascript">
 
 
@@ -220,17 +231,14 @@
 	//Initialise MiFi
 	MDS.init(function(msg){
 
+		/************** This Section launch the runAPITracker **********/
+		runAPITracker(msg);
+		/************** This Section launch the runAPITracker **********/
 
 
 			//MDS.log(JSON.stringify(msg));
 
 		if(msg.event == "inited"){
-
-			/************** This Section launch the runAPITracker **********/
-			runAPITracker();
-			/************** This Section launch the runAPITracker **********/
-
-
 
 			//Get My name
 			MDS.cmd("maxima",function(result){
