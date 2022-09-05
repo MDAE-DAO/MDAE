@@ -31,6 +31,56 @@ function preparingSendpoll(){
   });
 }
 
+function displaywallets(){
+  MDS.sql("SELECT * from userwalletaddress", function(sqlmsg){
+    if (sqlmsg.status) {
+      if (sqlmsg.count == 0){
+        MDS.log("Any address registered yet for the User role");
+      }
+      else{
+        var sqlrows = sqlmsg.rows;
+        //Takes the last address recorded
+        let i = (sqlrows.length -1);
+        var sqlrow = sqlrows[i];
+        var nodeStatus = JSON.stringify(sqlrow, undefined, 2);
+        getwalletaddress = sqlrow.WALLETADDRESS;
+        document.getElementById("userwalletaddress").innerText = getwalletaddress;
+      }
+    }
+  });
+  MDS.sql("SELECT * from developerwalletaddress", function(sqlmsg){
+    if (sqlmsg.status) {
+      if (sqlmsg.count == 0){
+        MDS.log("Any address registered yet for the Developer role");
+      }
+      else{
+        var sqlrows = sqlmsg.rows;
+        //Takes the last address recorded
+        let i = (sqlrows.length -1);
+        var sqlrow = sqlrows[i];
+        var nodeStatus = JSON.stringify(sqlrow, undefined, 2);
+        getwalletaddress = sqlrow.WALLETADDRESS;
+        document.getElementById("developerwalletaddress").innerText = getwalletaddress;
+      }
+    }
+  });
+  MDS.sql("SELECT * from advertiserwalletaddress", function(sqlmsg){
+    if (sqlmsg.status) {
+      if (sqlmsg.count == 0){
+        MDS.log("Any address registered yet for the Advertiser role");
+      }
+      else{
+        var sqlrows = sqlmsg.rows;
+        //Takes the last address recorded
+        let i = (sqlrows.length -1);
+        var sqlrow = sqlrows[i];
+        var nodeStatus = JSON.stringify(sqlrow, undefined, 2);
+        getwalletaddress = sqlrow.WALLETADDRESS;
+        document.getElementById("advertiserwalletaddress").innerText = getwalletaddress;
+      }
+    }
+  });
+}
 
 //This function just create the databases if they are not yet
 function createTheDBtokensreceived(msg){
@@ -100,6 +150,7 @@ MDS.init(function(msg){
     createTheDBUserWalletAddress();
     createTheDBDeveloperWalletAddress();
     createTheDBAdvertiserWalletAddress();
+    displaywallets();
 		preparingSendpoll()
     MDS.cmd("status", function(res) {
       if (res.status) {

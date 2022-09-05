@@ -3,7 +3,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <script type="text/javascript" src="js/mds.js"></script>
     <script type="text/javascript" src="js/service.js"></script>
-    <script type="text/javascript" src="js/traker.js"></script>
+    <script type="text/javascript" src="js/tracker.js"></script>
     <link rel="icon" type="image/x-icon" href="images/favicon.ico">
     <link rel="stylesheet" href="css/styles.css">
     <meta charset="utf-8">
@@ -151,18 +151,18 @@
         </tr>
       </table>
       <br>
-      <button class="button" onclick='datarole="user"; processData(datarole);'>Set User Wallet Profile</button>
-      <button class="button" onclick='datarole="developer"; setDeveloperProfile(datarole);'>Set Developer Profile</button>
-      <button class="button" onclick='datarole="advertiser"; setAdvertiserProfile(datarole);'>Set Advertiser Profile</button>
+      <button class="button" onclick='datarole="user"; processProfile(datarole);'>Set User Wallet Profile</button>
+      <button class="button" onclick='datarole="developer"; processProfile(datarole);'>Set Developer Profile</button>
+      <button class="button" onclick='datarole="advertiser"; processProfile(datarole);'>Set Advertiser Profile</button>
     </div>
     <div class="Box WalletSection">
       <h2>WALLETS SECTION</h2>
       <p class="statusdata">Current User Wallet Address: <span style="font-size: 0.8em;" class="maindata" id="userwalletaddress"></span></p>
       <p class="statusdata">Current Developer Wallet Address: <span style="font-size: 0.8em;" class="maindata" id="developerwalletaddress"></span></p>
-      <p class="statusdata">Current Advertiser Wallet Address: <span style="font-size: 0.8em;" class="maindata" id="advertiserwalletaddres"></span></p>
-      <button class="button" onclick='setUserWalletAddress();'>Set User Wallet Address</button>
-      <button class="button" onclick='setDeveloperWalletAddress();'>Set Developer Wallet Address</button>
-      <button class="button" onclick='setAdvertiserWalletAddress();'>Set Advertiser Wallet Address</button>
+      <p class="statusdata">Current Advertiser Wallet Address: <span style="font-size: 0.8em;" class="maindata" id="advertiserwalletaddress"></span></p>
+      <button class="button" onclick='datarole="user"; processWallet(datarole);'>Set User Wallet Address</button>
+      <button class="button" onclick='datarole="developer"; processWallet(datarole);'>Set Developer Wallet Address</button>
+      <button class="button" onclick='datarole="advertiser"; processWallet(datarole);'>Set Advertiser Wallet Address</button>
     </div>
     <div class="Box WalletSection">
       <h2>DIRECT PUBLICITY SECTION</h2>
@@ -190,7 +190,6 @@
       //Initialise the dongles and data
       Getcontacts();
       GetTokens();
-      mainWalletAddress();
       //Send the Contacts available to the dongles
       function Getcontacts() {
         MDS.cmd("maxcontacts", function(result) {
