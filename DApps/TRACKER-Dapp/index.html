@@ -3,7 +3,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <script type="text/javascript" src="js/mds.js"></script>
     <script type="text/javascript" src="js/service.js"></script>
-    <script type="text/javascript" src="js/dao.js"></script>
+    <script type="text/javascript" src="js/traker.js"></script>
     <link rel="icon" type="image/x-icon" href="images/favicon.ico">
     <link rel="stylesheet" href="css/styles.css">
     <meta charset="utf-8">
@@ -14,7 +14,6 @@
     <p class="statusdata">Maxima User Name: <span class="maindata" id="maximacontactname"></span></p>
     <p class="statusdata">Current Node Version: <span class="maindata" id="version"></span></p>
     <p class="statusdata">Current Blockchain Time: <span class="maindata" id="blockchaintime"></span></p>
-    <p class="statusdata">Current Wallet Address: <span style="font-size: 0.8em;" class="maindata" id="walletaddress"></span></p>
     <div class="wrapper">
       <div class="INF contacts">
         <h2>MAXIMA CONTACTS</h2>
@@ -72,22 +71,33 @@
       <button type="button" id="buybutton" class="Button" onclick="sendTokens();">Send Tokens</button>
       </div>
       <div class="INF Tokencreate">
-        <h2>LIST OF DAO DAAP'S </h2>
-          <p>Fill in the fiels and create any Token.</p>
+        <h2>LIST OF MDAE DAPP'S </h2>
           <table style="color:#FFF; border=0;">
+            <tr>
+      				<td style="color:#FFF; text-align:right;">As a: </td>
+              <td style="margin:5px;">
+                <select id="role">
+                  <option value="user">User</option>
+                  <option value="developer">Developer</option>
+                  <option value="advertiser">Advertiser</option>
+                </select>
+              </td>
+      			</tr>
             <tr>
       				<td style="color:#FFF; text-align:right;">Dapp's List: </td>
               <td><select id="daoapps" onchange="daodapslist();"></td>
       			</tr>
             <tr>
-              <td style="text-align:right;">Token: </td>
-              <td><input type="number" id="toeknacumulated" maxlength="64"></td>
+              <td style="text-align:right;">Earned Token: </td>
+              <td><span id="earnedtoken"></span></td>
             </tr>
             <tr>
-              <td style="text-align:right;">Amount accumulated: </td>
-              <td><input type="number" id="amountacumulated" maxlength="64"></td>
+              <td style="text-align:right;">Amount Accumulated: </td>
+              <td><span id="amountacumulated"></span></td>
             </tr>
 		      </table>
+          <br>
+          <button type="button" class="Button" onclick="addDapp();">Add Dapp</button>
       </div>
       <div class="INF Tokenminima">
         <h2>MINIMA TOKEN BALANCE</h2>
@@ -114,15 +124,56 @@
         <p>Total Token's Amount: <span id="Total"></span></p>
       </div>
     </div>
+    <div class="Box WalletSection">
+      <h2>PROFILE SECTION</h2>
+      <table style="color:#FFF; border=0;">
+        <tr>
+          <td style="color:#FFF; text-align:right;">Select a Profile: </td>
+          <td style="margin:5px;">
+            <select id="role">
+              <option value="user">User</option>
+              <option value="developer">Developer</option>
+              <option value="advertiser">Advertiser</option>
+            </select>
+          </td>
+        </tr>
+        <tr>
+          <td style="color:#FFF; text-align:right;">Dapp's List: </td>
+          <td><select id="daoapps" onchange="daodapslist();"></td>
+        </tr>
+        <tr>
+          <td style="text-align:right;">Topics of Interest: </td>
+          <td><span id="earnedtoken"></span></td>
+        </tr>
+        <tr>
+          <td style="text-align:right;">Amount Accumulated: </td>
+          <td><span id="amountacumulated"></span></td>
+        </tr>
+      </table>
+      <br>
+      <button class="button" onclick='setUserProfile();'>Set User Wallet Profile</button>
+      <button class="button" onclick='setDeveloperProfile();'>Set Developer Profile</button>
+      <button class="button" onclick='setAdvertiserProfile();'>Set Advertiser Profile</button>
+    </div>
+    <div class="Box WalletSection">
+      <h2>WALLETS SECTION</h2>
+      <p class="statusdata">Current User Wallet Address: <span style="font-size: 0.8em;" class="maindata" id="walletaddress"></span></p>
+      <p class="statusdata">Current Developer Wallet Address: <span style="font-size: 0.8em;" class="maindata" id="walletaddressdeveloper"></span></p>
+      <p class="statusdata">Current Advertiser Wallet Address: <span style="font-size: 0.8em;" class="maindata" id="walletaddressadvertiser"></span></p>
+      <button class="button" onclick='setUserWalletAddress();'>Set User Wallet Address</button>
+      <button class="button" onclick='setDeveloperWalletAddress();'>Set Developer Wallet Address</button>
+      <button class="button" onclick='setAdvertiserWalletAddress();'>Set Advertiser Wallet Address</button>
+    </div>
+    <div class="Box WalletSection">
+      <h2>DIRECT PUBLICITY SECTION</h2>
+    </div>
     <div class="Box Statussection">
       <h2>STATUS AND TOOLS SECTION</h2>
+      <button class="button" onclick='contact();'>Maxima</button>
+      <button class="button" onclick='setMaximaName();'>Set Maxima Name</button>
       <button class="button" onclick='newAddress();'>New Address</button>
       <button class="button" onclick='getAddress();'>Get Address</button>
       <button class="button" onclick='coins();'>Coins</button>
-      <button class="button" onclick='mainWalletAddress();'>Show DAO Wallet Address</button>
-      <button class="button" onclick='setDAOWalletAddress();'>Set DAO Wallet Address</button>
-      <button class="button" onclick='contact();'>Maxima</button>
-      <button class="button" onclick='setMaximaName();'>Set Maxima Name</button>
       <button class="button" onclick='listtokensreceivedDB();'>List DB Transactions</button>
       <pre id="status-object"></pre>
       <div class="visualconsole"></div>
