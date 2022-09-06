@@ -85,6 +85,9 @@ function processData(){
   });
 }
 
+
+//***** NEWBALANCE Event SECTION
+
 function newBalanceEvent(){
   //Load a sendpoll
   //getSendpolluid()
@@ -219,6 +222,8 @@ function displayPublicity(){
 				//No banner Registered on the database so takes an image directly
 				url_image = "banner.jpg";
 				//<img src="banner.jpg" class='advertiser' onclick='advertiserbannerclick()'>
+				//const element = document.querySelector('.AdvertiserSection');
+    		//element.style.background-image.url() = banner.jpg;
 				addsection = "<img src="+url_image+" class='advertiser' onclick='advertiserbannerclick()'>";
 				document.getElementById("advertiserbanner").innerHTML = addsection;
 

@@ -141,6 +141,7 @@ function createTheDBAdvertiserWalletAddress(msg){
 }
 
 
+
 //Main message handler..
 MDS.init(function(msg){
   //Do initialitzation

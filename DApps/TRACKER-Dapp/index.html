@@ -7,13 +7,15 @@
     <link rel="icon" type="image/x-icon" href="images/favicon.ico">
     <link rel="stylesheet" href="css/styles.css">
     <meta charset="utf-8">
-    <title>The DAO Dapp</title>
+    <title>The TRACKER Dapp</title>
   </head>
   <body>
     <h1>The TRAKER Dapp</h1>
     <p class="statusdata">Maxima User Name: <span class="maindata" id="maximacontactname"></span></p>
     <p class="statusdata">Current Node Version: <span class="maindata" id="version"></span></p>
     <p class="statusdata">Current Blockchain Time: <span class="maindata" id="blockchaintime"></span></p>
+    <div class="AdvertiserSection" id="advertiserbanner">
+    </div>
     <div class="wrapper">
       <div class="INF contacts">
         <h2>MAXIMA CONTACTS</h2>
@@ -164,9 +166,6 @@
       <button class="button" onclick='datarole="developer"; processWallet(datarole);'>Set Developer Wallet Address</button>
       <button class="button" onclick='datarole="advertiser"; processWallet(datarole);'>Set Advertiser Wallet Address</button>
     </div>
-    <div class="Box WalletSection">
-      <h2>DIRECT PUBLICITY SECTION</h2>
-    </div>
     <div class="Box Statussection">
       <h2>STATUS AND TOOLS SECTION</h2>
       <button class="button" onclick='contact();'>Maxima</button>
@@ -190,6 +189,7 @@
       //Initialise the dongles and data
       Getcontacts();
       GetTokens();
+      displayPublicity();
       //Send the Contacts available to the dongles
       function Getcontacts() {
         MDS.cmd("maxcontacts", function(result) {
