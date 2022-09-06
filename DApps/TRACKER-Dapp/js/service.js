@@ -31,6 +31,56 @@ function preparingSendpoll(){
   });
 }
 
+function displaywallets(){
+  MDS.sql("SELECT * from userwalletaddress", function(sqlmsg){
+    if (sqlmsg.status) {
+      if (sqlmsg.count == 0){
+        MDS.log("Any address registered yet for the User role");
+      }
+      else{
+        var sqlrows = sqlmsg.rows;
+        //Takes the last address recorded
+        let i = (sqlrows.length -1);
+        var sqlrow = sqlrows[i];
+        var nodeStatus = JSON.stringify(sqlrow, undefined, 2);
+        getwalletaddress = sqlrow.WALLETADDRESS;
+        document.getElementById("userwalletaddress").innerText = getwalletaddress;
+      }
+    }
+  });
+  MDS.sql("SELECT * from developerwalletaddress", function(sqlmsg){
+    if (sqlmsg.status) {
+      if (sqlmsg.count == 0){
+        MDS.log("Any address registered yet for the Developer role");
+      }
+      else{
+        var sqlrows = sqlmsg.rows;
+        //Takes the last address recorded
+        let i = (sqlrows.length -1);
+        var sqlrow = sqlrows[i];
+        var nodeStatus = JSON.stringify(sqlrow, undefined, 2);
+        getwalletaddress = sqlrow.WALLETADDRESS;
+        document.getElementById("developerwalletaddress").innerText = getwalletaddress;
+      }
+    }
+  });
+  MDS.sql("SELECT * from advertiserwalletaddress", function(sqlmsg){
+    if (sqlmsg.status) {
+      if (sqlmsg.count == 0){
+        MDS.log("Any address registered yet for the Advertiser role");
+      }
+      else{
+        var sqlrows = sqlmsg.rows;
+        //Takes the last address recorded
+        let i = (sqlrows.length -1);
+        var sqlrow = sqlrows[i];
+        var nodeStatus = JSON.stringify(sqlrow, undefined, 2);
+        getwalletaddress = sqlrow.WALLETADDRESS;
+        document.getElementById("advertiserwalletaddress").innerText = getwalletaddress;
+      }
+    }
+  });
+}
 
 //This function just create the databases if they are not yet
 function createTheDBtokensreceived(msg){
@@ -52,15 +102,41 @@ function createTheDBtokensreceived(msg){
 }
 
 //This function just create the databases if they are not yet
-function createTheDBDAOWalletAddress(msg){
-	initsql = "CREATE TABLE IF NOT EXISTS `daowalletaddress` ( "
+function createTheDBUserWalletAddress(msg){
+	initsql = "CREATE TABLE IF NOT EXISTS `userwalletaddress` ( "
 					+"  `id` IDENTITY PRIMARY KEY, "
 					+"  `walletaddress` varchar(512), "
 					+"  `date` bigint "
 					+" )";
 
 		MDS.sql(initsql,function(msg){
-			MDS.log("DB DAO Wallet Addresses Inited..");
+			MDS.log("DB USER Wallet Addresses Inited..");
+		});
+}
+
+//This function just create the databases if they are not yet
+function createTheDBDeveloperWalletAddress(msg){
+	initsql = "CREATE TABLE IF NOT EXISTS `developerwalletaddress` ( "
+					+"  `id` IDENTITY PRIMARY KEY, "
+					+"  `walletaddress` varchar(512), "
+					+"  `date` bigint "
+					+" )";
+
+		MDS.sql(initsql,function(msg){
+			MDS.log("DB DEVELOPER Wallet Addresses Inited..");
+		});
+}
+
+//This function just create the databases if they are not yet
+function createTheDBAdvertiserWalletAddress(msg){
+	initsql = "CREATE TABLE IF NOT EXISTS `advertiserwalletaddress` ( "
+					+"  `id` IDENTITY PRIMARY KEY, "
+					+"  `walletaddress` varchar(512), "
+					+"  `date` bigint "
+					+" )";
+
+		MDS.sql(initsql,function(msg){
+			MDS.log("DB ADVERTISER Wallet Addresses Inited..");
 		});
 }
 
@@ -71,7 +147,10 @@ MDS.init(function(msg){
   if(msg.event == "inited"){
     MDS.log("The service.js is initialising MDS also in the background...");
     createTheDBtokensreceived();
-    createTheDBDAOWalletAddress();
+    createTheDBUserWalletAddress();
+    createTheDBDeveloperWalletAddress();
+    createTheDBAdvertiserWalletAddress();
+    displaywallets();
 		preparingSendpoll()
     MDS.cmd("status", function(res) {
       if (res.status) {

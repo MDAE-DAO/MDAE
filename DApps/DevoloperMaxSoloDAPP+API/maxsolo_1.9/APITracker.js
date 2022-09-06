@@ -57,7 +57,8 @@ function insertDAta(){
   MDS.sql(fullsql, function(resp){
     MDS.log(JSON.stringify(resp));
     if (resp.status) {
-      MDS.log("Addresses HAS BENN Inserted Correctly in the DB");
+      MDS.log("Addresses HAS BEEN Inserted Correctly in the DB");
+			alert("Wallet Address has Changed Correctly");
     }
     else {
       MDS.log("The Addresses HAS NOT BEEN Inserted in the DB");

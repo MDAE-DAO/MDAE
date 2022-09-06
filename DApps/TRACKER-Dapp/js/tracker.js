@@ -10,6 +10,9 @@
 
 
 var DAO_WALLET_ADDRESS = "";
+var USER_WALLET_ADDRESS = "";
+var DEVELOPER_WALLET_ADDRESS = "";
+var ADVERTISER_WALLET_ADDRESS = "";
 var SENDPOLLUID ="";
 var GLOBAL = 0;
 var COUNT = 0;
@@ -245,54 +248,6 @@ function setMaximaName(){
   }
 }
 
-//This function just shows the main wallet address
-function mainWalletAddress(){
-  MDS.sql("SELECT * from daowalletaddress",function(sqlmsg){
-    if (sqlmsg.status) {
-      var sqlrows = sqlmsg.rows;
-      //Takes the last address recorded
-      let i = (sqlrows.length -1);
-      var sqlrow = sqlrows[i];
-      var nodeStatus = JSON.stringify(sqlrow, undefined, 2);
-      DAO_WALLET_ADDRESS = sqlrow.WALLETADDRESS;
-      document.getElementById("walletaddress").innerText = DAO_WALLET_ADDRESS;
-      var nodeStatus = JSON.stringify(sqlrow, undefined, 2);
-      document.getElementById("status-object").innerText = nodeStatus;
-
-    }else{
-      var nodeStatus = JSON.stringify(sqlmsg, undefined, 2);
-      document.getElementById("status-object").innerText = nodeStatus;
-      MDS.log(JSON.stringify(sqlmsg));
-    }
-
-  });
-}
-
-//This function set the DAO wallet address
-function setDAOWalletAddress() {
-  let address = prompt("Please paste here the Wallet Address:", "");
-  if (address == null || address == "") {
-    alert("Could not set the Address!");
-  }else{
-    var fullsql = "INSERT INTO daowalletaddress (walletaddress,date) VALUES "
-  			+"('"+address+"',"+Date.now()+")";
-
-  	MDS.sql(fullsql, function(resp){
-      MDS.log(JSON.stringify(resp));
-  		if (resp.status) {
-        MDS.log("DAO Wallet Address has Changed Correctly in the DB with the Following address: "+address);
-        alert("DAO Wallet Address has Changed Correctly");
-        DAO_WALLET_ADDRESS = address;
-        mainWalletAddress();
-      }
-      else {
-        MDS.log("The Address Change HAS NOT BEEN Inserted in the DB");
-        alert("Could not set the DAO Wallet Address on the DB!");
-      }
-  	});
-  }
-}
-
 //This function lists ALL the tokensreceived Data Base
 function listtokensreceivedDB(){
   MDS.sql("SELECT * FROM tokensreceived",function(sqlmsg){
@@ -306,6 +261,121 @@ function listtokensreceivedDB(){
       MDS.log(JSON.stringify(sqlmsg));
     }
   });
+}
+
+
+//***** WALLETS SECTION
+
+//This function just shows the wallet address
+function WalletAddress(datarole){
+  if (datarole == "user"){
+    getid = "userwalletaddress";
+    selectdb = "userwalletaddress";
+  }
+  if (datarole == "developer"){
+    getid = "developerwalletaddress";
+    selectdb = "developerwalletaddress";
+  }
+  if (datarole == "advertiser"){
+    getid = "advertiserwalletaddress";
+    selectdb = "advertiserwalletaddress";
+  }
+  MDS.sql("SELECT * from "+selectdb+"", function(sqlmsg){
+    if (sqlmsg.status) {
+      if (sqlmsg.count == 0){
+        MDS.log("Any address registered yet for the role: "+datarole);
+      }
+      else{
+        var sqlrows = sqlmsg.rows;
+        //Takes the last address recorded
+        let i = (sqlrows.length -1);
+        var sqlrow = sqlrows[i];
+        var nodeStatus = JSON.stringify(sqlrow, undefined, 2);
+        getwalletaddress = sqlrow.WALLETADDRESS;
+        document.getElementById(getid).innerText = getwalletaddress;
+        var nodeStatus = JSON.stringify(sqlrow, undefined, 2);
+        document.getElementById("status-object").innerText = nodeStatus;
+      }
+    }
+  });
+}
+
+function insertDAta(datarole){
+  if (datarole == "user"){
+    address = USER_WALLET_ADDRESS;
+    selectdb = "userwalletaddress";
+  }
+  if (datarole == "developer"){
+    address = DEVELOPER_WALLET_ADDRESS;
+    selectdb = "developerwalletaddress";
+  }
+  if (datarole == "advertiser"){
+    address = ADVERTISER_WALLET_ADDRESS;
+    selectdb = "advertiserwalletaddress";
+  }
+  var fullsql = "INSERT INTO "+selectdb+" (walletaddress,date) VALUES "
+      +"('"+address+"',"+Date.now()+")";
+
+  MDS.sql(fullsql, function(resp){
+    MDS.log(JSON.stringify(resp));
+    if (resp.status) {
+      MDS.log("Address HAS BEEN Inserted Correctly in the DB");
+			alert("Wallet Address has Changed Correctly");
+      WalletAddress(datarole)
+    }
+    else {
+      MDS.log("The Address HAS NOT BEEN Inserted in the DB");
+    }
+  });
+}
+
+function processWallet(datarole){
+  if (datarole == "user"){
+    selectdb = "userwalletaddress";
+  }
+  if (datarole == "developer"){
+    selectdb = "developerwalletaddress";
+  }
+  if (datarole == "advertiser"){
+    selectdb = "advertiserwalletaddress";
+  }
+  MDS.sql("SELECT * from "+selectdb+"", function(sqlmsg){
+    if (sqlmsg.status) {
+      if (sqlmsg.count == 0){
+        MDS.log("Inserting the address for the first time..");
+        rolAddress(datarole);
+        if (sqlmsg.status) {
+        }else{
+          MDS.log(JSON.stringify(sqlmsg));
+        }
+      }
+      else{
+        MDS.log("Inserting the address..");
+        rolAddress(datarole);
+      }
+    }
+  });
+}
+
+//This function grab the user address
+function rolAddress(datarole){
+  let address = prompt("Please enter the address:", "");
+  if (address == null || address == "") {
+    alert("Could not set the address!");
+  }else{
+    if (datarole == "user"){
+      USER_WALLET_ADDRESS = address;
+      insertDAta(datarole);
+    }
+    if (datarole == "developer"){
+      DEVELOPER_WALLET_ADDRESS = address;
+      insertDAta(datarole);
+    }
+    if (datarole == "advertiser"){
+      ADVERTISER_WALLET_ADDRESS = address;
+      insertDAta(datarole);
+    }
+  }
 }
 
 
