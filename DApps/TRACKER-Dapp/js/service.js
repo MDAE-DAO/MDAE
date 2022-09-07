@@ -84,15 +84,14 @@ function displaywallets(){
 
 //This function just create the databases if they are not yet
 function createTheDBtokensreceived(msg){
-	initsql = "CREATE TABLE IF NOT EXISTS `tokensreceived` ( "
+  initsql = "CREATE TABLE IF NOT EXISTS `tokensreceived` ( "
 					+"  `id` IDENTITY PRIMARY KEY, "
 					+"  `coinidreceived` varchar(512), "
 					+"  `amountreceived` int, "
-					+"  `operation` varchar(64), "
-					+"  `clientwalletaddress` varchar(512), "
-					+"  `clienttokenid` varchar(512), "
-					+"  `clientamountdesired` int, "
-					+"  `trxdone` int, "
+					+"  `typeofuser` varchar(64), "
+					+"  `advertiseraddress` varchar(512), "
+					+"  `urlimage` varchar(64), "
+					+"  `urltext` varchar(64), "
 					+"  `date` bigint "
 					+" )";
 

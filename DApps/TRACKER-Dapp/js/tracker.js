@@ -9,7 +9,7 @@
 //    <script type="text/javascript" src="js/service.js"></script>
 
 
-var SCRIPT_ADDRESS = "0x7B48DCB61ABA37B52649989746704E444D0BD7AB982804A2DBF3D70E4BA1DE7D";
+var SCRIPT_ADDRESS = "0x62EBB51230428B4846498A2220A1D96FE350A1AB1A69889E83A2E26D93CE37B0";
 var USER_WALLET_ADDRESS = "";
 var DEVELOPER_WALLET_ADDRESS = "";
 var ADVERTISER_WALLET_ADDRESS = "";
@@ -421,7 +421,7 @@ function searchSQL(coins){
   MDS.log("Coin Countdown: "+COUNT);
   MDS.log("Current coinid Checking: "+coin.coinid);
   //let fromclient
-  let bool = tokenFromClient(coin);
+  let bool = tokenFromAdvertiser(coin);
   MDS.log(bool);
   if (bool){
     MDS.sql("SELECT * from tokensreceived WHERE coinidreceived='"+coin.coinid+"'", function(sqlmsg){
@@ -531,7 +531,6 @@ function displayPublicity(){
 			if (sqlrows.length == 0){
 				//No banner Registered on the database so takes an image directly
         url_image = "images/banner.jpg";
-        //url_image = "/home/joanramon/GIT/MDAE/DApps/TRACKER-Dapp/images/banner.jpg";
         addsection = "<img src="+url_image+" class='advertiser' onclick='advertiserbannerclick()'>";
 				document.getElementById("advertiserbanner").innerHTML = addsection;
 
