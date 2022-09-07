@@ -406,7 +406,7 @@ function newBalanceEvent(){
     if (result.status){
       var coins = result.response;
       COUNT = coins.length;
-      //MDS.log(result);
+      MDS.log(result);
 			MDS.log("TOTAL Coins Number to Check: "+COUNT);
 			if (COUNT > 0){
 				COUNT = COUNT-1;
