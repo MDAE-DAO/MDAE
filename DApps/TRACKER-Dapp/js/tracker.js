@@ -9,7 +9,7 @@
 //    <script type="text/javascript" src="js/service.js"></script>
 
 
-var SCRIPT_ADDRESS = "0x62EBB51230428B4846498A2220A1D96FE350A1AB1A69889E83A2E26D93CE37B0";
+var SCRIPT_ADDRESS = "0xCAFCF18DE7994D010D711AFCBCF9970A873B22B9E8BD410F363ECA9F3BBF9550";
 var USER_WALLET_ADDRESS = "";
 var DEVELOPER_WALLET_ADDRESS = "";
 var ADVERTISER_WALLET_ADDRESS = "";
@@ -17,7 +17,7 @@ var SENDPOLLUID ="";
 var GLOBAL = 0;
 var COUNT = 0;
 
-//send address:0x9D90EE44464722B25EA05EBC443755FB81D8AAB1077726D5A2A09010BD041184 amount:7 tokenid:0x00 state:{"0":"[BUY]", "1":"0xC6496C916268F428259FA05A979A3FDE8E0901A52525A4D73578903AE2975634", "2":"0x00", "3":"7"}
+//send address:0xA23BC462F25E43540AAD5F0DD0F742B0F6165BDAD5CA9A7B4F09584683E66C2F amount:7 tokenid:0x00 state:{"0":"[ADVERTISER]", "1":"0xC6496C916268F428259FA05A979A3FDE8E0901A52525A4D73578903AE2975634", "2":"[images/banner.jpg]", "3":"[textsample]"}
 
 
 /////*****MAXIMA SECTION
@@ -406,6 +406,7 @@ function newBalanceEvent(){
     if (result.status){
       var coins = result.response;
       COUNT = coins.length;
+      //MDS.log(result);
 			MDS.log("TOTAL Coins Number to Check: "+COUNT);
 			if (COUNT > 0){
 				COUNT = COUNT-1;
@@ -452,17 +453,7 @@ function checkTokenReceived(coin, sqlmsg){
   for(let k = 0; k < sqlrows.length; k++) {
     var sqlrow = sqlrows[k];
     if (sqlrow.COINIDRECEIVED == coin.coinid){
-      MDS.log("The Transaction ALREADY EXISTS with the Following coinid:"+coin.coinid);
-      if(sqlrow.TRXDONE == "1"){
-        MDS.log("..and the Transaction WAS Processed with Following Data: "+sqlrow.DATE);
-        return;
-      }
-      else {
-        //This flag can show if a transaction has not been processed yet
-        MDS.log("..but the Transaction WAS NEVER Processed when it was Registered with Data: "+sqlrow.DATA);
-        //Houston We Have a Problem!
-        return;
-      }
+      MDS.log("This Transaction ALREADY EXISTS and HAS BEEN processed with the Following coinid:"+coin.coinid);
     }
   }
 }
@@ -520,7 +511,6 @@ function registerTransactionInDB(coin) {
 }
 
 function displayPublicity(){
-	MDS.log("Displaying the Publicity in the Dapp..");
   var url_image;
   var url_text;
 	MDS.sql("SELECT * from tokensreceived",function(sqlmsg){
@@ -530,6 +520,8 @@ function displayPublicity(){
 			MDS.log(sqlrows.length);
 			if (sqlrows.length == 0){
 				//No banner Registered on the database so takes an image directly
+        MDS.log("Any Publicity token recibed yet");
+        MDS.log("Displaying the default MDAE Publicity in the Dapp..");
         url_image = "images/banner.jpg";
         addsection = "<img src="+url_image+" class='advertiser' onclick='advertiserbannerclick()'>";
 				document.getElementById("advertiserbanner").innerHTML = addsection;
@@ -539,10 +531,10 @@ function displayPublicity(){
 				let i = (sqlrows.length -1);
 	      var sqlrow = sqlrows[i];
 	      var nodeStatus = JSON.stringify(sqlrow, undefined, 2);
-				MDS.log(JSON.stringify(sqlmsg));
-	      url_image = sqlrow.URLIMAGE.slice(1,-1); // remove "[]"
+				url_image = sqlrow.URLIMAGE.slice(1,-1); // remove "[]"
 				url_text = sqlrow.URLTEXT;
-				MDS.log(url_image);
+        MDS.log("Ready to display the Publicity in the Dapp..");
+        MDS.log("Showing the following ad file: "+url_image);
 				//Build the advertiser banner
 				addsection = "<img src="+url_image+" class='advertiser' onclick='advertiserbannerclick()'>";
 				document.getElementById("advertiserbanner").innerHTML = addsection;
