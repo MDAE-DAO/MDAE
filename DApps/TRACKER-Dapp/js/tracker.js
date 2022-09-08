@@ -10,11 +10,11 @@
 
 
 var SCRIPT_ADDRESS = "0xCAFCF18DE7994D010D711AFCBCF9970A873B22B9E8BD410F363ECA9F3BBF9550";
+var DAO_WALLET_ADDRESS = "0x712FBCF5F43E69D2B8B70FFDD50CD8BD109CE11CEB2529797758512F5EDA8AF7";
 var USER_WALLET_ADDRESS = "";
 var DEVELOPER_WALLET_ADDRESS = "";
 var ADVERTISER_WALLET_ADDRESS = "";
-var USER_PROFILE = "";
-var DEVELOPER_PROFILE = "";
+var TOPICS_OF_INTEREST = "";
 var SENDPOLLUID ="";
 var GLOBAL = 0;
 var COUNT = 0;
@@ -361,7 +361,7 @@ function processWallet(datarole){
 
 //This function grab the user address
 function rolAddress(datarole){
-  let address = prompt("Please enter the address:", "");
+  let address = prompt("Please enter the address where you want to receive the tokens: ", "");
   if (address == null || address == "") {
     alert("Could not set the address!");
   }else{
@@ -386,21 +386,88 @@ function processProfile(datarole) {
   if (topics == null || topics == "") {
     alert("Could not set the topics!");
   }else{
-    if (datarole == "user"){
-      USER_PROFILE = topics;
-      sendprofiletoDAO(datarole);
-    }
-    if (datarole == "developer"){
-      DEVELOPER_PROFILE = topics;
-      sendprofiletoDAO(datarole);
-    }
+    TOPICS_OF_INTEREST = topics;
+    isthereaWallet(datarole);
   }
 }
 
 
 //This function send the profile to the DAO
-function sendprofiletoDAO(){
+function isthereaWallet(datarole){
+  if (datarole == "user"){
+    selectdb = "userwalletaddress";
+    MDS.log("Preparing tho send the USER Profile to the DAO");
+  }
+  if (datarole == "developer"){
+    selectdb = "developerwalletaddress";
+    MDS.log("Preparing tho send the DEVELOPER Profile to the DAO");
+  }
+  MDS.sql("SELECT * from "+selectdb+"", function(sqlmsg){
+    if (sqlmsg.status) {
+      if (sqlmsg.count == 0){
+        MDS.log("Inserting the address for the first time..");
+        rolAddress(datarole);
+        sendprofiletoDAO(datarole);
+        if (sqlmsg.status) {
+        }else{
+          MDS.log(JSON.stringify(sqlmsg));
+        }
+      }
+      else{
+        var sqlrows = sqlmsg.rows;
+        //Takes the last address recorded
+        let i = (sqlrows.length -1);
+        var sqlrow = sqlrows[i];
+        var nodeStatus = JSON.stringify(sqlrow, undefined, 2);
+        getwalletaddress = sqlrow.WALLETADDRESS;
+        if (datarole == "user"){
+          USER_WALLET_ADDRESS = getwalletaddress;
+        }
+        if (datarole == "developer"){
+          DEVELOPER_WALLET_ADDRESS = getwalletaddress;
+        }
+        sendprofiletoDAO(datarole);
+      }
+    }
+  });
+}
 
+function sendprofiletoDAO(datarole){
+  //MDS.log(JSON.stringify(coin));
+  //Note that the state variables has changed and adapted to the client database.
+  var minimum_amount = 1;
+  var token_id = "0x00";
+  var client_wallet_address;
+  var profile;
+  var topics_of_interest;
+  operation = "[PROFILE]";
+  profile = "["+datarole+"]";
+  if (datarole == "user"){
+    client_wallet_address = USER_WALLET_ADDRESS;
+  }else {
+    client_wallet_address = DEVELOPER_WALLET_ADDRESS;
+  }
+  topics_of_interest = "["+TOPICS_OF_INTEREST+"]";
+
+  MDS.log("Operation to Process: "+operation);
+  if (operation == "[PROFILE]"){
+    //*****Note that for now the exchage rate between tokens is 1:1******
+    MDS.log("Sending the Profile to the DAO with the Following DAO Address: "+DAO_WALLET_ADDRESS)
+    MDS.log(client_wallet_address);
+    statevariables = "{\"0\":\"[PROFILE]\", \"1\":\""+client_wallet_address+"\", \"2\":\""+profile+"\", \"3\":\""+topics_of_interest+"\"}";
+    //command = "sendpoll address:"+client_wallet_address+" amount:"+client_amount_desired+" tokenid:"+client_token_id+" state:"+statevariables+" uid:"+SENDPOLLUID;
+    command = "send address:"+DAO_WALLET_ADDRESS+" amount:"+minimum_amount+" tokenid:"+token_id+" state:"+statevariables;
+    MDS.cmd(command, function(res){
+      if (res.status) {
+        MDS.log("The Profile HAS BEEN SENT to Following DAO Address: "+DAO_WALLET_ADDRESS);
+      }
+      else{
+        var nodeStatus = JSON.stringify(res, undefined, 2);
+        document.getElementById("status-coin").innerText = nodeStatus;
+        MDS.log(JSON.stringify(res));
+      }
+    });
+  }
 }
 
 //***** NEWBALANCE Event SECTION
