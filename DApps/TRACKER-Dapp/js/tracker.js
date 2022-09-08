@@ -13,6 +13,8 @@ var SCRIPT_ADDRESS = "0xCAFCF18DE7994D010D711AFCBCF9970A873B22B9E8BD410F363ECA9F
 var USER_WALLET_ADDRESS = "";
 var DEVELOPER_WALLET_ADDRESS = "";
 var ADVERTISER_WALLET_ADDRESS = "";
+var USER_PROFILE = "";
+var DEVELOPER_PROFILE = "";
 var SENDPOLLUID ="";
 var GLOBAL = 0;
 var COUNT = 0;
@@ -378,7 +380,28 @@ function rolAddress(datarole){
   }
 }
 
+//This function grab the user and developer profile
+function processProfile(datarole) {
+  let topics = prompt("Please enter your topics of interest separated by comma:", "");
+  if (topics == null || topics == "") {
+    alert("Could not set the topics!");
+  }else{
+    if (datarole == "user"){
+      USER_PROFILE = topics;
+      sendprofiletoDAO(datarole);
+    }
+    if (datarole == "developer"){
+      DEVELOPER_PROFILE = topics;
+      sendprofiletoDAO(datarole);
+    }
+  }
+}
 
+
+//This function send the profile to the DAO
+function sendprofiletoDAO(){
+
+}
 
 //***** NEWBALANCE Event SECTION
 
@@ -534,7 +557,7 @@ function displayPublicity(){
 				url_image = sqlrow.URLIMAGE.slice(1,-1); // remove "[]"
 				url_text = sqlrow.URLTEXT;
         MDS.log("Ready to display the Publicity in the Dapp..");
-        MDS.log("Showing the following ad file: "+url_image);
+        MDS.log("Showing the following advertiser file: "+url_image);
 				//Build the advertiser banner
 				addsection = "<img src="+url_image+" class='advertiser' onclick='advertiserbannerclick()'>";
 				document.getElementById("advertiserbanner").innerHTML = addsection;

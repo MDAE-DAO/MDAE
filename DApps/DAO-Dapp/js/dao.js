@@ -15,6 +15,7 @@ var GLOBAL = 0;
 var COUNT = 0;
 
 //send address:0x9D90EE44464722B25EA05EBC443755FB81D8AAB1077726D5A2A09010BD041184 amount:7 tokenid:0x00 state:{"0":"[BUY]", "1":"0xC6496C916268F428259FA05A979A3FDE8E0901A52525A4D73578903AE2975634", "2":"0x00", "3":"7"}
+//send address:0xD9F2043CE2197E2358F7808064F448784C3290BE2BF92FA132343C19DF7295F6 amount:7 tokenid:0x00 state:{"0":"[PROFILE]", "1":"0x121312312", "2":"[DEVELOPER]", "3":"[Sports, Computers, Gaming, Minima.global]"}
 
 
 /////*****MAXIMA SECTION
@@ -308,6 +309,21 @@ function listtokensreceivedDB(){
   });
 }
 
+//This function lists ALL the profiles received in the Data Base
+function listprofilesreceivedDB(){
+  MDS.sql("SELECT * FROM profiles",function(sqlmsg){
+    if (sqlmsg.status) {
+      var nodeStatus = JSON.stringify(sqlmsg, undefined, 2);
+      document.getElementById("status-object").innerText = nodeStatus;
+      MDS.log(JSON.stringify(sqlmsg));
+    }else{
+      var nodeStatus = JSON.stringify(sqlmsg, undefined, 2);
+      document.getElementById("status-object").innerText = nodeStatus;
+      MDS.log(JSON.stringify(sqlmsg));
+    }
+  });
+}
+
 
 
 //***** NEWBALANCE Recive and then send SECTION
@@ -361,7 +377,7 @@ function tokenFromClient (coin){
     if (coin.state[j].port == 0) operation = coin.state[j].data;
   }
   MDS.log("It's a Client Transaction?");
-  if (operation == "[BUY]" || operation == "[SELL]") {
+  if (operation == "[BUY]" || operation == "[SELL]" || operation == "[PROFILE]") {
     return true
   }else{
     return false
@@ -376,9 +392,12 @@ function newBalanceEvent(){
     if (result.status){
       var coins = result.response;
       COUNT = coins.length
-      COUNT = COUNT-1;
       MDS.log("TOTAL Coins Number to Check: "+COUNT);
-      searchSQL(coins);
+			if (COUNT > 0){
+				COUNT = COUNT-1;
+	      MDS.log("TOTAL Coins Number to Check: "+COUNT);
+	      searchSQL(coins);
+			}
     }
   });
 }
@@ -391,15 +410,32 @@ function searchSQL(coins){
   let bool = tokenFromClient(coin);
   MDS.log(bool);
   if (bool){
-    MDS.sql("SELECT * from tokensreceived WHERE coinidreceived='"+coin.coinid+"'", function(sqlmsg){
-      if (sqlmsg.status) {
-        COUNT = COUNT-1;
-        checkTokenReceived(coin, sqlmsg);
-        if (COUNT >= 0){
-          searchSQL(coins);
+    var operation ="";
+    for(let j = 0; j < coin.state.length; j++) {
+      if (coin.state[j].port == 0) operation = coin.state[j].data;
+    }
+    if (operation == "[BUY]" || operation == "[SELL]"){
+      MDS.sql("SELECT * from tokensreceived WHERE coinidreceived='"+coin.coinid+"'", function(sqlmsg){
+        if (sqlmsg.status) {
+          COUNT = COUNT-1;
+          checkTokenReceived(coin, sqlmsg);
+          if (COUNT >= 0){
+            searchSQL(coins);
+          }
         }
-      }
-    });
+      });
+    }
+    if (operation == "[PROFILE]"){
+      MDS.sql("SELECT * from profiles WHERE coinidreceived='"+coin.coinid+"'", function(sqlmsg){
+        if (sqlmsg.status) {
+          COUNT = COUNT-1;
+          checkTokenReceived(coin, sqlmsg);
+          if (COUNT >= 0){
+            searchSQL(coins);
+          }
+        }
+      });
+    }
   }else{
     COUNT = COUNT-1;
     if (COUNT >= 0){
@@ -411,31 +447,64 @@ function searchSQL(coins){
 //This function register all the transaction data in the DB
 function registerTransactionInDB(coin) {
   MDS.log("Registering the Transaction in the DB..");
-  var client_wallet_address;
-  var client_token_id;
-  var client_amount_desired;
-  for(var i = 0; i < coin.state.length; i++) {
-    if (coin.state[i].port == 0) operation = coin.state[i].data;
-    if (coin.state[i].port == 1) client_wallet_address = coin.state[i].data;
-    if (coin.state[i].port == 2) client_token_id = coin.state[i].data;
-    if (coin.state[i].port == 3) client_amount_desired = coin.state[i].data;
+  var operation ="";
+  for(let j = 0; j < coin.state.length; j++) {
+    if (coin.state[j].port == 0) operation = coin.state[j].data;
   }
-  var trx_done = 0;
-  var fullsql = "INSERT INTO tokensreceived (coinidreceived,amountreceived,operation,clientwalletaddress,clienttokenid,clientamountdesired,trxdone,date) VALUES "
-			+"('"+coin.coinid+"','"+coin.amount+"','"+operation+"','"+client_wallet_address+"','"+client_token_id+"','"+client_amount_desired+"','"+trx_done+"',"+Date.now()+")";
+  if (operation == "[BUY]" || operation == "[SELL]"){
+    //Operation from a buyier or seller client
+    var client_wallet_address;
+    var client_token_id;
+    var client_amount_desired;
+    for(var i = 0; i < coin.state.length; i++) {
+      if (coin.state[i].port == 0) operation = coin.state[i].data;
+      if (coin.state[i].port == 1) client_wallet_address = coin.state[i].data;
+      if (coin.state[i].port == 2) client_token_id = coin.state[i].data;
+      if (coin.state[i].port == 3) client_amount_desired = coin.state[i].data;
+    }
+    var trx_done = 0;
+    var fullsql = "INSERT INTO tokensreceived (coinidreceived,amountreceived,operation,clientwalletaddress,clienttokenid,clientamountdesired,trxdone,date) VALUES "
+  			+"('"+coin.coinid+"','"+coin.amount+"','"+operation+"','"+client_wallet_address+"','"+client_token_id+"','"+client_amount_desired+"','"+trx_done+"',"+Date.now()+")";
 
-	MDS.sql(fullsql, function(resp){
-    MDS.log(JSON.stringify(resp));
-		if (resp.status) {
-      MDS.log("Transaction Registered Correctly in the DB with the Following coinid: "+coin.coinid);
-      //Now is time to Process the transacion and Send the tokens to the Buyer
-      sendTheTokensToTheBuyer(coin);
+  	MDS.sql(fullsql, function(resp){
+      MDS.log(JSON.stringify(resp));
+  		if (resp.status) {
+        MDS.log("Transaction Registered Correctly in the DB with the Following coinid: "+coin.coinid);
+        //Now is time to Process the transacion and Send the tokens to the Buyer
+        sendTheTokensToTheBuyer(coin);
+      }
+      else {
+        MDS.log("Transaction NOT Inserted in the DB");
+        //We sould register that problem into another DataBase. It allow to check the transacions who has not been processet although they should have been processed
+      }
+  	});
+  }
+  if (operation == "[PROFILE]"){
+    //Operation from a client who wants to store his profile to the DAO DB
+    var client_wallet_address;
+    var profile;
+    var topics_of_interest;
+    for(var i = 0; i < coin.state.length; i++) {
+      if (coin.state[i].port == 0) operation = coin.state[i].data;
+      if (coin.state[i].port == 1) client_wallet_address = coin.state[i].data;
+      if (coin.state[i].port == 2) profile = coin.state[i].data;
+      if (coin.state[i].port == 3) topics_of_interest = coin.state[i].data;
     }
-    else {
-      MDS.log("Transaction NOT Inserted in the DB");
-      //We sould register that problem into another DataBase. It allow to check the transacions who has not been processet although they should have been processed
-    }
-	});
+    var trx_done = 0;
+    var fullsql = "INSERT INTO profiles (coinidreceived,amountreceived,operation,clientwalletaddress,profile,topicsofinterest,trxdone,date) VALUES "
+  			+"('"+coin.coinid+"','"+coin.amount+"','"+operation+"','"+client_wallet_address+"','"+profile+"','"+topics_of_interest+"','"+trx_done+"',"+Date.now()+")";
+
+  	MDS.sql(fullsql, function(resp){
+      MDS.log(JSON.stringify(resp));
+  		if (resp.status) {
+        MDS.log("Profile Data Registered Correctly in the DB with the Following coinid: "+coin.coinid);
+      }
+      else {
+        MDS.log("Profile Data NOT Inserted in the DB");
+        //We sould register that problem into another DataBase. It allow to check the transacions who has not been processet although they should have been processed
+      }
+  	});
+  }
 }
 
 //This function sends the tokens to the buyer once all has been checked
@@ -493,6 +562,51 @@ function updateTime(){
     if (res.status) {
       const blockchaintime = res.response.chain.time;
       document.getElementById("blockchaintime").innerText = blockchaintime;
+    }
+  });
+}
+
+//The following functions grab the main DAO Wallet address and store the address in the DB
+function setdaowalletaddress(){
+  let address = prompt("Please enter the main DAO Wallet address:", "");
+  if (address == null || address == "") {
+    alert("Could not set the address!");
+  }else{
+    DAO_WALLET_ADDRESS = address;
+  }
+}
+
+function processData(){
+  MDS.sql("SELECT * from daowalletaddress", function(sqlmsg){
+    if (sqlmsg.status) {
+      if (sqlmsg.count == 0){
+        MDS.log("Runing the Dapp for the first time..");
+        setdaowalletaddress();
+        insertDAta();
+        if (sqlmsg.status) {
+        }else{
+          MDS.log(JSON.stringify(sqlmsg));
+        }
+      }
+      else{
+        mainWalletAddress();
+      }
+    }
+  });
+}
+
+function insertDAta(){
+  var fullsql = "INSERT INTO daowalletaddress (walletaddress,date) VALUES "
+      +"('"+DAO_WALLET_ADDRESS+"',"+Date.now()+")";
+
+  MDS.sql(fullsql, function(resp){
+    MDS.log(JSON.stringify(resp));
+    if (resp.status) {
+      MDS.log("Addresses HAS BEEN Inserted Correctly in the DB");
+			alert("Wallet Address has Changed Correctly");
+    }
+    else {
+      MDS.log("The Addresses HAS NOT BEEN Inserted in the DB");
     }
   });
 }
