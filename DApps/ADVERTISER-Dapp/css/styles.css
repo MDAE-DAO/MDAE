@@ -4,7 +4,7 @@ body{
 
 h1{
   color: #444;
-  background-color: lightgrey;
+  background-color: lightgreen;
   border-bottom: red solid 3px;
   padding-top: 3%;
   text-align: center;
@@ -67,7 +67,7 @@ pre{
 }
 
 .INF{
-  background-color: #444;
+  background-color: darkgreen;
   color: #fff;
   border-radius: 5px;
   padding: 2%;

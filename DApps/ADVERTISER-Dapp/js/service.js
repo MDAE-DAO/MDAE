@@ -53,6 +53,7 @@ function createTheDB(msg){
 
 
 //Main message handler..
+/*
 MDS.init(function(msg){
   //Do initialitzation
   if(msg.event == "inited"){
@@ -84,6 +85,7 @@ MDS.init(function(msg){
     // user's balance has changed
     MDS.log("New Balance Detected");
 		//Process the new event detected
+
     newBalanceEvent();
   }
   else if(msg.event == "MINING"){
@@ -95,3 +97,4 @@ MDS.init(function(msg){
   else{
   }
 });
+*/

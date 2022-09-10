@@ -93,21 +93,93 @@
       <br>
       <button type="button" id="buybutton" class="Button" onclick="SendMoney();">Send Tokens</button>
       </div>
-      <div class="INF Tokencreate">
-        <h2>CREATE A TOKEN</h2>
-          <p>Here you can create any Token.</p>
-          <table style="color:#FFF; border=0;">
-            <tr>
-      				<td style="color:#FFF; text-align:right;">Token Name: </td>
-      				<td><input type="text" id="TokenName" maxlength="64"></td>
-      			</tr>
-            <tr>
-              <td style="text-align:right;">Amount: </td>
-              <td><input type="number" id="Amount" maxlength="64"></td>
-            </tr>
-		      </table>
-          <br>
-          <button class="button Create Token" onclick='CreateToken();'>Create The Token</button>
+      <div class="INF ConfigureAdvertiserToken">
+        <table>
+  			<h2>CONFIGURE YOUR ADVERTISER CAMPAIGN ON TOKENS</h2>
+        <p>Select the Token to configure, the Amount of it, the target users, the rewards to be received by every DApp and user, and the Adevertiser info that the token will hold.</p>
+        <tr>
+  				<td style=" color:#FFF; text-align:right;">Campaign Name: </td>
+  				<td><input type="text" id='campaign_name' maxlength='64'></td>
+  			</tr>
+        <tr>
+  				<td style="color:#FFF; text-align:right;">Token to Configure: </td>
+  				<td>
+  				  <select id="select_advertiser_tokens" onchange="TokenAdvertiserBalance();"></select>
+  				</td>
+          <td style="color:#FFF; text-align:right;">Total amount: </td>
+          <td style="color:#FFF; text-align:left;"><span id="availableTokensConfigure" style="color:yellow;font-weight:bold;font-size:22px;"></span> </td>
+  			</tr>
+  			<tr>
+  				<td style=" color:#FFF; text-align:right;">Amount: </td>
+  				<td><input type="number" id='token_amount_configure' maxlength='64'></td>
+          <td style=" color:#FFF; text-align:right;">Text-0: </td>
+          <td><input type="text" id='text_0_adv' maxlength='64' value=" "></td>
+  			</tr>
+        <tr>
+  				<td style="color:#FFF; text-align:right;">Type Advertiser: </td>
+  				<td>
+  				  <select id="select_type_advertise" onchange="TypeAdvertiseChange();">
+              <option value="0">Text</option>
+              <option value="1">Web Page</option>
+              <option value="2">Image</option>
+              <option value="3">Survey</option>
+              <option value="4">Actions</option>
+              <option value="5">Contest</option>
+              <option value="6">Others</option>
+            </select>
+  				</td>
+          <td style=" color:#FFF; text-align:right;">Text-1: </td>
+          <td><input type="text" id='text_1_adv' maxlength='64' value=" "></td>
+  			</tr>
+        <tr>
+          <td style=" color:#FFF; text-align:right;">Web Page / Image: </td>
+          <td><input type="text" id='web_img_input' maxlength='128' disabled ></td>
+          <td style=" color:#FFF; text-align:right;">Text-2: </td>
+          <td><input type="text" id='text_2_adv' maxlength='64' value=" "></td>
+        </tr>
+        <tr>
+  				<td style=" color:#FFF; text-align:right;">Dapp rewards amount: </td>
+  				<td><input type="number" id='dapp_rewards' maxlength='64'></td>
+          <td style=" color:#FFF; text-align:right;">Text-3: </td>
+          <td><input type="text" id='text_3_adv' maxlength='64' value=" "></td>
+  			</tr>
+        <tr>
+          <td style="color:#FFF; text-align:right;">Dapp rewards type: </td>
+          <td>
+            <select id="tokens_type_reward_dapp"></select>
+          </td>
+          <td style=" color:#FFF; text-align:right;">Text-4: </td>
+          <td><input type="text" id='text_4_adv' maxlength='64' value=" "></td>
+        </tr>
+        <tr>
+          <td style=" color:#FFF; text-align:right;">Final user rewards amount: </td>
+          <td><input type="number" id='user_rewards' maxlength='64'></td>
+          <td style=" color:#FFF; text-align:right;">Text-5: </td>
+          <td><input type="text" id='text_5_adv' maxlength='64' value=" "></td>
+        </tr>
+        <tr>
+          <td style="color:#FFF; text-align:right;">User rewards type: </td>
+          <td>
+            <select id="tokens_type_reward_user"></select>
+          </td>
+          <td style=" color:#FFF; text-align:right;">Text-6: </td>
+          <td><input type="text" id='text_6_adv' maxlength='64' value=" "></td>
+        </tr>
+        <tr>
+  				<td style=" color:#FFF; text-align:right;">Actions: </td>
+  				<td><input type="text" id='actions_adv' maxlength='64' disabled value=" "></td>
+          <td style=" color:#FFF; text-align:right;">Text-7: </td>
+          <td><input type="text" id='text_7_adv' maxlength='64' value=" "></td>
+  			</tr>
+        <tr>
+  				<td style=" color:#FFF; text-align:right;">Rules: </td>
+  				<td><input type="text" id='rules_adv' maxlength='66' value="click" style="text-align:center;" disabled></td>
+          <td style=" color:#FFF; text-align:right;">Text-8: </td>
+          <td><input type="text" id='text_8_adv' maxlength='64' value=" "></td>
+      	</tr>
+  		</table>
+      <br>
+      <button type="button" id="buybutton" class="Button" onclick="ConfigureCampaign();">Cofigure Campaign</button>
       </div>
       <div class="INF Tokenminima">
         <h2>MINIMA TOKEN BALANCE</h2>
@@ -157,6 +229,7 @@
     <script type="text/javascript">
       //document.getElementById("buybutton").disabled = true;
       //Initialise the dongles
+      getNewBalance()
       Getcontacts();
       GetTokens();
 
@@ -192,62 +265,7 @@
         })
       }
 
-      //Send the Tokens available to the dongles
-      function GetTokens(){
-        MDS.cmd("balance",function(result){
-          //Create the select dongles
-          var select = document.getElementById('tokens');
-          while (select.hasChildNodes()) {
-            select.removeChild(select.firstChild);
-          }
-          var select2  = document.getElementById('tokens2');
-          while (select2.hasChildNodes()) {
-            select2.removeChild(select2.firstChild);
-          }
-          var select3  = document.getElementById('tokens3');
-          while (select3.hasChildNodes()) {
-            select3.removeChild(select3.firstChild);
-          }
-          //Add each Token
-          balance = result.response;
-          //Add the tokens to the dongle Buy a Token (spend)
-          for(var i = 0; i < balance.length; i++) {
-            var opt = document.createElement('option');
-            if(balance[i].tokenid == "0x00"){
-              opt.value = balance[i].tokenid;
-              opt.innerHTML = balance[i].token;
-            }else{
-              opt.value = balance[i].tokenid;
-              opt.innerHTML = balance[i].token.name;
-            }
-            select.appendChild(opt);
-          }
-          //Add tokens to the dongle buy a Token (buy)
-          for(var i = 0; i < balance.length; i++) {
-            var opt = document.createElement('option');
-            if(balance[i].tokenid == "0x00"){
-              opt.value = balance[i].tokenid;
-              opt.innerHTML = balance[i].token;
-            }else{
-              opt.value = balance[i].tokenid;
-              opt.innerHTML = balance[i].token.name;
-            }
-            select3.appendChild(opt);
-          }
-          //Add tokens to the dongle Token balance
-          for(var i = 0; i < balance.length; i++) {
-            var opt = document.createElement('option');
-            if(balance[i].tokenid == "0x00"){
-              opt.value = balance[i].tokenid;
-              opt.innerHTML = balance[i].token;
-            }else{
-              opt.value = balance[i].tokenid;
-              opt.innerHTML = balance[i].token.name;
-            }
-            select2.appendChild(opt);
-          }
-        });
-      }
+
     </script>
   </body>
 </html>
