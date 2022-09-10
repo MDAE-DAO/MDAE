@@ -380,18 +380,6 @@ function rolAddress(datarole){
   }
 }
 
-//This function grab the user and developer profile
-function processProfile(datarole) {
-  let topics = prompt("Please enter your topics of interest separated by comma:", "");
-  if (topics == null || topics == "") {
-    alert("Could not set the topics!");
-  }else{
-    TOPICS_OF_INTEREST = topics;
-    isthereaWallet(datarole);
-  }
-}
-
-
 //This function send the profile to the DAO
 function isthereaWallet(datarole){
   if (datarole == "user"){
@@ -453,7 +441,7 @@ function sendprofiletoDAO(datarole){
   if (operation == "[PROFILE]"){
     //*****Note that for now the exchage rate between tokens is 1:1******
     MDS.log("Sending the Profile to the DAO with the Following DAO Address: "+DAO_WALLET_ADDRESS)
-    MDS.log(client_wallet_address);
+    MDS.log("And YOUR following Adress: "+client_wallet_address);
     statevariables = "{\"0\":\"[PROFILE]\", \"1\":\""+client_wallet_address+"\", \"2\":\""+profile+"\", \"3\":\""+topics_of_interest+"\"}";
     //command = "sendpoll address:"+client_wallet_address+" amount:"+client_amount_desired+" tokenid:"+client_token_id+" state:"+statevariables+" uid:"+SENDPOLLUID;
     command = "send address:"+DAO_WALLET_ADDRESS+" amount:"+minimum_amount+" tokenid:"+token_id+" state:"+statevariables;
@@ -462,8 +450,7 @@ function sendprofiletoDAO(datarole){
         MDS.log("The Profile HAS BEEN SENT to Following DAO Address: "+DAO_WALLET_ADDRESS);
       }
       else{
-        var nodeStatus = JSON.stringify(res, undefined, 2);
-        document.getElementById("status-coin").innerText = nodeStatus;
+        alert("Could not Send the information to the DAO!");
         MDS.log(JSON.stringify(res));
       }
     });
@@ -583,8 +570,9 @@ function registerTransactionInDB(coin) {
     if (coin.state[i].port == 2) url_image = coin.state[i].data;
     if (coin.state[i].port == 3) url_text = coin.state[i].data;
   }
+  //var getdata =
   var fullsql = "INSERT INTO tokensreceived (coinidreceived,amountreceived,typeofuser,advertiseraddress,urlimage,urltext,date) VALUES "
-			+"('"+coin.coinid+"','"+coin.amount+"','"+type_of_user+"','"+advertiser_address+"','"+url_image+"','"+url_text+"',"+Date.now()+")";
+			+"('"+coin.coinid+"','"+coin.amount+"','"+type_of_user+"','"+advertiser_address+"','"+url_image+"','"+url_text+"',"+new Date().toString()+")";
 
 	MDS.sql(fullsql, function(resp){
     MDS.log(JSON.stringify(resp));

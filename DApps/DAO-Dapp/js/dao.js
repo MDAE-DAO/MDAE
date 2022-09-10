@@ -436,6 +436,17 @@ function searchSQL(coins){
         }
       });
     }
+    if (operation == "[GET_INFO]"){
+      MDS.sql("SELECT * from profiles WHERE coinidreceived='"+coin.coinid+"'", function(sqlmsg){
+        if (sqlmsg.status) {
+          COUNT = COUNT-1;
+          checkTokenReceived(coin, sqlmsg);
+          if (COUNT >= 0){
+            searchSQL(coins);
+          }
+        }
+      });
+    }
   }else{
     COUNT = COUNT-1;
     if (COUNT >= 0){
@@ -491,6 +502,33 @@ function registerTransactionInDB(coin) {
       if (coin.state[i].port == 3) topics_of_interest = coin.state[i].data;
     }
     var trx_done = 0;
+    var fullsql = "INSERT INTO profiles (coinidreceived,amountreceived,operation,clientwalletaddress,profile,topicsofinterest,trxdone,date) VALUES "
+  			+"('"+coin.coinid+"','"+coin.amount+"','"+operation+"','"+client_wallet_address+"','"+profile+"','"+topics_of_interest+"','"+trx_done+"',"+Date.now()+")";
+
+  	MDS.sql(fullsql, function(resp){
+      MDS.log(JSON.stringify(resp));
+  		if (resp.status) {
+        MDS.log("Profile Data Registered Correctly in the DB with the Following coinid: "+coin.coinid);
+      }
+      else {
+        MDS.log("Profile Data NOT Inserted in the DB");
+        //We sould register that problem into another DataBase. It allow to check the transacions who has not been processet although they should have been processed
+      }
+  	});
+  }
+  if (operation == "[GET_INFO]"){
+    //Operation from a client who wants to store his profile to the DAO DB
+    var maxima;
+    var dapps;
+    var topics_of_interest;
+    for(var i = 0; i < coin.state.length; i++) {
+      if (coin.state[i].port == 0) operation = coin.state[i].data;
+      if (coin.state[i].port == 1) dapps = coin.state[i].data;
+      if (coin.state[i].port == 2) maxima = coin.state[i].data;
+      if (coin.state[i].port == 3) topics_of_interest = coin.state[i].data;
+    }
+
+
     var fullsql = "INSERT INTO profiles (coinidreceived,amountreceived,operation,clientwalletaddress,profile,topicsofinterest,trxdone,date) VALUES "
   			+"('"+coin.coinid+"','"+coin.amount+"','"+operation+"','"+client_wallet_address+"','"+profile+"','"+topics_of_interest+"','"+trx_done+"',"+Date.now()+")";
 

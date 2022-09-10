@@ -94,7 +94,7 @@ MDS.init(function(msg){
     createTheDBtokensreceived();
     createTheDBDAOWalletAddress();
     createTheDBProfiles();
-		preparingSendpoll()
+		preparingSendpoll();
     MDS.cmd("status", function(res) {
       if (res.status) {
         // get the version number and the blockchain time from the Status object returned
