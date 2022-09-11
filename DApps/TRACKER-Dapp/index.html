@@ -221,7 +221,7 @@
       }
       // "Update details" button opens the <dialog> modally
       updateButton.addEventListener('click', () => {
-        if (typeof favDialog.showModal === "function") {
+        if (typeof favDialog.showModal === "function") { 
           favDialog.showModal();
         } else {
           outputBox.value = "Sorry, the <dialog> API is not supported";
