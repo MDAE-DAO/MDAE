@@ -13,7 +13,7 @@ var DEVELOPER_WALLET_ADDRESS = "";
 var USER_WALLET_ADDRESS = "";
 var SCRIPT_ADDRESS = "0x7B48DCB61ABA37B52649989746704E444D0BD7AB982804A2DBF3D70E4BA1DE7D";
 
-//send address:0x7B48DCB61ABA37B52649989746704E444D0BD7AB982804A2DBF3D70E4BA1DE7D amount:7 tokenid:0x00 state:{"0":"[ADVERTISER]", "1":"0xC6496C916268F428259FA05A979A3FDE8E0901A52525A4D73578903AE2975634", "2":"[banner.jpg]", "3":"[textsample]"}
+//send address:0x62EBB51230428B4846498A2220A1D96FE350A1AB1A69889E83A2E26D93CE37B0 amount:7 tokenid:0x00 state:{"0":"[ADVERTISER]", "1":"0xC6496C916268F428259FA05A979A3FDE8E0901A52525A4D73578903AE2975634", "2":"[images/banner.jpg]", "3":"[textsample]"}
 
 //This function just create the databases if it is not yet
 function createTheDBtokensreceived(msg){
@@ -221,9 +221,6 @@ function displayPublicity(){
 			if (sqlrows.length == 0){
 				//No banner Registered on the database so takes an image directly
 				url_image = "banner.jpg";
-				//<img src="banner.jpg" class='advertiser' onclick='advertiserbannerclick()'>
-				//const element = document.querySelector('.AdvertiserSection');
-    		//element.style.background-image.url() = banner.jpg;
 				addsection = "<img src="+url_image+" class='advertiser' onclick='advertiserbannerclick()'>";
 				document.getElementById("advertiserbanner").innerHTML = addsection;
 

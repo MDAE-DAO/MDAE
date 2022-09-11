@@ -121,7 +121,8 @@
       <button class="button" onclick='setDAOWalletAddress();'>Set DAO Wallet Address</button>
       <button class="button" onclick='contact();'>Maxima</button>
       <button class="button" onclick='setMaximaName();'>Set Maxima Name</button>
-      <button class="button" onclick='listtokensreceivedDB();'>List DB Transactions</button>
+      <button class="button" onclick='listtokensreceivedDB();'>List Transactions DB</button>
+      <button class="button" onclick='listprofilesreceivedDB();'>List Profiles DB</button>
       <pre id="status-object"></pre>
       <div class="visualconsole"></div>
     </div>
@@ -137,7 +138,7 @@
       //Initialise the dongles and data
       Getcontacts();
       GetTokens();
-      mainWalletAddress();
+      processData();
       //Send the Contacts available to the dongles
       function Getcontacts() {
         MDS.cmd("maxcontacts", function(result) {

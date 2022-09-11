@@ -9,15 +9,17 @@
 //    <script type="text/javascript" src="js/service.js"></script>
 
 
-var SCRIPT_ADDRESS = "0x7B48DCB61ABA37B52649989746704E444D0BD7AB982804A2DBF3D70E4BA1DE7D";
+var SCRIPT_ADDRESS = "0xCAFCF18DE7994D010D711AFCBCF9970A873B22B9E8BD410F363ECA9F3BBF9550";
+var DAO_WALLET_ADDRESS = "0x712FBCF5F43E69D2B8B70FFDD50CD8BD109CE11CEB2529797758512F5EDA8AF7";
 var USER_WALLET_ADDRESS = "";
 var DEVELOPER_WALLET_ADDRESS = "";
 var ADVERTISER_WALLET_ADDRESS = "";
+var TOPICS_OF_INTEREST = "";
 var SENDPOLLUID ="";
 var GLOBAL = 0;
 var COUNT = 0;
 
-//send address:0x9D90EE44464722B25EA05EBC443755FB81D8AAB1077726D5A2A09010BD041184 amount:7 tokenid:0x00 state:{"0":"[BUY]", "1":"0xC6496C916268F428259FA05A979A3FDE8E0901A52525A4D73578903AE2975634", "2":"0x00", "3":"7"}
+//send address:0xA23BC462F25E43540AAD5F0DD0F742B0F6165BDAD5CA9A7B4F09584683E66C2F amount:7 tokenid:0x00 state:{"0":"[ADVERTISER]", "1":"0xC6496C916268F428259FA05A979A3FDE8E0901A52525A4D73578903AE2975634", "2":"[images/banner.jpg]", "3":"[textsample]"}
 
 
 /////*****MAXIMA SECTION
@@ -359,7 +361,7 @@ function processWallet(datarole){
 
 //This function grab the user address
 function rolAddress(datarole){
-  let address = prompt("Please enter the address:", "");
+  let address = prompt("Please enter the address where you want to receive the tokens: ", "");
   if (address == null || address == "") {
     alert("Could not set the address!");
   }else{
@@ -378,7 +380,82 @@ function rolAddress(datarole){
   }
 }
 
+//This function send the profile to the DAO
+function isthereaWallet(datarole){
+  if (datarole == "user"){
+    selectdb = "userwalletaddress";
+    MDS.log("Preparing tho send the USER Profile to the DAO");
+  }
+  if (datarole == "developer"){
+    selectdb = "developerwalletaddress";
+    MDS.log("Preparing tho send the DEVELOPER Profile to the DAO");
+  }
+  MDS.sql("SELECT * from "+selectdb+"", function(sqlmsg){
+    if (sqlmsg.status) {
+      if (sqlmsg.count == 0){
+        MDS.log("Inserting the address for the first time..");
+        rolAddress(datarole);
+        sendprofiletoDAO(datarole);
+        if (sqlmsg.status) {
+        }else{
+          MDS.log(JSON.stringify(sqlmsg));
+        }
+      }
+      else{
+        var sqlrows = sqlmsg.rows;
+        //Takes the last address recorded
+        let i = (sqlrows.length -1);
+        var sqlrow = sqlrows[i];
+        var nodeStatus = JSON.stringify(sqlrow, undefined, 2);
+        getwalletaddress = sqlrow.WALLETADDRESS;
+        if (datarole == "user"){
+          USER_WALLET_ADDRESS = getwalletaddress;
+        }
+        if (datarole == "developer"){
+          DEVELOPER_WALLET_ADDRESS = getwalletaddress;
+        }
+        sendprofiletoDAO(datarole);
+      }
+    }
+  });
+}
 
+function sendprofiletoDAO(datarole){
+  //MDS.log(JSON.stringify(coin));
+  //Note that the state variables has changed and adapted to the client database.
+  var minimum_amount = 1;
+  var token_id = "0x00";
+  var client_wallet_address;
+  var profile;
+  var topics_of_interest;
+  operation = "[PROFILE]";
+  profile = "["+datarole+"]";
+  if (datarole == "user"){
+    client_wallet_address = USER_WALLET_ADDRESS;
+  }else {
+    client_wallet_address = DEVELOPER_WALLET_ADDRESS;
+  }
+  topics_of_interest = "["+TOPICS_OF_INTEREST+"]";
+
+  MDS.log("Operation to Process: "+operation);
+  if (operation == "[PROFILE]"){
+    //*****Note that for now the exchage rate between tokens is 1:1******
+    MDS.log("Sending the Profile to the DAO with the Following DAO Address: "+DAO_WALLET_ADDRESS)
+    MDS.log("And YOUR following Adress: "+client_wallet_address);
+    statevariables = "{\"0\":\"[PROFILE]\", \"1\":\""+client_wallet_address+"\", \"2\":\""+profile+"\", \"3\":\""+topics_of_interest+"\"}";
+    //command = "sendpoll address:"+client_wallet_address+" amount:"+client_amount_desired+" tokenid:"+client_token_id+" state:"+statevariables+" uid:"+SENDPOLLUID;
+    command = "send address:"+DAO_WALLET_ADDRESS+" amount:"+minimum_amount+" tokenid:"+token_id+" state:"+statevariables;
+    MDS.cmd(command, function(res){
+      if (res.status) {
+        MDS.log("The Profile HAS BEEN SENT to Following DAO Address: "+DAO_WALLET_ADDRESS);
+      }
+      else{
+        alert("Could not Send the information to the DAO!");
+        MDS.log(JSON.stringify(res));
+      }
+    });
+  }
+}
 
 //***** NEWBALANCE Event SECTION
 
@@ -406,6 +483,7 @@ function newBalanceEvent(){
     if (result.status){
       var coins = result.response;
       COUNT = coins.length;
+      MDS.log(result);
 			MDS.log("TOTAL Coins Number to Check: "+COUNT);
 			if (COUNT > 0){
 				COUNT = COUNT-1;
@@ -421,7 +499,7 @@ function searchSQL(coins){
   MDS.log("Coin Countdown: "+COUNT);
   MDS.log("Current coinid Checking: "+coin.coinid);
   //let fromclient
-  let bool = tokenFromClient(coin);
+  let bool = tokenFromAdvertiser(coin);
   MDS.log(bool);
   if (bool){
     MDS.sql("SELECT * from tokensreceived WHERE coinidreceived='"+coin.coinid+"'", function(sqlmsg){
@@ -452,17 +530,7 @@ function checkTokenReceived(coin, sqlmsg){
   for(let k = 0; k < sqlrows.length; k++) {
     var sqlrow = sqlrows[k];
     if (sqlrow.COINIDRECEIVED == coin.coinid){
-      MDS.log("The Transaction ALREADY EXISTS with the Following coinid:"+coin.coinid);
-      if(sqlrow.TRXDONE == "1"){
-        MDS.log("..and the Transaction WAS Processed with Following Data: "+sqlrow.DATE);
-        return;
-      }
-      else {
-        //This flag can show if a transaction has not been processed yet
-        MDS.log("..but the Transaction WAS NEVER Processed when it was Registered with Data: "+sqlrow.DATA);
-        //Houston We Have a Problem!
-        return;
-      }
+      MDS.log("This Transaction ALREADY EXISTS and HAS BEEN processed with the Following coinid:"+coin.coinid);
     }
   }
 }
@@ -502,8 +570,9 @@ function registerTransactionInDB(coin) {
     if (coin.state[i].port == 2) url_image = coin.state[i].data;
     if (coin.state[i].port == 3) url_text = coin.state[i].data;
   }
+  //var getdata =
   var fullsql = "INSERT INTO tokensreceived (coinidreceived,amountreceived,typeofuser,advertiseraddress,urlimage,urltext,date) VALUES "
-			+"('"+coin.coinid+"','"+coin.amount+"','"+type_of_user+"','"+advertiser_address+"','"+url_image+"','"+url_text+"',"+Date.now()+")";
+			+"('"+coin.coinid+"','"+coin.amount+"','"+type_of_user+"','"+advertiser_address+"','"+url_image+"','"+url_text+"',"+new Date().toString()+")";
 
 	MDS.sql(fullsql, function(resp){
     MDS.log(JSON.stringify(resp));
@@ -520,7 +589,6 @@ function registerTransactionInDB(coin) {
 }
 
 function displayPublicity(){
-	MDS.log("Displaying the Publicity in the Dapp..");
   var url_image;
   var url_text;
 	MDS.sql("SELECT * from tokensreceived",function(sqlmsg){
@@ -530,8 +598,9 @@ function displayPublicity(){
 			MDS.log(sqlrows.length);
 			if (sqlrows.length == 0){
 				//No banner Registered on the database so takes an image directly
+        MDS.log("Any Publicity token recibed yet");
+        MDS.log("Displaying the default MDAE Publicity in the Dapp..");
         url_image = "images/banner.jpg";
-        //url_image = "/home/joanramon/GIT/MDAE/DApps/TRACKER-Dapp/images/banner.jpg";
         addsection = "<img src="+url_image+" class='advertiser' onclick='advertiserbannerclick()'>";
 				document.getElementById("advertiserbanner").innerHTML = addsection;
 
@@ -540,10 +609,10 @@ function displayPublicity(){
 				let i = (sqlrows.length -1);
 	      var sqlrow = sqlrows[i];
 	      var nodeStatus = JSON.stringify(sqlrow, undefined, 2);
-				MDS.log(JSON.stringify(sqlmsg));
-	      url_image = sqlrow.URLIMAGE.slice(1,-1); // remove "[]"
+				url_image = sqlrow.URLIMAGE.slice(1,-1); // remove "[]"
 				url_text = sqlrow.URLTEXT;
-				MDS.log(url_image);
+        MDS.log("Ready to display the Publicity in the Dapp..");
+        MDS.log("Showing the following advertiser file: "+url_image);
 				//Build the advertiser banner
 				addsection = "<img src="+url_image+" class='advertiser' onclick='advertiserbannerclick()'>";
 				document.getElementById("advertiserbanner").innerHTML = addsection;

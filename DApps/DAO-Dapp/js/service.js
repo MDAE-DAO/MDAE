@@ -61,8 +61,29 @@ function createTheDBDAOWalletAddress(msg){
 
 		MDS.sql(initsql,function(msg){
 			MDS.log("DB DAO Wallet Addresses Inited..");
+      processData();
 		});
 }
+
+//This function just create the databases if they are not yet
+function createTheDBProfiles(msg){
+	initsql = "CREATE TABLE IF NOT EXISTS `profiles` ( "
+					+"  `id` IDENTITY PRIMARY KEY, "
+          +"  `coinidreceived` varchar(512), "
+          +"  `amountreceived` int, "
+          +"  `operation` varchar(64), "
+          +"  `clientwalletaddress` varchar(512), "
+          +"  `profile` varchar(64), "
+					+"  `topicsofinterest` varchar(512), "
+          +"  `trxdone` int, "
+					+"  `date` bigint "
+					+" )";
+
+		MDS.sql(initsql,function(msg){
+			MDS.log("DB DAO Profiles Inited..");
+		});
+}
+
 
 
 //Main message handler..
@@ -72,7 +93,8 @@ MDS.init(function(msg){
     MDS.log("The service.js is initialising MDS also in the background...");
     createTheDBtokensreceived();
     createTheDBDAOWalletAddress();
-		preparingSendpoll()
+    createTheDBProfiles();
+		preparingSendpoll();
     MDS.cmd("status", function(res) {
       if (res.status) {
         // get the version number and the blockchain time from the Status object returned
