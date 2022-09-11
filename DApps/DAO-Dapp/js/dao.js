@@ -18,7 +18,7 @@ var COUNT = 0;
 //send address:0xD9F2043CE2197E2358F7808064F448784C3290BE2BF92FA132343C19DF7295F6 amount:7 tokenid:0x00 state:{"0":"[PROFILE]", "1":"0x121312312", "2":"[DEVELOPER]", "3":"[Sports, Computers, Gaming, Minima.global]"}
 
 
-/////*****MAXIMA SECTION
+/////*****MAXIMA SECTION 
 
 //This function just list the Maxima contacts
 function contact(){
