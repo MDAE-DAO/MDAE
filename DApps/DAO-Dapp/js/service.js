@@ -42,6 +42,7 @@ function createTheDBtokensreceived(msg){
 					+"  `clientwalletaddress` varchar(512), "
 					+"  `clienttokenid` varchar(512), "
 					+"  `clientamountdesired` int, "
+          +"  `clientpublickkey` varchar(512), "
 					+"  `trxdone` int, "
 					+"  `date` bigint "
 					+" )";

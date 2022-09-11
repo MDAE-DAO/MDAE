@@ -138,7 +138,6 @@
       //Initialise the dongles and data
       Getcontacts();
       GetTokens();
-      processData();
       //Send the Contacts available to the dongles
       function Getcontacts() {
         MDS.cmd("maxcontacts", function(result) {
