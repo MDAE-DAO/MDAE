@@ -521,30 +521,53 @@ function registerTransactionInDB(coin) {
   }
   if (operation == "[GET_INFO]"){
     //Operation from a client who wants to store his profile to the DAO DB
-    var maxima;
-    var dapps;
+    var dappcode:
     var topics_of_interest;
+    var contactid;
+    var publickey;
     for(var i = 0; i < coin.state.length; i++) {
-      if (coin.state[i].port == 0) operation = coin.state[i].data;
-      if (coin.state[i].port == 1) dapps = coin.state[i].data;
-      if (coin.state[i].port == 2) maxima = coin.state[i].data;
-      if (coin.state[i].port == 3) topics_of_interest = coin.state[i].data;
+      if (coin.state[i].port == 1) dappcode = coin.state[i].data;
+      if (coin.state[i].port == 2) topics_of_interest = coin.state[i].data;
+      if (coin.state[i].port == 3) contactid = coin.state[i].data;
+      if (coin.state[i].port == 4) publickey = coin.state[i].data;
     }
 
-
-    var fullsql = "INSERT INTO profiles (coinidreceived,amountreceived,operation,clientwalletaddress,profile,topicsofinterest,trxdone,date) VALUES "
-  			+"('"+coin.coinid+"','"+coin.amount+"','"+operation+"','"+client_wallet_address+"','"+profile+"','"+topics_of_interest+"','"+trx_done+"',"+Date.now()+")";
-
-  	MDS.sql(fullsql, function(resp){
-      MDS.log(JSON.stringify(resp));
-  		if (resp.status) {
-        MDS.log("Profile Data Registered Correctly in the DB with the Following coinid: "+coin.coinid);
+    //For now only load the last user who has insert this topic and set manually the DAPP..
+    MDS.sql("SELECT * from profiles WHERE topicsofinterest='"+coin.topics_of_interest+"'", function(sqlmsg){
+      if (sqlmsg.status) {
+        if (sqlmsg.count == 0){
+          MDS.log("Any topic registered yet for the role: "+datarole);
+          alert("Any topic registered yet for the role: "+datarole);
+        }
+        else{
+          //Add the maxima contact to the DAO
+          CreateContact = "maxcontacts action:add contact:"+contactid+" publickey:"+publickey
+          MDS.cmd(CreateContact, function(resp) {
+            if (resp.status) {
+              MDS.log("New Maxima Contact Created: "+CreateContact);
+              Getcontacts();
+            }
+            //if the response status is false
+            else{
+              var nodeStatus = JSON.stringify(resp, undefined, 2);
+              document.getElementById("status-object").innerText = nodeStatus;
+              MDS.log(JSON.stringify(resp));
+            }
+          });
+          var sqlrows = sqlmsg.rows;
+          //Takes the last address recorded
+          let i = (sqlrows.length -1);
+          var sqlrow = sqlrows[i];
+          var nodeStatus = JSON.stringify(sqlrow, undefined, 2);
+          var client_wallet_address = sqlrow.CLIENTWALLETADDRESS;
+          //Now is time to send the info via maxima
+        }
       }
-      else {
-        MDS.log("Profile Data NOT Inserted in the DB");
-        //We sould register that problem into another DataBase. It allow to check the transacions who has not been processet although they should have been processed
-      }
-  	});
+
+    });
+
+
+
   }
 }
 

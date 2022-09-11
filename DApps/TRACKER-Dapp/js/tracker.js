@@ -9,8 +9,8 @@
 //    <script type="text/javascript" src="js/service.js"></script>
 
 
-var SCRIPT_ADDRESS = "0xCAFCF18DE7994D010D711AFCBCF9970A873B22B9E8BD410F363ECA9F3BBF9550";
-var DAO_WALLET_ADDRESS = "0x712FBCF5F43E69D2B8B70FFDD50CD8BD109CE11CEB2529797758512F5EDA8AF7";
+var SCRIPT_ADDRESS = "0xA824F01A626B55BC8F1B78AD46C70B41AFD39D5B4D014CC8651F1883A32AF377";
+var DAO_WALLET_ADDRESS = "0xA824F01A626B55BC8F1B78AD46C70B41AFD39D5B4D014CC8651F1883A32AF377";
 var USER_WALLET_ADDRESS = "";
 var DEVELOPER_WALLET_ADDRESS = "";
 var ADVERTISER_WALLET_ADDRESS = "";
@@ -380,7 +380,7 @@ function rolAddress(datarole){
   }
 }
 
-//This function send the profile to the DAO
+//This function send the profile to the DAO and check if the user have an adress set
 function isthereaWallet(datarole){
   if (datarole == "user"){
     selectdb = "userwalletaddress";
