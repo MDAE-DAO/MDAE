@@ -15,7 +15,7 @@ var GLOBAL = 0;
 var COUNT = 0;
 
 //send address:0xA824F01A626B55BC8F1B78AD46C70B41AFD39D5B4D014CC8651F1883A32AF377 amount:11 tokenid:0x00 state:{"0":"[BUY]", "1":"0xB45BB90C547E1E9F489402F98F75234EE7CD958166E5DAE78DCE9ECA69E073C5", "2":"0xD22144350AD648779C61D5730CA6DD07299D7B34698378416D44E050306DC504", "3":"2", "4":"0xA3F6D4863A739D2FAA90388C1FFD1C359D2B59F23C416729CEC3A87584BB08A2"}
-//send address:0xD9F2043CE2197E2358F7808064F448784C3290BE2BF92FA132343C19DF7295F6 amount:7 tokenid:0x00 state:{"0":"[PROFILE]", "1":"0x121312312", "2":"[DEVELOPER]", "3":"[Sports, Computers, Gaming, Minima.global]"}
+//send address:0xA824F01A626B55BC8F1B78AD46C70B41AFD39D5B4D014CC8651F1883A32AF377 amount:7 tokenid:0x00 state:{"0":"[PROFILE]", "1":"0x121312312", "2":"[DEVELOPER]", "3":"[Sports, Computers, Gaming, Minima.global]"}
 
 
 /////*****MAXIMA SECTION
@@ -465,6 +465,7 @@ function registerTransactionInDB(coin) {
   }
   if (operation == "[BUY]"){
     //Operation from a buyier or seller client
+    MDS.log("Registering the Transaction from a BUYIER Client in the DB..");
     var client_wallet_address;
     var client_token_id;
     var client_amount_desired;
@@ -495,6 +496,7 @@ function registerTransactionInDB(coin) {
   }
   if (operation == "[PROFILE]"){
     //Operation from a client who wants to store his profile to the DAO DB
+    MDS.log("Registering the Transaction from a PROFILE Client in the DB..");
     var client_wallet_address;
     var profile;
     var topics_of_interest;
@@ -521,7 +523,7 @@ function registerTransactionInDB(coin) {
   }
   if (operation == "[GET_INFO]"){
     //Operation from a client who wants to store his profile to the DAO DB
-    var dappcode:
+    var dappcode;
     var topics_of_interest;
     var contactid;
     var publickey;
@@ -563,11 +565,7 @@ function registerTransactionInDB(coin) {
           //Now is time to send the info via maxima
         }
       }
-
     });
-
-
-
   }
 }
 
@@ -601,19 +599,12 @@ function sendTheTokensToTheBuyer(coin){
     if (coin.state[i].port == 3) client_amount_desired = coin.state[i].data;
     if (coin.state[i].port == 4) client_publickkey = coin.state[i].data;
   }
-
-
   MDS.log("Client Operation to Process: "+operation);
-
   if (operation == "[BUY]"){
     if (coin.amount < client_amount_desired){
       //*****Note that for now the exchage rate between tokens is 1:1******
       MDS.log("Transaction Checked with the Following coinid: "+coin.coinid);
       MDS.log("Sending the Tokens to the Client with the Following Client Address: "+client_wallet_address)
-
-
-
-
       MDS.cmd("coins tokenid:"+client_token_id, function(res){
         if (res.status) {
           MDS.log("Getting tokenid info: "+res.response[0].tokenid);
@@ -638,13 +629,8 @@ function sendTheTokensToTheBuyer(coin){
                       MDS.log("CLIENT TRANSACTION PROCESS ENDED CORRECTLY");
                     }
                   });
-
-                  MDS.log("Sending token configured with state vars of Campaign");
-                  //alert(JSON.stringify(res.response, undefined, 2));
-                  alert("TOKEN SENT "+client_token_id);
                 }
                 else{
-                  //alert("ERROR");
                     //var nodeStatus = JSON.stringify(res, undefined, 2);
                     //document.getElementById("status-coin").innerText = nodeStatus;
                     MDS.log(JSON.stringify(res));
@@ -652,14 +638,13 @@ function sendTheTokensToTheBuyer(coin){
               });
         }
         else{
-          //alert("ERROR");
             //var nodeStatus = JSON.stringify(res, undefined, 2);
             //document.getElementById("status-coin").innerText = nodeStatus;
             MDS.log(JSON.stringify(res));
           }
       });
     }else{
-      alert("Insuficient Founds sended");
+      alert("Insuficient Founds Recived by the Buyer with Operation: "+operation);
     }
   }
 }
