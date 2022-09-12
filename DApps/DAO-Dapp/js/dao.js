@@ -9,14 +9,28 @@
 //    <script type="text/javascript" src="js/service.js"></script>
 
 
+
+
+/*BUY
+port == 0 operation
+port == 1 client_wallet_address
+port == 2 client_token_id
+port == 3 client_amount_desired
+port == 4 client_publickkey */
+//send address:0xC7940D0A24294691342706CCD7F2468DEB3555E5914E3586F90F0B7C6AE468B5 amount:10 tokenid:0x00 state:{"0":"[BUY]", "1":"0x7D6877B7C0B2202650DE4E829569350B6371245CEFADAABAF2AF3F4AFBAD3CA1", "2":"0x2FC125D31A832BEC3AF044633CA1B9683F35DBB2A83653C9FCDB197E76B23B3A", "3":"2", "4":"0x549E84F7F39B7AB9562D1C91C55DEC7BE6A966368814D89503D65E77935DDD3C"}
+
+
+
+
+
+//tokencreate name:"aMDAE" amount:5000 decimals:0 state:{"0":"0xA2784D94B13C114BB3937118BB2419A3712D871C767202A3B178F6905728D0DA","1":"0x39383D810DC3A733E22344E02B97C940EB7A7AD4FAE918403E71FB5998C9E3C8","2":"0x62A8D572CB69B82F3ED3AE215D16F340A0EF231164D9557D6B10D24D70C4DD06","3":"0x1B17E4607ABDD642A65409A1D27D28DF628219D77B4512FA3D58A4BBE613F309","4":"0x4712CD047BDC4233788709BF5258F5F88495B986CE1F0AFAEA9A89E8EEAFB441","5":"0xE9C2AD0CF3E65DC3F85DFB9C23FCE05B1EC4CEF09ADE5D48B31E347054E772EC","6":"0.2","7":"0.2","8":"0.2","9":"1"}
+
+
+
 var DAO_WALLET_ADDRESS = "";
 var SENDPOLLUID ="";
 var GLOBAL = 0;
 var COUNT = 0;
-
-//send address:0xA824F01A626B55BC8F1B78AD46C70B41AFD39D5B4D014CC8651F1883A32AF377 amount:11 tokenid:0x00 state:{"0":"[BUY]", "1":"0xB45BB90C547E1E9F489402F98F75234EE7CD958166E5DAE78DCE9ECA69E073C5", "2":"0xD22144350AD648779C61D5730CA6DD07299D7B34698378416D44E050306DC504", "3":"2", "4":"0xA3F6D4863A739D2FAA90388C1FFD1C359D2B59F23C416729CEC3A87584BB08A2"}
-//send address:0xA824F01A626B55BC8F1B78AD46C70B41AFD39D5B4D014CC8651F1883A32AF377 amount:7 tokenid:0x00 state:{"0":"[PROFILE]", "1":"0x121312312", "2":"[DEVELOPER]", "3":"[Sports, Computers, Gaming, Minima.global]"}
-
 
 /////*****MAXIMA SECTION
 
@@ -271,7 +285,7 @@ function mainWalletAddress(){
 
 //This function set the DAO wallet address
 function setDAOWalletAddress() {
-  let address = prompt("Please paste here the Wallet Address:", "");
+  let address = prompt("Please paste here the MAIN DAO Wallet Address:", "");
   if (address == null || address == "") {
     alert("Could not set the Address!");
   }else{
@@ -345,7 +359,8 @@ function getSendpolluid(){
 }
 
 function checkTokenReceived(coin, sqlmsg){
-  //MDS.log(JSON.stringify(sqlmsg));
+  MDS.log(JSON.stringify(sqlmsg));
+  MDS.log(sqlmsg.count);
   if (sqlmsg.count == 0){
     MDS.log("NEW CLIENT TRANSACTION HAS BEEN DETECTED.."+coin.coinid);
     registerTransactionInDB(coin);
@@ -377,7 +392,7 @@ function tokenFromClient (coin){
     if (coin.state[j].port == 0) operation = coin.state[j].data;
   }
   MDS.log("It's a Client Transaction?");
-  if (operation == "[BUY]" || operation == "[SELL]" || operation == "[PROFILE]") {
+  if (operation == "[BUY]" || operation == "[SELL]" || operation == "[PROFILE]" || operation == "[GET_INFO]") {
     return true
   }else{
     return false
@@ -406,7 +421,6 @@ function searchSQL(coins){
   var coin = coins[COUNT];
   MDS.log("Coin Countdown: "+COUNT);
   MDS.log("Current coinid Checking: "+coin.coinid);
-  //let fromclient
   let bool = tokenFromClient(coin);
   MDS.log(bool);
   if (bool){
@@ -414,7 +428,7 @@ function searchSQL(coins){
     for(let j = 0; j < coin.state.length; j++) {
       if (coin.state[j].port == 0) operation = coin.state[j].data;
     }
-    if (operation == "[BUY]" || operation == "[SELL]"){
+    if (operation == "[BUY]"){
       MDS.sql("SELECT * from tokensreceived WHERE coinidreceived='"+coin.coinid+"'", function(sqlmsg){
         if (sqlmsg.status) {
           COUNT = COUNT-1;
@@ -522,7 +536,7 @@ function registerTransactionInDB(coin) {
   	});
   }
   if (operation == "[GET_INFO]"){
-    //Operation from a client who wants to store his profile to the DAO DB
+    //Operation from a client who wants to get info from the DAO profiles DB
     var dappcode;
     var topics_of_interest;
     var contactid;
