@@ -624,7 +624,7 @@ function displayPublicity(){
 	      var sqlrow = sqlrows[i];
 	      var nodeStatus = JSON.stringify(sqlrow, undefined, 2);
 				url_image = sqlrow.URLIMAGE.slice(1,-1); // remove "[]"
-				url_text = sqlrow.URLTEXT;
+				url_text = sqlrow.URLTEXT.slice(1,-1); // remove "[]";
         MDS.log("Ready to display the Publicity in the Dapp..");
         MDS.log("Showing the following advertiser file: "+url_image);
 				//Build the advertiser banner
