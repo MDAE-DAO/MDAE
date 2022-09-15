@@ -28,7 +28,7 @@ port == 2 topics_of_interest
 port == 3 contactid
 port == 4 publickey
 
-send address:0xC7940D0A24294691342706CCD7F2468DEB3555E5914E3586F90F0B7C6AE468B5 amount:10 tokenid:0x00 state:{"0":"[GET_INFO]", "1":"7646796", "2":"[sports]", "3":"[MxG18HGG6FJ038614Y8CW46US6G20810K0070CD00Z83282G60G1392G6KQFUQ1M5GKEW0AJMJZDGZKM4F4754GGZJMF9DSBFBGEYVY428PDMDAZ9PTS9USY4Z49CZVZBQ5WCRPVP063JNQRSA76E7SZN1K7H6WEGPQRW8EEMC6CTN1QQTDP4NUE69VYHUWMWT8NJR9GHDSVGSZZTTJSDCQNK5ZPMYJQJY3NJBSFRZVMB8PSDPSA6W1N42BHP7CVK10608004KW8DZM@192.168.1.248:10001]",  "4":"0x30819F300D06092A864886F70D010101050003818D00308189028181009AB970235A0CCD164F7CD0369ABF05335D17ED5DEC437D3B377AD5B918D2B98F60DC4993ECBA065F5EA01B3D7F07CF984A5D9DD9BF6972F67F74B31680D3C62BF48272590C18F3F6D3065BB38F7059896F6C12D66BEEAFB2D1E6DA6976F6A9CDD033F65A575E4A2B91E745CE16BDFE1465ECDAD63901073EF3CA99DEFBEE7C410203010001"}
+send address:0xADD56E54F84D6A76EB05B8227FC2ECE9CAB13ECD205D9198354DB940C3C906B6 amount:1 tokenid:0x00 state:{"0":"[GET_INFO]", "1":"7646796", "2":"[sports]", "3":"[MxG18HGG6FJ038614Y8CW46US6G20810K0070CD00Z83282G60G1CJNTAZHK4Q990JHACB6JM7UHVHC7T8K1RAFQB2943G1ZYM6S1FZAAFM41J1USJDNW9CTDH61PM0RCKEZ2N0829GKDVA2SN5RRYC1V4W1Y39512SVEKQEUSK62WJNTWYUKUFR2BFMW5VB0DCGY58TQY637ARNDTKC4TJ85F4SMG2FDK8YAPR7F23P1VEQCE152UHYQQNKBYPR410608004655WDM@192.168.1.190:10001]",  "4":"0x30819F300D06092A864886F70D010101050003818D0030818902818100A8ADDC95096C2E3529FA7A1C91282F5867ED4EF204B71A3F46C0651F38FADBD8C57AADA74BD2692E675B8DAE75E8E8132DAA6AD93DC738AC92A418C02CB52CFC8B478A9288D3EC811C9558DD4A29E01ACC21D85F38B66A951CEA469EC3C793CA5CFB07D281572906FA7607F7548A59837030C99B3B8F51461A500548B3105DAD0203010001"}
 }*/
 
 /*PROFILE
@@ -36,7 +36,7 @@ port == 0 operation
 port == 1 client_wallet_address
 port == 2 profile
 port == 3 topics_of_interest
-send address:0xC7940D0A24294691342706CCD7F2468DEB3555E5914E3586F90F0B7C6AE468B5 amount:10 tokenid:0x00 state:{"0":"[PROFILE]", "1":"0xE71CD49075969D6B290BD732841A7672976E15737BF5C5511712CCA5C9BBD91E", "2":"[user]", "3":"[sports]"}
+send address:0xADD56E54F84D6A76EB05B8227FC2ECE9CAB13ECD205D9198354DB940C3C906B6 amount:10 tokenid:0x00 state:{"0":"[PROFILE]", "1":"0xE71CD49075969D6B290BD732841A7672976E15737BF5C5511712CCA5C9BBD91E", "2":"[user]", "3":"[sports]"}
 */
 
 
@@ -64,7 +64,6 @@ function contact(){
 //This function add a Maxima contact
 function addContact() {
   //Get the information
-  var contactname 	= document.getElementById('namecontact').value;
 	var publickey = document.getElementById('publickeycontact').value;
   var contactid = document.getElementById('idcontact').value;
   CreateContact = "maxcontacts action:add contact:"+contactid+" publickey:"+publickey
@@ -355,6 +354,20 @@ function listprofilesreceivedDB(){
   });
 }
 
+function listadvertisersDB(){
+  MDS.sql("SELECT * FROM advertisersDAO3",function(sqlmsg){
+    if (sqlmsg.status) {
+      var nodeStatus = JSON.stringify(sqlmsg, undefined, 2);
+      document.getElementById("status-object").innerText = nodeStatus;
+      MDS.log(JSON.stringify(sqlmsg));
+    }else{
+      var nodeStatus = JSON.stringify(sqlmsg, undefined, 2);
+      document.getElementById("status-object").innerText = nodeStatus;
+      MDS.log(JSON.stringify(sqlmsg));
+    }
+  });
+}
+
 
 
 //***** NEWBALANCE Recive and then send SECTION
@@ -376,8 +389,7 @@ function getSendpolluid(){
 }
 
 function checkTokenReceived(coin, sqlmsg){
-  MDS.log(JSON.stringify(sqlmsg));
-  MDS.log(sqlmsg.count);
+  //MDS.log(JSON.stringify(sqlmsg));
   if (sqlmsg.count == 0){
     MDS.log("NEW CLIENT TRANSACTION HAS BEEN DETECTED.."+coin.coinid);
     registerTransactionInDB(coin);
@@ -387,14 +399,14 @@ function checkTokenReceived(coin, sqlmsg){
   for(let k = 0; k < sqlrows.length; k++) {
     var sqlrow = sqlrows[k];
     if (sqlrow.COINIDRECEIVED == coin.coinid){
-      MDS.log("The Transaction ALREADY EXISTS with the Following coinid:"+coin.coinid);
+      MDS.log("The Transaction ALREADY EXISTS with the Following coinid: "+coin.coinid);
       if(sqlrow.TRXDONE == "1"){
-        MDS.log("..and the Transaction WAS Processed with Following Data: "+sqlrow.DATE);
+        MDS.log("..and the Transaction WAS Processed with Following coinid: "+coin.coinid);
         return;
       }
-      else {
+      else if(sqlrow.OPERATION != "[PROFILE]") {
         //This flag can show if a transaction has not been processed yet
-        MDS.log("..but the Transaction WAS NEVER Processed when it was Registered with Data: "+sqlrow.DATA);
+        MDS.log("..but the Transaction WAS NEVER Processed when it was Registered with the following coinid: "+coin.coinid);
         //Houston We Have a Problem!
         return;
       }
@@ -408,7 +420,7 @@ function tokenFromClient (coin){
   for(let j = 0; j < coin.state.length; j++) {
     if (coin.state[j].port == 0) operation = coin.state[j].data;
   }
-  MDS.log("It's a Client Transaction?");
+  MDS.log("Is it a Client Transaction?");
   if (operation == "[BUY]" || operation == "[SELL]" || operation == "[PROFILE]" || operation == "[GET_INFO]") {
     return true
   }else{
@@ -427,7 +439,6 @@ function newBalanceEvent(){
       MDS.log("TOTAL Coins Number to Check: "+COUNT);
 			if (COUNT > 0){
 				COUNT = COUNT-1;
-	      MDS.log("TOTAL Coins Number to Check: "+COUNT);
 	      searchSQL(coins);
 			}
     }
@@ -446,6 +457,7 @@ function searchSQL(coins){
       if (coin.state[j].port == 0) operation = coin.state[j].data;
     }
     if (operation == "[BUY]"){
+      MDS.log("with Operation: "+operation);
       MDS.sql("SELECT * from tokensreceived WHERE coinidreceived='"+coin.coinid+"'", function(sqlmsg){
         if (sqlmsg.status) {
           COUNT = COUNT-1;
@@ -457,6 +469,7 @@ function searchSQL(coins){
       });
     }
     if (operation == "[PROFILE]"){
+      MDS.log("With Operation: "+operation);
       MDS.sql("SELECT * from profiles WHERE coinidreceived='"+coin.coinid+"'", function(sqlmsg){
         if (sqlmsg.status) {
           COUNT = COUNT-1;
@@ -468,7 +481,8 @@ function searchSQL(coins){
       });
     }
     if (operation == "[GET_INFO]"){
-      MDS.sql("SELECT * from profiles WHERE coinidreceived='"+coin.coinid+"'", function(sqlmsg){
+      MDS.log("With Operation: "+operation);
+      MDS.sql("SELECT * from advertisersDAO3 WHERE coinidreceived='"+coin.coinid+"'", function(sqlmsg){
         if (sqlmsg.status) {
           COUNT = COUNT-1;
           checkTokenReceived(coin, sqlmsg);
@@ -489,7 +503,6 @@ function searchSQL(coins){
 
 //This function register all the transaction data in the DB
 function registerTransactionInDB(coin) {
-  MDS.log("Registering the Transaction in the DB..");
   var operation ="";
   for(let j = 0; j < coin.state.length; j++) {
     if (coin.state[j].port == 0) operation = coin.state[j].data;
@@ -520,7 +533,7 @@ function registerTransactionInDB(coin) {
         sendTheTokensToTheBuyer(coin);
       }
       else {
-        MDS.log("Transaction NOT Inserted in the DB");
+        MDS.log("Transaction NOT Inserted in the DB with the followig coinid: "+coin.coinid);
         //We sould register that problem into another DataBase. It allow to check the transacions who has not been processet although they should have been processed
       }
   	});
@@ -547,13 +560,14 @@ function registerTransactionInDB(coin) {
         MDS.log("Profile Data Registered Correctly in the DB with the Following coinid: "+coin.coinid);
       }
       else {
-        MDS.log("Profile Data NOT Inserted in the DB");
+        MDS.log("Profile Data NOT Inserted in the DB with the followig coinid: "+coin.coinid);
         //We sould register that problem into another DataBase. It allow to check the transacions who has not been processet although they should have been processed
       }
   	});
   }
   if (operation == "[GET_INFO]"){
     //Operation from a client who wants to get info from the DAO profiles DB
+    MDS.log("Registering the Transaction from an ADVERTISER Client in the DB..");
     var dappcode;
     var topics_of_interest;
     var contactid;
@@ -564,40 +578,86 @@ function registerTransactionInDB(coin) {
       if (coin.state[i].port == 3) contactid = coin.state[i].data;
       if (coin.state[i].port == 4) publickey = coin.state[i].data;
     }
-    contactid = contactid.slice(1,-1); // remove "[]"
+    var trx_done = 0;
+    var fullsql = "INSERT INTO advertisersDAO3 (coinidreceived,amountreceived,operation,topicsofinterest,dappcode,contactid,publickey,trxdone,date) VALUES "
+  			+"('"+coin.coinid+"','"+coin.amount+"','"+operation+"','"+topics_of_interest+"','"+dappcode+"','"+contactid+"','"+publickey+"','"+trx_done+"',"+Date.now()+")";
 
-    //For now only load the last user who has insert this topic and set manually the DAPP..
-    MDS.sql("SELECT * from profiles WHERE topicsofinterest='"+coin.topics_of_interest+"'", function(sqlmsg){
-      if (sqlmsg.status) {
-        if (sqlmsg.count == 0){
-          MDS.log("Any topic registered yet for the role: "+topics_of_interest);
-        }
-        else{
-          //Add the maxima contact to the DAO
-          CreateContact = "maxcontacts action:add contact:"+contactid+" publickey:"+publickey
-          MDS.cmd(CreateContact, function(resp) {
-            if (resp.status) {
-              MDS.log("New Maxima Contact Created: "+CreateContact);
-              Getcontacts();
-            }
-            //if the response status is false
-            else{
-              var nodeStatus = JSON.stringify(resp, undefined, 2);
-              document.getElementById("status-object").innerText = nodeStatus;
-              MDS.log(JSON.stringify(resp));
-            }
-          });
-          var sqlrows = sqlmsg.rows;
-          //Takes the last address recorded
-          let i = (sqlrows.length -1);
-          var sqlrow = sqlrows[i];
-          var nodeStatus = JSON.stringify(sqlrow, undefined, 2);
-          var client_wallet_address = sqlrow.CLIENTWALLETADDRESS;
-          //Now is time to send the info via maxima
-        }
+
+  	MDS.sql(fullsql, function(resp){
+      MDS.log(JSON.stringify(resp));
+  		if (resp.status) {
+        MDS.log("Advertiser Data Registered Correctly in the DB with the Following coinid: "+coin.coinid);
+        sendTheDataToTheAdvertiser(coin);
       }
-    });
+      else {
+        MDS.log("Advertiser Data NOT Inserted in the DB with the followig coinid: "+coin.coinid);
+        //We sould register that problem into another DataBase. It allow to check the transacions who has not been processet although they should have been processed
+      }
+  	});
   }
+}
+
+function sendTheDataToTheAdvertiser(coin){
+  //For now only load the last user who has insert this topic and set manually the DAPP..
+  var dappcode;
+  var topics_of_interest;
+  var contactid;
+  var publickey;
+  for(var i = 0; i < coin.state.length; i++) {
+    if (coin.state[i].port == 1) dappcode = coin.state[i].data;
+    if (coin.state[i].port == 2) topics_of_interest = coin.state[i].data;
+    if (coin.state[i].port == 3) contactid = coin.state[i].data;
+    if (coin.state[i].port == 4) publickey = coin.state[i].data;
+  }
+  var trx_done = 0;
+  MDS.log("Preparing the Transaction with the Following coind: "+coin.coinid);
+  MDS.sql("SELECT * from profiles WHERE topicsofinterest='"+topics_of_interest+"'", function(sqlmsg){
+    if (sqlmsg.status) {
+      MDS.log(JSON.stringify(sqlmsg));
+      if (sqlmsg.count == 0){
+        MDS.log("TOPIC DB: "+coin.topics_of_interest);
+        MDS.log("Any topic registered yet for the role: "+topics_of_interest);
+      }
+      else{
+        contactid = contactid.slice(1,-1); // remove "[]"
+        //Add the maxima contact to the DAO
+        CreateContact = "maxcontacts action:add contact:"+contactid+" publickey:"+publickey
+        MDS.cmd(CreateContact, function(resp) {
+          if (resp.status) {
+            MDS.log("New Maxima Contact Created: "+CreateContact);
+            Getcontacts();
+            var sqlrows = sqlmsg.rows;
+            //Takes the last address recorded
+            let j = (sqlrows.length -1);
+            var sqlrow = sqlrows[j];
+            var nodeStatus = JSON.stringify(sqlrow, undefined, 2);
+            var client_wallet_address = sqlrow.CLIENTWALLETADDRESS;
+            //Now is time to send the info via maxima
+            sendinfo = "maxima action:send publickey:"+publickey+" application:Advertiser-Dapp data:"+client_wallet_address;
+            MDS.cmd(sendinfo, function(resp) {
+              if (resp.status) {
+                MDS.log("Maxima Contact information sended with the following coinid: "+coin.coinid);
+                MDS.log(JSON.stringify(resp));
+                //Needs to update the trxdone at the database.
+              }
+              //if the response status is false
+              else{
+                var nodeStatus = JSON.stringify(resp, undefined, 2);
+                document.getElementById("status-object").innerText = nodeStatus;
+                MDS.log(JSON.stringify(resp));
+              }
+            });
+          }
+          //if the response status is false
+          else{
+            var nodeStatus = JSON.stringify(resp, undefined, 2);
+            document.getElementById("status-object").innerText = nodeStatus;
+            MDS.log(JSON.stringify(resp));
+          }
+        });
+      }
+    }
+  });
 }
 
 // Get the state vars of a tokenID until the last number specified by end
@@ -616,8 +676,6 @@ function get_state_vars_string (coin, end){
 //This function sends the tokens to the buyer once all has been checked
 function sendTheTokensToTheBuyer(coin){
   MDS.log("Preparing the Transaction with the Following coind: "+coin.coinid);
-
-
   var client_wallet_address;
   var client_token_id;
   var client_amount_desired;
