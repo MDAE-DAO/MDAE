@@ -28,7 +28,10 @@ future and support scientific projects on green energies.
 ** PHASE 2 Documentation **
 -------------------------------------------------------------------------------------------------------
 - Architecture, Overview and conclusion of the MDAE <https://github.com/MDAE-DAO/MDAE/blob/main/docs/mdae_Architecture_project_explanation.txt>
-
+- Image 1 Dapp Advertiser: <https://github.com/MDAE-DAO/MDAE/blob/main/images/AdvertiserDapp1.png>
+- Image 2 Dapp Advertiser: <https://github.com/MDAE-DAO/MDAE/blob/main/images/AdvertiserDapp2.png>
+- Image 1 Dapp ShowPublicity: <https://github.com/MDAE-DAO/MDAE/blob/main/images/Show-Publicity-DAPP1.png>
+- Image 2 Dapp ShowPublicity: <https://github.com/MDAE-DAO/MDAE/blob/main/images/Show-Publicity-DAPP2.png>
 -------------------------------------------------------------------------------------------------------
 - Pitch Presentation: <https://github.com/MDAE-DAO/MDAE/blob/main/docs/MDAE_Pitch_%20Presentation.pdf>
 - White Paper: <https://github.com/MDAE-DAO/MDAE/blob/main/docs/MDAE%20White%20Paper%20v0.1.pdf>
