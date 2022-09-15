@@ -15,7 +15,7 @@ var SENDPOLLUID ="";
 var GLOBAL = 0;
 var COUNT = 0;
 var BALANCE = {};
-const ADVERTISING_TOKENS = ["0x6F3D1B097DD5B73FF6D9CC018ADB2524BF1F854B32820DC695ECD58E199363B6", "0x835F54EF6FBD7E3B599AA3C963E6BCE02680729AD8AE2B95882BE810A0074587"];
+const ADVERTISING_TOKENS = ["0x6F3D1B097DD5B73FF6D9CC018ADB2524BF1F854B32820DC695ECD58E199363B6"];
 var BUYER_ADDRESS ="";
 var BUYER_PUBLICKEY="";
 //send address:0x9D90EE44464722B25EA05EBC443755FB81D8AAB1077726D5A2A09010BD041184 amount:7 tokenid:0x00 state:{"0":"[BUY]", "1":"0xC6496C916268F428259FA05A979A3FDE8E0901A52525A4D73578903AE2975634", "2":"0x00", "3":"7"}
@@ -87,62 +87,41 @@ function MinimaBalance(){
 }
 
 
-//***** BUY AND SEND TOKEN SECTION
 
-//This function send a token to anyone
+//This function ley buy advertising tokens in exchange of Minimas
+/*BUY
+port == 0 operation
+port == 1 client_wallet_address
+port == 2 client_token_id
+port == 3 client_amount_desired
+port == 4 client_publickkey
+*/
 function BuyTokens(){
   //Get the information
-  var select3	= document.getElementById('select3');
+
+  var select3	= document.getElementById('tokens3');
   var tokenid = select3.options[select3.selectedIndex].value;       // tokens to buy
 	var buyer_address = document.getElementById('destinationaddress').value; //buyer address
   var amount = document.getElementById('amount').value;             //minimas to use to buy tokens
   var amount_buy_tokens = document.getElementById('amounttobuy').value;
-/*  var state_vars = '{' + get_state_vars_string(coin, 12) +
-      '"13":"['+campaign+']",' +*/
-  CreateSend = "send address:"+DAO_WALLET_ADDRESS+" amount:"+amount+" tokenid:0x00"
+
+  var state_vars = '{"0":"[BUY]","1":"'+buyer_address+'","2":"'+tokenid+'","3":"'+amount_buy_tokens+'","4:"'+BUYER_PUBLICKEY+'"}';
+  //alert(state_vars);
+  var CreateSend = "send address:"+DAO_WALLET_ADDRESS+" amount:"+amount+" tokenid:0x00";//+ " state:"+state_vars;
   MDS.cmd(CreateSend, function(resp) {
     if (resp.status) {
-      alert("Token Send!");
+      alert("Buy Tokens executed!");
       var nodeStatus = JSON.stringify(resp.response, undefined, 2);
       document.getElementById("status-object").innerText = nodeStatus;
     }
-    //if the response status is false
     else{
       var nodeStatus = JSON.stringify(resp, undefined, 2);
       document.getElementById("status-object").innerText = nodeStatus;
-      alert("Could not send the Token");
-      MDS.log("Token NOT Send");
+      alert("Could not buy the Tokens");
+      MDS.log("Token NOT Buyed");
       //MDS.log(JSON.stringify(resp));
     }
   });
-}
-
-//This function create a new token
-function CreateToken(){
-  //Get the information
-  var tokenname 	= document.getElementById('TokenName').value;
-	var tokenamount = document.getElementById('Amount').value;
-	if(tokenamount=="" || tokenamount < 0){
-		alert("Invalid amount..");
-		return;
-	}
-  CreateTokenFunction = "tokencreate name:"+tokenname+" amount:"+tokenamount
-  MDS.cmd(CreateTokenFunction, function(resp) {
-    if (resp.status) {
-      alert("Token Created!");
-      var nodeStatus = JSON.stringify(resp.response, undefined, 2);
-      document.getElementById("status-object").innerText = nodeStatus;
-      MDS.log("TOKEN: "+CreateTokenFunction);
-      MDS.log(JSON.stringify(resp));
-    }
-    //if the response status is false
-    else{
-      var nodeStatus = JSON.stringify(resp, undefined, 2);
-      document.getElementById("status-object").innerText = nodeStatus;
-      alert("Could not create the Token");
-    }
-  });
-  GetTokens();
 }
 
 
@@ -239,20 +218,6 @@ function ListtokensreceivedDB(){
 
 
 
-function tokenFromClient (coin){
-  //Checking if this is a transaction with a client state variables
-  var operation ="";
-  for(let j = 0; j < coin.state.length; j++) {
-    if (coin.state[j].port == 0) operation = coin.state[j].data;
-  }
-  MDS.log("It's a Client Transaction?");
-  if (operation == "[BUY]" || operation == "[SELL]") {
-    return true
-  }else{
-    return false
-  }
-}
-
 
 
 //This function sends the tokens to the buyer once all has been checked
@@ -314,7 +279,6 @@ function updateTime(){
   });
 }
 
-// ---------------------Every thing modified by JOSUA goes here to help to locate the changes.
 
 //Main message handler..
 MDS.init(function(msg){
@@ -460,6 +424,74 @@ function TypeAdvertiseChange(){
       }
 }
 
+
+// Execute minima balance command and set the balance as a Global variable BALANCE every time is called
+// It is called by default on NEWBALANCE event
+// It is called by default when the app starts also
+function getNewBalance(){
+  MDS.cmd("balance", function(res) {
+  //if the response status is true
+    if (res.status) {
+      BALANCE = res.response;
+      GetTokens();
+    }
+    //if the response status is false
+    else{
+      document.getElementById("StatusBalances").innerText = "Warning: Could not retrieve current Balance Status";
+    }
+  });
+}
+
+
+function get_user_script(){
+  var script = "LET finalUserWallet=" +document.getElementById("user_wallet") +
+  " LET dappDeveloperWallet="+document.getElementById("developer_wallet") + " RETURN TRUE"
+  return script;
+}
+
+
+// Send a hardcoded publicity token configured by hand to a script address composed of a user wallet and developer
+// wallet
+function sendCampaign(){
+  // get script address
+  var command = 'runscript script:"'+get_user_script()+'"';
+  MDS.cmd(command, function(res) {
+  //if the response status is true
+    if (res.status) {
+      var script_address = res.response.script.address;
+
+      alert("Sending an advertising configured token to user Script address: "+ script_address);
+
+      var command = 'send address:'+script_address+' amount:1 tokenid:0x6F3D1B097DD5B73FF6D9CC018ADB2524BF1F854B32820DC695ECD58E199363B6'+
+      ' state:{"0":"0xA2784D94B13C114BB3937118BB2419A3712D871C767202A3B178F6905728D0DA","1":"0x39383D810DC3A733E22344E02B97C940EB7A7AD4FAE918403E71FB5998C9E3C8"'+
+      ',"2":"0x62A8D572CB69B82F3ED3AE215D16F340A0EF231164D9557D6B10D24D70C4DD06","3":"0x1B17E4607ABDD642A65409A1D27D28DF628219D77B4512FA3D58A4BBE613F309"'+
+      ',"4":"0x4712CD047BDC4233788709BF5258F5F88495B986CE1F0AFAEA9A89E8EEAFB441","5":"0xE9C2AD0CF3E65DC3F85DFB9C23FCE05B1EC4CEF09ADE5D48B31E347054E772EC"'+
+      ',"6":"0.2","7":"0.2","8":"0.2","9":"1","10":"0xD06BACC2B849FD373B20C1C2DFD6643F17CEDD60FF0421E57E46DEE4CC83EC31","11":"10"'+
+      ',"12":"0x98AB6980372FCF7F6B23CD757B420AAE06066C92D7B432DC11741F74ADF067D8","13":"[CAMPAIGN MANUAL HARDCODED]","14":"2","15":"10","16":"0x00","17":"10"'+
+      ',"18":"0x00","19":"2","20":"[https://i.postimg.cc/pLPWFsD6/images.jpg]","21":"[-]","22":"[click]","23":"[-]","24":"[-]","25":"[-]","26":"[-]","27":"[-]"'+
+      ',"28":"[-]","29":"[-]","30":"[-]","31":"[-]"};'+
+      'send address:'+script_address+' amount:20;'
+      var command="coins";
+      MDS.cmd(command, function(res){
+          if (res.status) {
+            alert ("Token Sent: "+JSON.stringify(res, undefined, 2));
+            var nodeStatus = JSON.stringify(res, undefined, 2);
+            document.getElementById("status-coin").innerText = nodeStatus;
+          } else{
+            alert("ERROR");
+            var nodeStatus = JSON.stringify(res, undefined, 2);
+            document.getElementById("status-coin").innerText = nodeStatus;
+            MDS.log(JSON.stringify(res));
+            }
+        });
+    }
+    else{
+        MDS.log("ERROR: Could not retrieve SCRIPT address: "+JSON.stringify(res));
+    }
+  });
+}
+
+
 //Send the Tokens available to the dongles
 //Fetch the data from BALANCE global variable
 //It is called from getNewBalance as it must be updated every time a NEWBALANCE even happens
@@ -489,6 +521,8 @@ function GetTokens(){
     while (select_tokens_type_reward_user.hasChildNodes()) {
       select_tokens_type_reward_user.removeChild(select_tokens_type_reward_user.firstChild);
     }
+
+
     //Add each Token
     //Add the tokens to the dongle Buy a Token (spend)
     for(var i = 0; i < BALANCE.length; i++) {
@@ -575,26 +609,6 @@ function GetTokens(){
       }
       select_tokens_type_reward_user.appendChild(opt);
     }
-
-}
-
-
-
-// Execute minima balance command and set the balance as a Global variable BALANCE every time is called
-// It is called by default on NEWBALANCE event
-// It is called by default when the app starts also
-function getNewBalance(){
-  MDS.cmd("balance", function(res) {
-  //if the response status is true
-    if (res.status) {
-      BALANCE = res.response;
-      GetTokens();
-    }
-    //if the response status is false
-    else{
-      document.getElementById("StatusBalances").innerText = "Warning: Could not retrieve current Balance Status";
-    }
-  });
 }
 
 // Returns true is a given tokenid is an Advertiser TokenName
@@ -678,11 +692,15 @@ function ConfigureCampaign(){
                 MDS.log("Configured tokens Camapign with state vars of Campaign: "+campaign+" tokenid:"+advertiser_token);
                 //alert(JSON.stringify(res.response, undefined, 2));
                 //alert("TOKEN SENT "+advertiser_token);
+                var nodeStatus = JSON.stringify(res, undefined, 2);
+                document.getElementById("status-object").innerText = nodeStatus;
               }
               else{
                 //alert("ERROR");
                   //var nodeStatus = JSON.stringify(res, undefined, 2);
                   //document.getElementById("status-coin").innerText = nodeStatus;
+                  var nodeStatus = JSON.stringify(res, undefined, 2);
+                  document.getElementById("status-object").innerText = nodeStatus;
                   MDS.log(JSON.stringify(res));
                 }
             });
