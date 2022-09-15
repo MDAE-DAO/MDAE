@@ -85,6 +85,26 @@ function createTheDBProfiles(msg){
 		});
 }
 
+//This function just create the databases if they are not yet
+function createTheDBAdvertisers(msg){
+	initsql = "CREATE TABLE IF NOT EXISTS `advertisers` ( "
+					+"  `id` IDENTITY PRIMARY KEY, "
+          +"  `coinidreceived` varchar(512), "
+          +"  `amountreceived` int, "
+          +"  `operation` varchar(64), "
+					+"  `topicsofinterest` varchar(64), "
+          +"  `dappcode` varchar(64), "
+          +"  `contactid` varchar(1024), "
+          +"  `publickey` varchar(512), "
+          +"  `trxdone` int, "
+					+"  `date` bigint "
+					+" )";
+
+		MDS.sql(initsql,function(msg){
+			MDS.log("DB DAO Advertisers Inited..");
+		});
+}
+
 
 
 //Main message handler..
@@ -95,6 +115,7 @@ MDS.init(function(msg){
     createTheDBtokensreceived();
     createTheDBDAOWalletAddress();
     createTheDBProfiles();
+    createTheDBAdvertisers();
 		preparingSendpoll();
     MDS.cmd("status", function(res) {
       if (res.status) {
