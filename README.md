@@ -28,6 +28,7 @@ future and support scientific projects on green energies.
 ** PHASE 2 Documentation **
 -------------------------------------------------------------------------------------------------------
 - Architecture, Overview and conclusion of the MDAE <https://github.com/MDAE-DAO/MDAE/blob/main/docs/mdae_Architecture_project_explanation.txt>
+- Easy example case of the DAO-Dapp <https://github.com/MDAE-DAO/MDAE/blob/main/docs/Easy%20example%20case%20of%20the%20DAO-Dapp.odt>
 - Image 1 Dapp Advertiser: <https://github.com/MDAE-DAO/MDAE/blob/main/images/AdvertiserDapp1.png>
 - Image 2 Dapp Advertiser: <https://github.com/MDAE-DAO/MDAE/blob/main/images/AdvertiserDapp2.png>
 - Image 1 Dapp ShowPublicity: <https://github.com/MDAE-DAO/MDAE/blob/main/images/Show-Publicity-DAPP1.png>
