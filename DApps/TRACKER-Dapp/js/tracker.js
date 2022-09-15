@@ -9,8 +9,8 @@
 //    <script type="text/javascript" src="js/service.js"></script>
 
 
-var SCRIPT_ADDRESS = "0xCAFCF18DE7994D010D711AFCBCF9970A873B22B9E8BD410F363ECA9F3BBF9550";
-var DAO_WALLET_ADDRESS = "0x712FBCF5F43E69D2B8B70FFDD50CD8BD109CE11CEB2529797758512F5EDA8AF7";
+var SCRIPT_ADDRESS = "0xA824F01A626B55BC8F1B78AD46C70B41AFD39D5B4D014CC8651F1883A32AF377";
+var DAO_WALLET_ADDRESS = "";
 var USER_WALLET_ADDRESS = "";
 var DEVELOPER_WALLET_ADDRESS = "";
 var ADVERTISER_WALLET_ADDRESS = "";
@@ -61,6 +61,17 @@ function addContact() {
   });
 }
 
+
+//This function sets manually the DAO Wallet Address (in the future it will ask automatically this address to the DAO)
+function setDAOWalletAddress(){
+  let address = prompt("Please enter the DAO Wallet address: ", "");
+  if (address == null || address == "") {
+    alert("Could not set the address!");
+  }else
+  {
+    DAO_WALLET_ADDRESS = address;
+  }
+}
 
 
 //*****BALANCE SECTION
@@ -380,7 +391,7 @@ function rolAddress(datarole){
   }
 }
 
-//This function send the profile to the DAO
+//This function send the profile to the DAO and check if the user have an adress set
 function isthereaWallet(datarole){
   if (datarole == "user"){
     selectdb = "userwalletaddress";
@@ -389,6 +400,9 @@ function isthereaWallet(datarole){
   if (datarole == "developer"){
     selectdb = "developerwalletaddress";
     MDS.log("Preparing tho send the DEVELOPER Profile to the DAO");
+  }
+  if (DAO_WALLET_ADDRESS == ""){
+    setDAOWalletAddress()
   }
   MDS.sql("SELECT * from "+selectdb+"", function(sqlmsg){
     if (sqlmsg.status) {
@@ -441,13 +455,13 @@ function sendprofiletoDAO(datarole){
   if (operation == "[PROFILE]"){
     //*****Note that for now the exchage rate between tokens is 1:1******
     MDS.log("Sending the Profile to the DAO with the Following DAO Address: "+DAO_WALLET_ADDRESS)
-    MDS.log("And YOUR following Adress: "+client_wallet_address);
+    MDS.log("Your Wallet Adress sended to the DAO will be: "+client_wallet_address);
     statevariables = "{\"0\":\"[PROFILE]\", \"1\":\""+client_wallet_address+"\", \"2\":\""+profile+"\", \"3\":\""+topics_of_interest+"\"}";
     //command = "sendpoll address:"+client_wallet_address+" amount:"+client_amount_desired+" tokenid:"+client_token_id+" state:"+statevariables+" uid:"+SENDPOLLUID;
     command = "send address:"+DAO_WALLET_ADDRESS+" amount:"+minimum_amount+" tokenid:"+token_id+" state:"+statevariables;
     MDS.cmd(command, function(res){
       if (res.status) {
-        MDS.log("The Profile HAS BEEN SENT to Following DAO Address: "+DAO_WALLET_ADDRESS);
+        MDS.log("The Profile HAS BEEN SENT to the Following DAO Address: "+DAO_WALLET_ADDRESS);
       }
       else{
         alert("Could not Send the information to the DAO!");
@@ -610,7 +624,7 @@ function displayPublicity(){
 	      var sqlrow = sqlrows[i];
 	      var nodeStatus = JSON.stringify(sqlrow, undefined, 2);
 				url_image = sqlrow.URLIMAGE.slice(1,-1); // remove "[]"
-				url_text = sqlrow.URLTEXT;
+				url_text = sqlrow.URLTEXT.slice(1,-1); // remove "[]";
         MDS.log("Ready to display the Publicity in the Dapp..");
         MDS.log("Showing the following advertiser file: "+url_image);
 				//Build the advertiser banner

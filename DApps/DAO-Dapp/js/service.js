@@ -75,7 +75,7 @@ function createTheDBProfiles(msg){
           +"  `operation` varchar(64), "
           +"  `clientwalletaddress` varchar(512), "
           +"  `profile` varchar(64), "
-					+"  `topicsofinterest` varchar(512), "
+					+"  `topicsofinterest` varchar(64), "
           +"  `trxdone` int, "
 					+"  `date` bigint "
 					+" )";

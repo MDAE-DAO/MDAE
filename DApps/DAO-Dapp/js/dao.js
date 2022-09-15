@@ -9,14 +9,45 @@
 //    <script type="text/javascript" src="js/service.js"></script>
 
 
+
+
+/*BUY
+port == 0 operation
+port == 1 client_wallet_address
+port == 2 client_token_id
+port == 3 client_amount_desired
+port == 4 client_publickkey
+
+send address:0xC7940D0A24294691342706CCD7F2468DEB3555E5914E3586F90F0B7C6AE468B5 amount:10 tokenid:0x00 state:{"0":"[BUY]", "1":"0x7D6877B7C0B2202650DE4E829569350B6371245CEFADAABAF2AF3F4AFBAD3CA1", "2":"0x2FC125D31A832BEC3AF044633CA1B9683F35DBB2A83653C9FCDB197E76B23B3A", "3":"2", "4":"0x549E84F7F39B7AB9562D1C91C55DEC7BE6A966368814D89503D65E77935DDD3C"}
+*/
+
+/*GET_INFO
+port == 0 operation
+port == 1 dappcode
+port == 2 topics_of_interest
+port == 3 contactid
+port == 4 publickey
+
+send address:0xC7940D0A24294691342706CCD7F2468DEB3555E5914E3586F90F0B7C6AE468B5 amount:10 tokenid:0x00 state:{"0":"[GET_INFO]", "1":"7646796", "2":"[sports]", "3":"[MxG18HGG6FJ038614Y8CW46US6G20810K0070CD00Z83282G60G1392G6KQFUQ1M5GKEW0AJMJZDGZKM4F4754GGZJMF9DSBFBGEYVY428PDMDAZ9PTS9USY4Z49CZVZBQ5WCRPVP063JNQRSA76E7SZN1K7H6WEGPQRW8EEMC6CTN1QQTDP4NUE69VYHUWMWT8NJR9GHDSVGSZZTTJSDCQNK5ZPMYJQJY3NJBSFRZVMB8PSDPSA6W1N42BHP7CVK10608004KW8DZM@192.168.1.248:10001]",  "4":"0x30819F300D06092A864886F70D010101050003818D00308189028181009AB970235A0CCD164F7CD0369ABF05335D17ED5DEC437D3B377AD5B918D2B98F60DC4993ECBA065F5EA01B3D7F07CF984A5D9DD9BF6972F67F74B31680D3C62BF48272590C18F3F6D3065BB38F7059896F6C12D66BEEAFB2D1E6DA6976F6A9CDD033F65A575E4A2B91E745CE16BDFE1465ECDAD63901073EF3CA99DEFBEE7C410203010001"}
+}*/
+
+/*PROFILE
+port == 0 operation
+port == 1 client_wallet_address
+port == 2 profile
+port == 3 topics_of_interest
+send address:0xC7940D0A24294691342706CCD7F2468DEB3555E5914E3586F90F0B7C6AE468B5 amount:10 tokenid:0x00 state:{"0":"[PROFILE]", "1":"0xE71CD49075969D6B290BD732841A7672976E15737BF5C5511712CCA5C9BBD91E", "2":"[user]", "3":"[sports]"}
+*/
+
+
+//tokencreate name:"aMDAE" amount:5000 decimals:0 state:{"0":"0xA2784D94B13C114BB3937118BB2419A3712D871C767202A3B178F6905728D0DA","1":"0x39383D810DC3A733E22344E02B97C940EB7A7AD4FAE918403E71FB5998C9E3C8","2":"0x62A8D572CB69B82F3ED3AE215D16F340A0EF231164D9557D6B10D24D70C4DD06","3":"0x1B17E4607ABDD642A65409A1D27D28DF628219D77B4512FA3D58A4BBE613F309","4":"0x4712CD047BDC4233788709BF5258F5F88495B986CE1F0AFAEA9A89E8EEAFB441","5":"0xE9C2AD0CF3E65DC3F85DFB9C23FCE05B1EC4CEF09ADE5D48B31E347054E772EC","6":"0.2","7":"0.2","8":"0.2","9":"1"}
+
+
+
 var DAO_WALLET_ADDRESS = "";
 var SENDPOLLUID ="";
 var GLOBAL = 0;
 var COUNT = 0;
-
-//send address:0xA824F01A626B55BC8F1B78AD46C70B41AFD39D5B4D014CC8651F1883A32AF377 amount:11 tokenid:0x00 state:{"0":"[BUY]", "1":"0xB45BB90C547E1E9F489402F98F75234EE7CD958166E5DAE78DCE9ECA69E073C5", "2":"0xD22144350AD648779C61D5730CA6DD07299D7B34698378416D44E050306DC504", "3":"2", "4":"0xA3F6D4863A739D2FAA90388C1FFD1C359D2B59F23C416729CEC3A87584BB08A2"}
-//send address:0xD9F2043CE2197E2358F7808064F448784C3290BE2BF92FA132343C19DF7295F6 amount:7 tokenid:0x00 state:{"0":"[PROFILE]", "1":"0x121312312", "2":"[DEVELOPER]", "3":"[Sports, Computers, Gaming, Minima.global]"}
-
 
 /////*****MAXIMA SECTION
 
@@ -271,7 +302,7 @@ function mainWalletAddress(){
 
 //This function set the DAO wallet address
 function setDAOWalletAddress() {
-  let address = prompt("Please paste here the Wallet Address:", "");
+  let address = prompt("Please paste here the MAIN DAO Wallet Address:", "");
   if (address == null || address == "") {
     alert("Could not set the Address!");
   }else{
@@ -345,7 +376,8 @@ function getSendpolluid(){
 }
 
 function checkTokenReceived(coin, sqlmsg){
-  //MDS.log(JSON.stringify(sqlmsg));
+  MDS.log(JSON.stringify(sqlmsg));
+  MDS.log(sqlmsg.count);
   if (sqlmsg.count == 0){
     MDS.log("NEW CLIENT TRANSACTION HAS BEEN DETECTED.."+coin.coinid);
     registerTransactionInDB(coin);
@@ -377,7 +409,7 @@ function tokenFromClient (coin){
     if (coin.state[j].port == 0) operation = coin.state[j].data;
   }
   MDS.log("It's a Client Transaction?");
-  if (operation == "[BUY]" || operation == "[SELL]" || operation == "[PROFILE]") {
+  if (operation == "[BUY]" || operation == "[SELL]" || operation == "[PROFILE]" || operation == "[GET_INFO]") {
     return true
   }else{
     return false
@@ -406,7 +438,6 @@ function searchSQL(coins){
   var coin = coins[COUNT];
   MDS.log("Coin Countdown: "+COUNT);
   MDS.log("Current coinid Checking: "+coin.coinid);
-  //let fromclient
   let bool = tokenFromClient(coin);
   MDS.log(bool);
   if (bool){
@@ -414,7 +445,7 @@ function searchSQL(coins){
     for(let j = 0; j < coin.state.length; j++) {
       if (coin.state[j].port == 0) operation = coin.state[j].data;
     }
-    if (operation == "[BUY]" || operation == "[SELL]"){
+    if (operation == "[BUY]"){
       MDS.sql("SELECT * from tokensreceived WHERE coinidreceived='"+coin.coinid+"'", function(sqlmsg){
         if (sqlmsg.status) {
           COUNT = COUNT-1;
@@ -465,6 +496,7 @@ function registerTransactionInDB(coin) {
   }
   if (operation == "[BUY]"){
     //Operation from a buyier or seller client
+    MDS.log("Registering the Transaction from a BUYIER Client in the DB..");
     var client_wallet_address;
     var client_token_id;
     var client_amount_desired;
@@ -495,6 +527,7 @@ function registerTransactionInDB(coin) {
   }
   if (operation == "[PROFILE]"){
     //Operation from a client who wants to store his profile to the DAO DB
+    MDS.log("Registering the Transaction from a PROFILE Client in the DB..");
     var client_wallet_address;
     var profile;
     var topics_of_interest;
@@ -520,31 +553,50 @@ function registerTransactionInDB(coin) {
   	});
   }
   if (operation == "[GET_INFO]"){
-    //Operation from a client who wants to store his profile to the DAO DB
-    var maxima;
-    var dapps;
+    //Operation from a client who wants to get info from the DAO profiles DB
+    var dappcode;
     var topics_of_interest;
+    var contactid;
+    var publickey;
     for(var i = 0; i < coin.state.length; i++) {
-      if (coin.state[i].port == 0) operation = coin.state[i].data;
-      if (coin.state[i].port == 1) dapps = coin.state[i].data;
-      if (coin.state[i].port == 2) maxima = coin.state[i].data;
-      if (coin.state[i].port == 3) topics_of_interest = coin.state[i].data;
+      if (coin.state[i].port == 1) dappcode = coin.state[i].data;
+      if (coin.state[i].port == 2) topics_of_interest = coin.state[i].data;
+      if (coin.state[i].port == 3) contactid = coin.state[i].data;
+      if (coin.state[i].port == 4) publickey = coin.state[i].data;
     }
+    contactid = contactid.slice(1,-1); // remove "[]"
 
-
-    var fullsql = "INSERT INTO profiles (coinidreceived,amountreceived,operation,clientwalletaddress,profile,topicsofinterest,trxdone,date) VALUES "
-  			+"('"+coin.coinid+"','"+coin.amount+"','"+operation+"','"+client_wallet_address+"','"+profile+"','"+topics_of_interest+"','"+trx_done+"',"+Date.now()+")";
-
-  	MDS.sql(fullsql, function(resp){
-      MDS.log(JSON.stringify(resp));
-  		if (resp.status) {
-        MDS.log("Profile Data Registered Correctly in the DB with the Following coinid: "+coin.coinid);
+    //For now only load the last user who has insert this topic and set manually the DAPP..
+    MDS.sql("SELECT * from profiles WHERE topicsofinterest='"+coin.topics_of_interest+"'", function(sqlmsg){
+      if (sqlmsg.status) {
+        if (sqlmsg.count == 0){
+          MDS.log("Any topic registered yet for the role: "+topics_of_interest);
+        }
+        else{
+          //Add the maxima contact to the DAO
+          CreateContact = "maxcontacts action:add contact:"+contactid+" publickey:"+publickey
+          MDS.cmd(CreateContact, function(resp) {
+            if (resp.status) {
+              MDS.log("New Maxima Contact Created: "+CreateContact);
+              Getcontacts();
+            }
+            //if the response status is false
+            else{
+              var nodeStatus = JSON.stringify(resp, undefined, 2);
+              document.getElementById("status-object").innerText = nodeStatus;
+              MDS.log(JSON.stringify(resp));
+            }
+          });
+          var sqlrows = sqlmsg.rows;
+          //Takes the last address recorded
+          let i = (sqlrows.length -1);
+          var sqlrow = sqlrows[i];
+          var nodeStatus = JSON.stringify(sqlrow, undefined, 2);
+          var client_wallet_address = sqlrow.CLIENTWALLETADDRESS;
+          //Now is time to send the info via maxima
+        }
       }
-      else {
-        MDS.log("Profile Data NOT Inserted in the DB");
-        //We sould register that problem into another DataBase. It allow to check the transacions who has not been processet although they should have been processed
-      }
-  	});
+    });
   }
 }
 
@@ -578,19 +630,12 @@ function sendTheTokensToTheBuyer(coin){
     if (coin.state[i].port == 3) client_amount_desired = coin.state[i].data;
     if (coin.state[i].port == 4) client_publickkey = coin.state[i].data;
   }
-
-
   MDS.log("Client Operation to Process: "+operation);
-
   if (operation == "[BUY]"){
     if (coin.amount < client_amount_desired){
       //*****Note that for now the exchage rate between tokens is 1:1******
       MDS.log("Transaction Checked with the Following coinid: "+coin.coinid);
       MDS.log("Sending the Tokens to the Client with the Following Client Address: "+client_wallet_address)
-
-
-
-
       MDS.cmd("coins tokenid:"+client_token_id, function(res){
         if (res.status) {
           MDS.log("Getting tokenid info: "+res.response[0].tokenid);
@@ -615,13 +660,8 @@ function sendTheTokensToTheBuyer(coin){
                       MDS.log("CLIENT TRANSACTION PROCESS ENDED CORRECTLY");
                     }
                   });
-
-                  MDS.log("Sending token configured with state vars of Campaign");
-                  //alert(JSON.stringify(res.response, undefined, 2));
-                  alert("TOKEN SENT "+client_token_id);
                 }
                 else{
-                  //alert("ERROR");
                     //var nodeStatus = JSON.stringify(res, undefined, 2);
                     //document.getElementById("status-coin").innerText = nodeStatus;
                     MDS.log(JSON.stringify(res));
@@ -629,14 +669,13 @@ function sendTheTokensToTheBuyer(coin){
               });
         }
         else{
-          //alert("ERROR");
             //var nodeStatus = JSON.stringify(res, undefined, 2);
             //document.getElementById("status-coin").innerText = nodeStatus;
             MDS.log(JSON.stringify(res));
           }
       });
     }else{
-      alert("Insuficient Founds sended");
+      alert("Insuficient Founds Recived by the Buyer with Operation: "+operation);
     }
   }
 }

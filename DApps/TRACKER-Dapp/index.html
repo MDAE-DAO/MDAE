@@ -81,7 +81,6 @@
                 <select id="role">
                   <option value="user">User</option>
                   <option value="developer">Developer</option>
-                  <option value="advertiser">Advertiser</option>
                 </select>
               </td>
       			</tr>
@@ -132,10 +131,9 @@
         <tr>
           <td style="color:#FFF; text-align:right;">Select a Profile: </td>
           <td style="margin:5px;">
-            <select id="role">
+            <select id="roleselector">
               <option value="user">User</option>
               <option value="developer">Developer</option>
-              <option value="advertiser">Advertiser</option>
             </select>
           </td>
         </tr>
@@ -176,10 +174,8 @@
       <h2>WALLETS SECTION</h2>
       <p class="statusdata">Current User Wallet Address: <span style="font-size: 0.8em;" class="maindata" id="userwalletaddress"></span></p>
       <p class="statusdata">Current Developer Wallet Address: <span style="font-size: 0.8em;" class="maindata" id="developerwalletaddress"></span></p>
-      <p class="statusdata">Current Advertiser Wallet Address: <span style="font-size: 0.8em;" class="maindata" id="advertiserwalletaddress"></span></p>
       <button class="button" onclick='datarole="user"; processWallet(datarole);'>Set User Wallet Address</button>
       <button class="button" onclick='datarole="developer"; processWallet(datarole);'>Set Developer Wallet Address</button>
-      <button class="button" onclick='datarole="advertiser"; processWallet(datarole);'>Set Advertiser Wallet Address</button>
     </div>
     <div class="Box Statussection">
       <h2>STATUS AND TOOLS SECTION</h2>
@@ -187,6 +183,7 @@
       <button class="button" onclick='setMaximaName();'>Set Maxima Name</button>
       <button class="button" onclick='newAddress();'>New Address</button>
       <button class="button" onclick='getAddress();'>Get Address</button>
+      <button class="button" onclick='setDAOWalletAddress();'>Set DAO Wallet Address</button>
       <button class="button" onclick='coins();'>Coins</button>
       <button class="button" onclick='newBalanceEvent();'>List DB Transactions</button>
       <pre id="status-object"></pre>
@@ -221,7 +218,7 @@
       }
       // "Update details" button opens the <dialog> modally
       updateButton.addEventListener('click', () => {
-        if (typeof favDialog.showModal === "function") { 
+        if (typeof favDialog.showModal === "function") {
           favDialog.showModal();
         } else {
           outputBox.value = "Sorry, the <dialog> API is not supported";
@@ -235,10 +232,10 @@
       favDialog.addEventListener('close', () => {
         //outputBox.value = `${favDialog.returnValue} button clicked - ${(new Date()).toString()}`;
         if (favDialog.returnValue != "cancel"){
-          var select = document.getElementById('role');
-          var datarole = select.options[select.selectedIndex].value;
+          selectElement = document.getElementById("roleselector");
+          roleselected = selectElement.value;
           TOPICS_OF_INTEREST = favDialog.returnValue;
-          isthereaWallet(datarole);
+          isthereaWallet(roleselected);
         }
       });
       /******  This is the update profile pop-up window    *************/
