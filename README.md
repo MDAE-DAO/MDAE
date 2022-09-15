@@ -25,6 +25,11 @@ future and support scientific projects on green energies.
 
 ## DOCS
 
+** PHASE 2 Documentation **
+-------------------------------------------------------------------------------------------------------
+- Architecture, Overview and conclusion of the MDAE <https://github.com/MDAE-DAO/MDAE/blob/main/docs/mdae_Architecture_project_explanation.txt>
+
+-------------------------------------------------------------------------------------------------------
 - Pitch Presentation: <https://github.com/MDAE-DAO/MDAE/blob/main/docs/MDAE_Pitch_%20Presentation.pdf>
 - White Paper: <https://github.com/MDAE-DAO/MDAE/blob/main/docs/MDAE%20White%20Paper%20v0.1.pdf>
 
@@ -34,12 +39,12 @@ future and support scientific projects on green energies.
 can have a name.
 - **Decentralize AI Machine Learning Models** that can be tokenized and Minima can be
 used to verify that the model hasn’t been tampered with hashing the data and saving
-into tokens. 
+into tokens.
 So every minima node could act as a neuron or group of neurons to develope a
 **AI model** decentralizing the machine learning model to run on each minima node.
-  - One of the use cases, almost endless, was to guide a blind person using 
+  - One of the use cases, almost endless, was to guide a blind person using
   the camera of his minima mobile and using external sources like GPS, and maps.
-- **MinimaVerseDAO system** that can be used for Metaverse, Network States, Virtual 
+- **MinimaVerseDAO system** that can be used for Metaverse, Network States, Virtual
 worlds, games or even to rule a real country in a decentralized way.
 Anyone, in case of a metaverse should own their piece of land, one piece of land for running minima node, where everything could be tokenized,
 and with the tools provided from the DAO this "metaverse" could be one, multiples, or build the way their communities wanted.
