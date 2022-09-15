@@ -5,7 +5,7 @@ body{
 h1{
   color: white;
   background: rgb(118,194,16);
-  background: linear-gradient(90deg, rgba(4,92,3,1) 10%, rgba(19,64,18,1) 50%, rgba(43,245,39,1) 95%);
+  background: linear-gradient(90deg, rgba(218,165,32,1) 10%, rgba(0,0,139,1) 50%, rgba(255,215,0,1) 95%);
   border-bottom: rgba(24,26,24,1) solid 3px;
   padding-top: 3%;
   text-align: center;
@@ -68,8 +68,8 @@ pre{
 }
 
 .INF{
-  background: rgb(8,92,6);
-  background: radial-gradient(circle, rgba(8,92,6,1) 0%, rgba(12,138,10,1) 200%);
+  background: rgb(189,183,107);
+  background: radial-gradient(circle, rgba(218,165,32,1) 0%, rgba(0,0,139,1) 190%);
   color: #fff;
   border-radius: 5px;
   padding: 2%;

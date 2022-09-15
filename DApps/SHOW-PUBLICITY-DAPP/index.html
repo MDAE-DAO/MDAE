@@ -1,0 +1,103 @@
+<html>
+  <head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script type="text/javascript" src="js/mds.js"></script>
+  <!--  <script type="text/javascript" src="js/service.js"></script> -->
+    <script type="text/javascript" src="js/show-cli.js"></script>
+    <script type="text/javascript" src="js/publicity-API.js"></script>
+    <link rel="icon" type="image/x-icon" href="images/favicon.ico">
+    <link rel="stylesheet" href="css/styles.css">
+    <meta charset="utf-8">
+    <title>The DAO Dapp</title>
+  </head>
+  <body>
+    <h1>The SHOW PUBLICITY DAPP - API for DAPP Developers</h1>
+    <p class="statusdata">Current Node Version: <span class="maindata" id="version"></span></p>
+    <p class="statusdata">Current blockchain Time: <span class="maindata" id="blockchaintime"></span></p>
+    <div class="wrapper">
+      <div class="INF instrucions">
+        <h2>DEVELOPER DAPP INSTRUCTIONS</h2>
+
+        <p>1.-: <span>Include API: publicity-API.js in your index.html</span></p>
+        </br>
+        <p>2.-: <span>Include the Developer Wallet for receving rewards to show publicity into the api</span></p>
+        </br>
+        <p>3.-: <span>Include a DIV layer with the id: 'advertiserbanner' into the code where publicity will be showed</span></p>
+        </br>
+        <p>4.-: <span>The API: publicity-API.js will execute MDS.init on startup, if is the first time a popup will ask for user wallet where to
+          receive the rewards for watching the publicity and it will save it to the database, then it will register on the user node the script
+          composed by developar wallet plus user wallet, generating a unique address, where publicity tokens will be sent /span></p>
+        </br>
+        <p>5.-: <span>The API: publicity-API.js after registering the script will fetch the publicity tokens calling the
+          function get_publicity_tokens(script_address) and set them on a global variable: USER_PUBLICITY_TOKENS </span></p>
+        </br>
+        <p>6.-: <span>On NEWBALANCEEVENT: the function get_publicity_tokens will call displayPublicity(section) and if there is some publicity
+          tokens into the registered script this publicity will be show on the 'id' specified by section, if 'null' is
+          used, then the default id: 'advertiserbanner' will be used, and also it will be called on NEWBALANCE event </span></p>
+        </br>
+        <p>7.-: <span>Once the publicity area is clicked, it will trigger the function: get_publiciy_token_rewards(token_coinid) that
+          will execute a transaction paying all rewards to all parties and returning the token to the DAO according the states variables
+          that are defined into the publicity TOKEN </span></p>
+      </div>
+      <div class="INF Publicity section" align="center">
+        <h2>PUBLICITY SHOW SECTION</h2>
+
+        <p> This is where publicity's token will be showed </p>
+        <div class="AdvertiserSection" id="advertiserbanner"></div>
+        <p style="font-size:1.3em;font-weight:bold;">Click on publicity to receive the rewards</p>
+        <p> -- </p>
+        <p align="ceter">--------- REWARDS Payback for Watching Publicity --------</p>
+        <p> -- </p>
+        <div align="left">
+          <p>Rewards to VAULT-developer       : <span id="rew_vault_dev" style="font-size:1.1em;font-weight:bold;"></span></p>
+          <p>Rewards to VAULT-user            : <span id="rew_vault_user" style="font-size:1.1em;font-weight:bold;"></span></p>
+          <p>Rewards to DAO-publicity tokenid : <span id="rew_dao_token" style="font-size:1.1em;font-weight:bold;"></span></p>
+          <p>Rewards to DEVELOPER             : <span id="rew_dev" style="font-size:1.1em;font-weight:bold;"></span></p>
+          <p>Rewards to USER                  : <span id="rew_user" style="font-size:1.1em;font-weight:bold;"></span></p>
+        </div>
+      </div>
+    </div>
+    <div class="INF instructions" style="margin:10px">
+      <h2>USER DAPP INSTRUCTIONS</h2>
+
+      <p>1.-: <span>The user installs de DAPP</span></p>
+      <p>2.-: <span>The DAPP will ask to the user his wallet to receive the rewars for watching the publicity</span></p>
+      <p>3.-: <span>The user has to register himself and the DAPP on the TRACKER-DAPP that he wants to receive publicity as
+      well as with some topics he is interested on </span></p>
+      <p>4.-: <span>Once registered on the TRACKER-DAPP, his info will be available to ADVERTISERS, and they will send
+      publicity tokens to his script node's address and then the DAPP will show to he user that publicity specified by the received TOKEN </span></p>
+      <p>5.-: <span>Once the user clicks on the publicity, a transaction will be triggerd and the rewards specified by the
+      TOKEN state variables will be sent to the user wallet that the APP asked at first time </span></p>
+    </div>
+    <div class="Box WalletSection">
+      <h2>WALLETS SECTION</h2>
+      <p class="statusdata">Current User Wallet Address: <span style="font-size: 1em;" class="maindata" id="userwalletaddress"></span></p>
+      <p class="statusdata">Current Developer Wallet Address: <span style="font-size: 1em;" class="maindata" id="developerwalletaddress"></span></p>
+      <p class="statusdata">Current Script User Address: <span style="font-size: 1em;" class="maindata" id="scriptwalletaddress"></span></p>
+      <button class="button" onclick='datarole="user"; WalletAddress(datarole);'>Get User Wallet Address</button>
+      <button class="button" onclick='datarole="developer"; WalletAddress(datarole);'>Get Developer Wallet Address</button>
+      <button class="button" onclick='get_user_script_variable_address("scriptwalletaddress");'>Get Script User Address</button>
+      <button class="button" onclick='deleteUserWallet();'>Delete User Address</button>
+    </div>
+    <div class="Box Statussection">
+      <h2>STATUS AND TOOLS SECTION</h2>
+      <button class="button" onclick='NewAddress();'>New Address</button>
+      <button class="button" onclick='GetAddress();'>Get Address</button>
+      <button class="button" onclick='MainWalletAddress();'>Main Wallet Address</button>
+      <button class="button" onclick='Coins();'>Coins</button>
+      <button class="button" onclick='Scripts();'>Scripts</button>
+      <pre id="status-object"></pre>
+      <div class="visualconsole"></div>
+    </div>
+    <div class="Box Credits">
+      <p style="text-align: center;">Developed by Josua's Team for Minima Innovation Challenge Team</p>
+    </div>
+
+
+    <script type="text/javascript">
+
+    // displayPublicity(null);
+
+    </script>
+  </body>
+</html>

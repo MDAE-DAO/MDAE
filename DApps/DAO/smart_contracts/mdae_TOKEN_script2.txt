@@ -383,7 +383,7 @@ Procedure:
         - **state 11** : Amount of tokens to buy
         - **state 12** : Buyer publickey
         - **state 13** : CAMPAIGN name
-        - **state 14** : State of the token (0,1,2) non configured(empty),1 configured, sent
+        - **state 14** : State of the token (0,1,2,3) non configured(empty),1 configured, sent, used
         - **state 15** : Amount of rewards to be received by the dapp(developer)
         - **state 16** : Type of rewards dapp (tokenid) (usualy 0x00)
         - **state 17** : Amount of rewards to be received by the final user
@@ -465,6 +465,7 @@ buyer publickey: 0x0D04EEB70EDF1E6E71AA5A0927F5B4ED2B7B4E7BADC064A4B99D2A15CE723
 ----------------------------------- END TEST SEQUENCE -----------------------------------
 
 
+--------------------------------------------------------------------------------------------------
 --------- new setup to test the system Advertiser and DAO on my nodes --------------------------
 VAULT script:
 vault1:0x39383D810DC3A733E22344E02B97C940EB7A7AD4FAE918403E71FB5998C9E3C8

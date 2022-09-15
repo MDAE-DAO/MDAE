@@ -10,13 +10,14 @@
 //    <script type="text/javascript" src="js/service.js"></script>
 
 
-var DAO_WALLET_ADDRESS = "0x614190606CD54F2CF78D06813CE1BF4C71438C7897234C7D0F788D4F65F84BDE";
+var DAO_WALLET_ADDRESS = "0x4712CD047BDC4233788709BF5258F5F88495B986CE1F0AFAEA9A89E8EEAFB441";
 var SENDPOLLUID ="";
 var GLOBAL = 0;
 var COUNT = 0;
 var BALANCE = {};
-const ADVERTISING_TOKENS = ["0x65504C6C205224A70C95BD963139F7BFB3646BED25CCB7F03DE960B2D1C51246", "0x835F54EF6FBD7E3B599AA3C963E6BCE02680729AD8AE2B95882BE810A0074587"];
-
+const ADVERTISING_TOKENS = ["0x6F3D1B097DD5B73FF6D9CC018ADB2524BF1F854B32820DC695ECD58E199363B6", "0x835F54EF6FBD7E3B599AA3C963E6BCE02680729AD8AE2B95882BE810A0074587"];
+var BUYER_ADDRESS ="";
+var BUYER_PUBLICKEY="";
 //send address:0x9D90EE44464722B25EA05EBC443755FB81D8AAB1077726D5A2A09010BD041184 amount:7 tokenid:0x00 state:{"0":"[BUY]", "1":"0xC6496C916268F428259FA05A979A3FDE8E0901A52525A4D73578903AE2975634", "2":"0x00", "3":"7"}
 
 
@@ -86,17 +87,19 @@ function MinimaBalance(){
 }
 
 
-
-
 //***** BUY AND SEND TOKEN SECTION
 
 //This function send a token to anyone
-function SendMoney(){
+function BuyTokens(){
   //Get the information
-  var tokenid 	= document.getElementById('tokens').value;
-	var address = document.getElementById('destinationaddress').value;
-  var amount = document.getElementById('amount').value;
-  CreateSend = "Send address:"+address+" amount:"+amount+" tokenid:"+tokenid
+  var select3	= document.getElementById('select3');
+  var tokenid = select3.options[select3.selectedIndex].value;       // tokens to buy
+	var buyer_address = document.getElementById('destinationaddress').value; //buyer address
+  var amount = document.getElementById('amount').value;             //minimas to use to buy tokens
+  var amount_buy_tokens = document.getElementById('amounttobuy').value;
+/*  var state_vars = '{' + get_state_vars_string(coin, 12) +
+      '"13":"['+campaign+']",' +*/
+  CreateSend = "send address:"+DAO_WALLET_ADDRESS+" amount:"+amount+" tokenid:0x00"
   MDS.cmd(CreateSend, function(resp) {
     if (resp.status) {
       alert("Token Send!");
@@ -156,12 +159,15 @@ function NewAddress(){
   })
 }
 
+
 //This function just get an address
 function GetAddress(){
   MDS.cmd("getaddress", function(resp) {
     if (resp.status) {
       var nodeStatus = JSON.stringify(resp.response, undefined, 2);
       document.getElementById("status-object").innerText = nodeStatus;
+      BUYER_ADDRESS = resp.response.address;
+      BUYER_PUBLICKEY = resp.response.publickey;
     }
   });
 }
@@ -231,47 +237,7 @@ function ListtokensreceivedDB(){
 
 //***** NEWBALANCE Recive and then send SECTION
 
-//This function get a sendpoll uid
-function GetSendpolluid(){
-  MDS.cmd("sendpoll action:list", function(res){
-    if (res.status) {
-      var suid = res.response.commands;
-      var uid = suid[0];
-      SENDPOLLUID = uid.uid;
-    }
-    else{
-      var nodeStatus = JSON.stringify(res, undefined, 2);
-      document.getElementById("status-object").innerText = nodeStatus;
-      MDS.log(JSON.stringify(res));
-    }
-  });
-}
 
-function checkTokenReceived(coin, sqlmsg){
-  //MDS.log(JSON.stringify(sqlmsg));
-  if (sqlmsg.count == 0){
-    MDS.log("NEW CLIENT TRANSACTION HAS BEEN DETECTED.."+coin.coinid);
-    RegisterTransactionInDB(coin);
-    return;
-  }
-  var sqlrows = sqlmsg.rows;
-  for(let k = 0; k < sqlrows.length; k++) {
-    var sqlrow = sqlrows[k];
-    if (sqlrow.COINIDRECEIVED == coin.coinid){
-      MDS.log("The Transaction ALREADY EXISTS with the Following coinid:"+coin.coinid);
-      if(sqlrow.TRXDONE == "1"){
-        MDS.log("..and the Transaction WAS Processed with Following Data: "+sqlrow.DATE);
-        return;
-      }
-      else {
-        //This flag can show if a transaction has not been processed yet
-        MDS.log("..but the Transaction WAS NEVER Processed when it was Registered with Data: "+sqlrow.DATA);
-        //Houston We Have a Problem!
-        return;
-      }
-    }
-  }
-}
 
 function tokenFromClient (coin){
   //Checking if this is a transaction with a client state variables
@@ -287,75 +253,7 @@ function tokenFromClient (coin){
   }
 }
 
-function newBalanceEvent(){
-  //Load a sendpoll
-  GetSendpolluid()
-  var command = "coins address:"+DAO_WALLET_ADDRESS;
-  MDS.cmd(command, function(result){
-    if (result.status){
-      var coins = result.response;
-      COUNT = coins.length
-      COUNT = COUNT-1;
-      MDS.log("TOTAL Coins Number to Check: "+COUNT);
-      searchSQL(coins);
-    }
-  });
-}
 
-function searchSQL(coins){
-  var coin = coins[COUNT];
-  MDS.log("Coin Countdown: "+COUNT);
-  MDS.log("Current coinid Checking: "+coin.coinid);
-  //let fromclient
-  let bool = tokenFromClient(coin);
-  MDS.log(bool);
-  if (bool){
-    MDS.sql("SELECT * from tokensreceived WHERE coinidreceived='"+coin.coinid+"'", function(sqlmsg){
-      if (sqlmsg.status) {
-        COUNT = COUNT-1;
-        checkTokenReceived(coin, sqlmsg);
-        if (COUNT >= 0){
-          searchSQL(coins);
-        }
-      }
-    });
-  }else{
-    COUNT = COUNT-1;
-    if (COUNT >= 0){
-      searchSQL(coins);
-    }
-  }
-}
-
-//This function register all the transaction data in the DB
-function RegisterTransactionInDB(coin) {
-  MDS.log("Registering the Transaction in the DB..");
-  var client_wallet_address;
-  var client_token_id;
-  var client_amount_desired;
-  for(var i = 0; i < coin.state.length; i++) {
-    if (coin.state[i].port == 0) operation = coin.state[i].data;
-    if (coin.state[i].port == 1) client_wallet_address = coin.state[i].data;
-    if (coin.state[i].port == 2) client_token_id = coin.state[i].data;
-    if (coin.state[i].port == 3) client_amount_desired = coin.state[i].data;
-  }
-  var trx_done = 0;
-  var fullsql = "INSERT INTO tokensreceived (coinidreceived,amountreceived,operation,clientwalletaddress,clienttokenid,clientamountdesired,trxdone,date) VALUES "
-			+"('"+coin.coinid+"','"+coin.amount+"','"+operation+"','"+client_wallet_address+"','"+client_token_id+"','"+client_amount_desired+"','"+trx_done+"',"+Date.now()+")";
-
-	MDS.sql(fullsql, function(resp){
-    MDS.log(JSON.stringify(resp));
-		if (resp.status) {
-      MDS.log("Transaction Registered Correctly in the DB with the Following coinid: "+coin.coinid);
-      //Now is time to Process the transacion and Send the tokens to the Buyer
-      SendTheTokensToTheBuyer(coin);
-    }
-    else {
-      MDS.log("Transaction NOT Inserted in the DB");
-      //We sould register that problem into another DataBase. It allow to check the transacions who has not been processet although they should have been processed
-    }
-	});
-}
 
 //This function sends the tokens to the buyer once all has been checked
 function SendTheTokensToTheBuyer(coin){
@@ -423,8 +321,8 @@ MDS.init(function(msg){
   //Do initialitzation
   if(msg.event == "inited"){
     MDS.log("The service.js is initialising MDS also in the background...");
-    createTheDB();
-		preparingSendpoll()
+    //createTheDB();
+		//preparingSendpoll()
     MDS.cmd("status", function(res) {
       if (res.status) {
         // get the version number and the blockchain time from the Status object returned
@@ -452,7 +350,6 @@ MDS.init(function(msg){
 		//Process the new event detected
     //alert("NEW BALANCE");
     getNewBalance();
-    newBalanceEvent();
   }
   else if(msg.event == "MINING"){
   // mining has started or ended
@@ -507,6 +404,17 @@ function TokenAdvertiserBalance(){
       }
 }
 
+//This function the token that has been fetched
+//on globbal variable BALANCE
+function getTokenByTokenID(tokenid){
+      for(var i = 0; i < BALANCE.length; i++) {
+        //Look for the token
+        if(BALANCE[i].tokenid == tokenid){
+          return BALANCE[i];  // return the token that matched the tokenid
+  		  }
+      }
+}
+
 //This function just detect if the type advertise type is set to Text then
 //It shows all texts fields and delete the content of web/image and disables it
 function TypeAdvertiseChange(){
@@ -514,7 +422,11 @@ function TypeAdvertiseChange(){
       var select = document.getElementById('select_type_advertise');
       var value = select.options[select.selectedIndex].value;
       if (value == 0) {  // Text
-        document.getElementById('web_img_input').value = "";
+        // we initilalize the text fields with "-" to avoid a minima bug when Sending
+        // a transaction with multucommands, if the string is empty or contains one space,
+        // the transaction will fails.
+
+        document.getElementById('web_img_input').value = "-";
         document.getElementById('web_img_input').disabled = true;
         document.getElementById("text_0_adv").disabled = false;
         document.getElementById("text_1_adv").disabled = false;
@@ -527,15 +439,15 @@ function TypeAdvertiseChange(){
         document.getElementById("text_8_adv").disabled = false;
       } else {
         document.getElementById('web_img_input').disabled = false;
-        document.getElementById("text_0_adv").value = "";
-        document.getElementById("text_1_adv").value = "";
-        document.getElementById("text_2_adv").value = "";
-        document.getElementById("text_3_adv").value = "";
-        document.getElementById("text_4_adv").value = "";
-        document.getElementById("text_5_adv").value = "";
-        document.getElementById("text_6_adv").value = "";
-        document.getElementById("text_7_adv").value = "";
-        document.getElementById("text_8_adv").value = "";
+        document.getElementById("text_0_adv").value = "-";
+        document.getElementById("text_1_adv").value = "-";
+        document.getElementById("text_2_adv").value = "-";
+        document.getElementById("text_3_adv").value = "-";
+        document.getElementById("text_4_adv").value = "-";
+        document.getElementById("text_5_adv").value = "-";
+        document.getElementById("text_6_adv").value = "-";
+        document.getElementById("text_7_adv").value = "-";
+        document.getElementById("text_8_adv").value = "-";
         document.getElementById("text_0_adv").disabled = true;
         document.getElementById("text_1_adv").disabled = true;
         document.getElementById("text_2_adv").disabled = true;
@@ -584,11 +496,12 @@ function GetTokens(){
       if(BALANCE[i].tokenid == "0x00"){
         opt.value = BALANCE[i].tokenid;
         opt.innerHTML = BALANCE[i].token;
-      }else{
+      }/*else{
         opt.value = BALANCE[i].tokenid;
         opt.innerHTML = BALANCE[i].token.name;
-      }
+      }*/
       select.appendChild(opt);
+      break;
     }
 
     //Add tokens to the dongle Token balance
@@ -607,14 +520,17 @@ function GetTokens(){
     //Add tokens to the dongle buy a Token (buy)
     for(var i = 0; i < BALANCE.length; i++) {
       var opt = document.createElement('option');
+      isMinima = false;
       if(BALANCE[i].tokenid == "0x00"){
-        opt.value = BALANCE[i].tokenid;
-        opt.innerHTML = BALANCE[i].token;
+        //opt.value = BALANCE[i].tokenid;
+        //opt.innerHTML = BALANCE[i].token;
+        isMinima = true;
       }else{
         opt.value = BALANCE[i].tokenid;
         opt.innerHTML = BALANCE[i].token.name;
       }
-      select3.appendChild(opt);
+      if (! isMinima) select3.appendChild(opt);
+      isMinima = false;
     }
 
     //Add tokens to the dongle configure Advertiser token
@@ -700,6 +616,11 @@ function ConfigureCampaign(){
   var advertiser_token_select= document.getElementById("select_advertiser_tokens");
   var advertiser_token = advertiser_token_select.options[advertiser_token_select.selectedIndex].value;
   var token_amount = document.getElementById("token_amount_configure").value;
+  var tk = getTokenByTokenID(advertiser_token);
+  if (token_amount > tk.sendable) {
+    alert("You cannot configure more tokens than you have, MAX available tokens amount: "+tk.sendable);
+    return;
+  }
   var type_advertise_select = document.getElementById("select_type_advertise");
   var type_advertise = type_advertise_select.options[type_advertise_select.selectedIndex].value;
   var web_img = document.getElementById("web_img_input").value;
@@ -719,34 +640,14 @@ function ConfigureCampaign(){
   var text_7_adv = document.getElementById("text_0_adv").value;
   var text_8_adv = document.getElementById("text_0_adv").value;
 
-/*  var state_vars = '{' + get_state_vars_string (advertiser_token, 12) +
-    '"13":"'+campaign+'",' +
-    '"14":"1",' +
-    '"15":"'+dapp_rewards+'",' +
-    '"16":"'+tokens_type_reward_dapp+'",' +
-    '"17":"'+user_rewards+'",' +
-    '"18":"'+tokens_type_reward_dapp+'",' +
-    '"19":"'+type_advertise+'",' +
-    '"20":"'+web_img+'",' +
-    '"21":"'+actions_adv+'",' +
-    '"22":"'+rules_adv+'",' +
-    '"23":"'+text_0_adv+'",' +
-    '"24":"'+text_1_adv+'",' +
-    '"25":"'+text_2_adv+'",' +
-    '"26":"'+text_3_adv+'",' +
-    '"27":"'+text_4_adv+'",' +
-    '"28":"'+text_5_adv+'",' +
-    '"29":"'+text_6_adv+'",' +
-    '"30":"'+text_7_adv+'",' +
-    '"31":"'+text_8_adv+'"}';
-*/
 
     MDS.cmd("coins tokenid:"+advertiser_token, function(res){
       if (res.status) {
         MDS.log("Getting token info to Configure Campaign by tokenid: "+res.response[0].tokenid);
         //alert(JSON.stringify(res.response, undefined, 2));
 
-        var state_vars = '{' + get_state_vars_string(res.response[0], 12) +
+        var coin = res.response[0];
+        var state_vars = '{' + get_state_vars_string(coin, 12) +
             '"13":"['+campaign+']",' +
             '"14":"1",' +
             '"15":"'+dapp_rewards+'",' +
@@ -767,14 +668,16 @@ function ConfigureCampaign(){
             '"30":"['+text_7_adv+']",' +
             '"31":"['+text_8_adv+']"}';
 
-            alert("state vars:"+state_vars);
-            var command = 'send address:0x614190606CD54F2CF78D06813CE1BF4C71438C7897234C7D0F788D4F65F84BDE amount:'+token_amount+' state:'+state_vars;
-            alert(command);
+            MDS.log("STATE VARS:"+state_vars);
+            // Send tokent to himself (buyer) = coin.state[10]
+            alert(JSON.stringify(res.response[0]));
+            var command = 'send address:' + coin.state[10].data + ' amount:'+token_amount+ ' tokenid:'+advertiser_token + ' state:'+state_vars;
+            //alert(command);
             MDS.cmd(command, function(res){
               if (res.status) {
-                MDS.log("Sending token configured with state vars of Campaign");
+                MDS.log("Configured tokens Camapign with state vars of Campaign: "+campaign+" tokenid:"+advertiser_token);
                 //alert(JSON.stringify(res.response, undefined, 2));
-                alert("TOKEN SENT "+advertiser_token);
+                //alert("TOKEN SENT "+advertiser_token);
               }
               else{
                 //alert("ERROR");

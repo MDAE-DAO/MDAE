@@ -2,7 +2,7 @@
   <head>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <script type="text/javascript" src="js/mds.js"></script>
-    <script type="text/javascript" src="js/service.js"></script>
+  <!--  <script type="text/javascript" src="js/service.js"></script> -->
     <script type="text/javascript" src="js/adv-cli.js"></script>
     <link rel="icon" type="image/x-icon" href="images/favicon.ico">
     <link rel="stylesheet" href="css/styles.css">
@@ -50,8 +50,8 @@
       </div>
       <div class="INF Buytoken">
         <table>
-  			<h2>BUY TOKENS TO THE DAO (section under construction!!)</h2>
-        <p>Select the Token to send, the Amount and the Address where you wnat to Receive the Tokens.</p>
+  			<h2>BUY ADVERTSING TOKENS TO THE DAO </h2>
+        <p>Select the amount of minimas to spend , 1 minima price per token, the Amount of tokens to buy and the Address where you wnat to Receive the Tokens.</p>
   			<tr>
   				<td style="color:#FFF; text-align:right;">Token to Spend: </td>
   				<td>
@@ -67,7 +67,7 @@
   				<td>
   				  <select id="seloperation">
               <option value="Buy">BUY</option>
-              <option value="Sell">SELL</option>
+            <!--  <option value="Sell">SELL</option> -->
             </select>
   				</td>
   			</tr>
@@ -76,7 +76,7 @@
   				<td><input type="text" id='ownaddress' maxlength='64'></td>
   			</tr>
         <tr>
-  				<td style="color:#FFF; text-align:right;">Token to Buy/Sell: </td>
+  				<td style="color:#FFF; text-align:right;">Token to Buy: </td>
   				<td>
   				  <select id="tokens3"></select>
   				</td>
@@ -86,12 +86,17 @@
   				<td><input type="text" id='amounttobuy' maxlength='64'></td>
   			</tr>
         <tr>
-  				<td style=" color:#FFF; text-align:right;">Main DAO Wallet: </td>
+  				<td style=" color:#FFF; text-align:right;">Buyer Wallet: </td>
   				<td><input type="text" id='destinationaddress' maxlength='66'></td>
   			</tr>
+        <td>
+          <td></td>
+          <td><span style="font-size:1.2em;">Get the Buyer address from Status tools and Section clicking on <b>Get Address</b>, The tokens bought will be delivered on this address
+          and also the <b>publickey</b> of this address will be used internally</span></td>
+        </tr>
   		</table>
       <br>
-      <button type="button" id="buybutton" class="Button" onclick="SendMoney();">Send Tokens</button>
+      <button type="button" id="buybutton" class="Button" onclick="BuyTokens();">Buy Tokens</button>
       </div>
       <div class="INF ConfigureAdvertiserToken">
         <table>
@@ -167,7 +172,7 @@
         </tr>
         <tr>
   				<td style=" color:#FFF; text-align:right;">Actions: </td>
-  				<td><input type="text" id='actions_adv' maxlength='64' disabled value=" "></td>
+  				<td><input type="text" id='actions_adv' maxlength='64' disabled value="-"></td>
           <td style=" color:#FFF; text-align:right;">Text-7: </td>
           <td><input type="text" id='text_7_adv' maxlength='64' value=" "></td>
   			</tr>
@@ -175,7 +180,7 @@
   				<td style=" color:#FFF; text-align:right;">Rules: </td>
   				<td><input type="text" id='rules_adv' maxlength='66' value="click" style="text-align:center;" disabled></td>
           <td style=" color:#FFF; text-align:right;">Text-8: </td>
-          <td><input type="text" id='text_8_adv' maxlength='64' value=" "></td>
+          <td><input type="text" id='text_8_adv' maxlength='64' value="-"></td>
       	</tr>
   		</table>
       <br>
