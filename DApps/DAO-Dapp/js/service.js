@@ -122,6 +122,8 @@ MDS.init(function(msg){
         document.getElementById("version").innerText = version;
         const blockchaintime = res.response.chain.time;
         document.getElementById("blockchaintime").innerText = blockchaintime;
+        getcontacts();
+        getTokens();
         //Keep cheking the blockchain time.
         setInterval(updateTime, 100);
       }
@@ -141,6 +143,7 @@ MDS.init(function(msg){
     MDS.log("New Balance Detected");
 		//Process the new event detected
     newBalanceEvent();
+    getTokens();
   }
   else if(msg.event == "MINING"){
   // mining has started or ended

@@ -75,7 +75,7 @@ function addContact() {
       document.getElementById("status-object").innerText = nodeStatus;
       //MDS.log("Contact: "+CreateContact);
       //MDS.log(JSON.stringify(resp));
-      Getcontacts();
+      getcontacts();
     }
     //if the response status is false
     else{
@@ -89,7 +89,7 @@ function addContact() {
 }
 
 //Send the Contacts available to the dongles
-function Getcontacts() {
+function getcontacts() {
   MDS.cmd("maxcontacts", function(result) {
     //MDS.log(JSON.stringify(result));
     var contact = result.response.contacts;
@@ -243,7 +243,7 @@ function createToken(){
       alert("Could not create the Token");
     }
   });
-  GetTokens();
+  getTokens();
   minimaBalance();
 }
 
@@ -296,12 +296,12 @@ function createComplexToken(){
       alert("Could not create the Token");
     }
   });
-  GetTokens();
+  getTokens();
   minimaBalance();
 }
 
 //Send the Tokens available to the dongles
-function GetTokens(){
+function getTokens(){
   MDS.cmd("balance",function(result){
     //Create the select dongles
     var select = document.getElementById('tokens');
@@ -752,7 +752,7 @@ function sendTheDataToTheAdvertiser(coin){
         MDS.cmd(CreateContact, function(resp) {
           if (resp.status) {
             MDS.log("New Maxima Contact Created: "+CreateContact);
-            Getcontacts();
+            getcontacts();
             var sqlrows = sqlmsg.rows;
             //Takes the last address recorded
             let j = (sqlrows.length -1);
