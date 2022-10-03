@@ -61,6 +61,7 @@ function contact(){
   });
 }
 
+
 //This function add a Maxima contact
 function addContact() {
   //Get the information
@@ -87,6 +88,37 @@ function addContact() {
   });
 }
 
+//Send the Contacts available to the dongles
+function Getcontacts() {
+  MDS.cmd("maxcontacts", function(result) {
+    //MDS.log(JSON.stringify(result));
+    var contact = result.response.contacts;
+    if (result.status) {
+      if(contact.length==0){
+        return;
+      }
+      else{
+        //Create the select dongles
+        var select = document.getElementById('contactslist');
+        while (select.hasChildNodes()) {
+          select.removeChild(select.firstChild);
+        }
+        //Add each Token
+        contact = result.response.contacts;
+        //Add the contacts to the dongle list contacts
+        for(var i = 0; i < contact.length; i++) {
+          var opt = document.createElement('option');
+          opt.value = contact[i].id;
+          opt.innerHTML = contact[i].extradata.name;
+          document.getElementById("contactname").innerText = contact[i].extradata.name;
+          document.getElementById("contactpublickey").innerText = contact[i].publickey;
+          document.getElementById("contactid").innerText = contact[i].currentaddress;
+          select.appendChild(opt);
+        }
+      }
+    }
+  })
+}
 
 
 //*****BALANCE SECTION
@@ -212,6 +244,101 @@ function createToken(){
     }
   });
   GetTokens();
+  minimaBalance();
+}
+
+
+//This function create a new complex token
+function createComplexToken(){
+  //Get the information
+  var tokenname 	= document.getElementById('ComplexTokenName').value;
+	var tokenamount = document.getElementById('ComplexAmount').value;
+	if(tokenamount=="" || tokenamount < 0){
+		alert("Invalid amount..");
+		return;
+	}
+  var complexDecimals = document.getElementById('ComplexDecimals').value;
+  var vault = document.getElementById('vault').value;
+  var publickey1 = document.getElementById('publickey1').value;
+  var publickey2 = document.getElementById('publickey2').value;
+  var publickey3 = document.getElementById('publickey3').value;
+  var dAOAddress = document.getElementById('DAOAddress').value;
+  var dAOPublickey = document.getElementById('DAOPublickey').value;
+  var percentagePartyComission = document.getElementById('PercentagePartyComission').value;
+  var percentageUserComission = document.getElementById('PercentageUserComission').value;
+  var percentageValueRewards = document.getElementById('PercentageValueRewards').value;
+  var toeknPrice = document.getElementById('ToeknPrice').value;
+  var state_vars = '{'+
+      '"0":"['+vault+']",' +
+      '"1":"['+publickey1+']",' +
+      '"2":"['+publickey2+']",' +
+      '"3":"['+publickey3+']",' +
+      '"4":"['+dAOAddress+']",' +
+      '"5":"['+dAOPublickey+']",' +
+      '"6":"['+percentagePartyComission+']",' +
+      '"7":"['+percentageUserComission+']",' +
+      '"8":"['+percentageValueRewards+']",' +
+      '"9":"['+toeknPrice+']"}';
+  CreateTokenFunction = "tokencreate name:"+tokenname+" amount:"+tokenamount+" decimals:"+complexDecimals+" state:"+state_vars;
+  MDS.log("STATE VARS:"+CreateTokenFunction);
+  MDS.cmd(CreateTokenFunction, function(resp) {
+    if (resp.status) {
+      alert("Token Created!");
+      var nodeStatus = JSON.stringify(resp.response, undefined, 2);
+      document.getElementById("status-object").innerText = nodeStatus;
+      MDS.log("TOKEN: "+CreateTokenFunction);
+      MDS.log(JSON.stringify(resp));
+    }
+    //if the response status is false
+    else{
+      var nodeStatus = JSON.stringify(resp, undefined, 2);
+      document.getElementById("status-object").innerText = nodeStatus;
+      alert("Could not create the Token");
+    }
+  });
+  GetTokens();
+  minimaBalance();
+}
+
+//Send the Tokens available to the dongles
+function GetTokens(){
+  MDS.cmd("balance",function(result){
+    //Create the select dongles
+    var select = document.getElementById('tokens');
+    while (select.hasChildNodes()) {
+      select.removeChild(select.firstChild);
+    }
+    var select2  = document.getElementById('tokens2');
+    while (select2.hasChildNodes()) {
+      select2.removeChild(select2.firstChild);
+    }
+    //Add each Token
+    balance = result.response;
+    //Add the tokens to the dongle Buy a Token (spend)
+    for(var i = 0; i < balance.length; i++) {
+      var opt = document.createElement('option');
+      if(balance[i].tokenid == "0x00"){
+        opt.value = balance[i].tokenid;
+        opt.innerHTML = balance[i].token;
+      }else{
+        opt.value = balance[i].tokenid;
+        opt.innerHTML = balance[i].token.name;
+      }
+      select.appendChild(opt);
+    }
+    //Add tokens to the dongle Token balance
+    for(var i = 0; i < balance.length; i++) {
+      var opt = document.createElement('option');
+      if(balance[i].tokenid == "0x00"){
+        opt.value = balance[i].tokenid;
+        opt.innerHTML = balance[i].token;
+      }else{
+        opt.value = balance[i].tokenid;
+        opt.innerHTML = balance[i].token.name;
+      }
+      select2.appendChild(opt);
+    }
+  });
 }
 
 
@@ -355,7 +482,7 @@ function listprofilesreceivedDB(){
 }
 
 function listadvertisersDB(){
-  MDS.sql("SELECT * FROM advertisersDAO3",function(sqlmsg){
+  MDS.sql("SELECT * FROM advertisersDAO",function(sqlmsg){
     if (sqlmsg.status) {
       var nodeStatus = JSON.stringify(sqlmsg, undefined, 2);
       document.getElementById("status-object").innerText = nodeStatus;
@@ -482,7 +609,7 @@ function searchSQL(coins){
     }
     if (operation == "[GET_INFO]"){
       MDS.log("With Operation: "+operation);
-      MDS.sql("SELECT * from advertisersDAO3 WHERE coinidreceived='"+coin.coinid+"'", function(sqlmsg){
+      MDS.sql("SELECT * from advertisersDAO WHERE coinidreceived='"+coin.coinid+"'", function(sqlmsg){
         if (sqlmsg.status) {
           COUNT = COUNT-1;
           checkTokenReceived(coin, sqlmsg);
@@ -579,7 +706,7 @@ function registerTransactionInDB(coin) {
       if (coin.state[i].port == 4) publickey = coin.state[i].data;
     }
     var trx_done = 0;
-    var fullsql = "INSERT INTO advertisersDAO3 (coinidreceived,amountreceived,operation,topicsofinterest,dappcode,contactid,publickey,trxdone,date) VALUES "
+    var fullsql = "INSERT INTO advertisersDAO (coinidreceived,amountreceived,operation,topicsofinterest,dappcode,contactid,publickey,trxdone,date) VALUES "
   			+"('"+coin.coinid+"','"+coin.amount+"','"+operation+"','"+topics_of_interest+"','"+dappcode+"','"+contactid+"','"+publickey+"','"+trx_done+"',"+Date.now()+")";
 
 
