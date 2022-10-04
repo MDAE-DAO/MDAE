@@ -1,0 +1,129 @@
+
+------ ADVERTISER -----------------
+
+----- PROBLEM A -------
+-----------------------
+Some of complexity to deal with the SCALABILITY, bought tokens, the configured tokens by campaigns and the same token type and how to deal with it:
+----------------------
+
+- The advertiser has publicity tokens and some of them can be configured as a campaign ready to send to every final user,
+so we have to think as in a real case scenario, an advertiser node can have a thousands 20k or more tokens, so doing a search for them on the node
+to look for tokens which are configured or not it can be very painful and in terms of resources a very big JSON object generated.
+
+So one solution is when buying tokens those go to one specific address and once the tokens are configured they are going to another address, that way,
+we can narrow the space to search(this could be applied to every different kind of publicity token), then let complicate things, every token type,
+when configured for a campaign, they can be configured with different parameters, the same token type can be configured on different options on different campaigns,
+as the campaign description is embedded on the token state vars, then we could search into the address where configured tokens of specific type are,
+for a specific campaign set on the state vars of every token, before launching a campaign to the users, but again, this search can be very huge as on the same
+address can be thousands of tokens of the same type but configured for different campaigns.
+
+To narrow even more the search we could split more this classification using an script with the campaign name and the tokenid acting as a selector to send
+the configured tokens on different addresses based on this unique script address generated, this last option seems the more efficient and easy to manage.
+
+- Considering a database for managing this classification has some problems:
+
+When search for sending campaigns, the problem with the database to try too classify (organize) all of it, it lends to that the only way to identify a token
+for sure it is by its coinid, since using tokenid you don know if the token is configured or not or what campaign does it have, and the coinid when you configure a token
+it will be different than when the token was bought, as you send it to yourself changing the state vars to configure it and then the coinid is changing, so you should need to use
+newbalance event to detect this new coinid generated and then use the database to register it and classify it, and makes things to manage more complicated.
+
+Another aproach instead of using the coinid to classify the tokens on the database it would be using the same address classification approach thought with the
+script, a different address for each campaign name, but that does implies using "getaddress" minima command and that command can return an already used address so
+extra checks would be needed..... too complex.
+
+------- SOLUION A ----------
+----------------------------
+The best, efficient and easy solution to solve the problem is using a script with the token type and campaign name to generate a unique address where to send
+the configured tokens, so that way you could locate where the tokens are and then launch a campaign on some of them or all of them only knowing the tokenid and
+the campaign name, keeping the number of tokens on an address as low as possible and making the search faster and the response object of it smallest as possible.
+
+So the first time a campaign name is used, a script would be generated and the token type, the address of script and the campaign name will be saved on the database,
+when the advertiser want to configure another token, it will search on the database if the campaign name exists, if so, no script is registered and the
+script address of the database is used to send the configured tokens to the script address and the amount of tokens on the database is updated as well as when
+a campaign is sent to the users, the amount of tokens available is also updated on the database to avoid executing more than one minima node commands and dealing with callbacks.
+
+So the database should save the tokenid, the campaign name, the script address and the amount of tokens available.
+
+Note: To avoid doing extra useless searches on the database, once the Advertiser APP is launched, the database could be loaded as a Javascript Object on a GLOBAL
+variable and updating it when changes on the database are done, that way before hitting the database for searches we hit before the global javascript object do
+the operation and after that update the database and speed things on.
+
+-------- END SOLUTION A -----
+-----------------------------------------------------------------------------------------------------------------------------------------------------------
+
+the problem is not on the response from the DAO, as it would be using maxima to return the results, the problem is the Advertiser, he can also choose the amount of results he wants to or simply save them on his database and then pick up at random, but saving them on the database it makes database not always updated, as imagine a user who register now for receiving publicity on a DAPP and after a few days he unregisterd it or simply uninstalling the DAPP , the API calls automatically to the tracker DAPP and unregister the user to receive that user from that DAPP
+
+El DAO es el que ha de crear els TOKENS, els basics de publicitat i els possible futurs que donguin mes possibilitats i mes opcions als publicistes, aleshores tinc pensat que quan el advertiser s'instala per primera vegada, el que fa es demanar la wallet del DAO i aleshores li demana una operacio de configuracio i el DAO li retorna els tokens de publicitat disponibles (per ara, en un futur podriem tenir oracles i mes opcions), i pel tema del TOKEN que dius, tambe ho havia pensat, crec que hauria de ser el que es fa servir per enviar misatges entre les diferents DAPPS per sincronitzar o enviar ordres, en comptes de enviar una fracció de un minima o els 10 minimes directament per comprar 10 tokens, ho hauriem de fer amb aquest token especial, pero aixo ja seria una versio 2.0, pero el negoci aqui esta en la compra del token i les diferents opcions que pot haver-hi segons el token o funcionalitat que vols comprar(us ilimitat de per vida del token, us limitat per un contador, un sol us.......) i les comisions que el VAULT rebera de lo que cobri cada developer i cada usuari sempre que es visualitzi un token de publicitat.
+Pel tema del DAO, ja versio 2.0 , nomes pot fer servir el DAO algu que tingui un token de governança, sino no hauries de poder fer servir el DAO en mode admin.
+Tambe es podria afegir un token per inversos, a mode de staking, que en funcio dels beneficis del DAO repartis dividents entre aquests tokens......seria una forma de finançar-se
+
+
+Script Advertiser 2: Classificate the configured tokens
+Send the configured tokens to different wallets determined by the execution of a script, according to the campaign name
+and the tokenid.
+
+SCRIPT:
+LET tokenid=
+LET campaign_name=
+RETURN TRUE
+
+runscript script:"LET tokenid=0x1736E20905F0171F18BAC012B613BEAD9F22FE60A54596F61753E0754D4B5D6A LET campaign_name="[TEST_CAMPAIGN]" RETURN TRUE"
+
+
+Enivronment DAO:
+java -jar minima.jar -data edenbase1 -test -nop2p -mdsenable -genesis -clean
+java -jar minima.jar -data edenbase1 -test -nop2p -mdsenable
+
+
+dao address: 0x5952FC2561BCE74F9AC3D80F80B759CF6F76256445DA8C1CBAE36A2F726AA818
+dao publickey: 0x773DC6ABF2083B353A3357E2B9770D45833A8710AAF8A7FB6D8EF326A2489034
+vault publickey 1: 0xEC48E40FB2DA8BEEB5B892276085545969AFBC78DA6888C3C97B1FC396AFF0A5
+vault publickey 2: 0x4C2141B21094D2FD08A1EF8C699859584E1B734AA45C21A3D19CD250374BAECA
+vault publickey 3: 0xCFCD52617D08174C7E3D27C4D186A9F5D3E17AC7772F07206C58C990A65BDAD8
+vault address: 0xA51F9F3DF661B9529D8D062C77DC777AB5C8CBD8B9F602B496A91794FF4226EC
+TOKENID: 0xFA150FF966F7B0BEFC034EB5A96B1FD709FDECF59B65D672B75BA71DC4289134
+
+script VAULT:
+-> newscript trackall:true script:"RETURN MULTISIG(2 0xEC48E40FB2DA8BEEB5B892276085545969AFBC78DA6888C3C97B1FC396AFF0A5 0x4C2141B21094D2FD08A1EF8C699859584E1B734AA45C21A3D19CD250374BAECA 0xCFCD52617D08174C7E3D27C4D186A9F5D3E17AC7772F07206C58C990A65BDAD8)"
+"response":{
+    "script":"RETURN MULTISIG(2 0xEC48E40FB2DA8BEEB5B892276085545969AFBC78DA6888C3C97B1FC396AFF0A5 0x4C2141B21094D2FD08A1EF8C699859584E1B734AA45C21A3D19CD250374BAECA 0xCFCD52617D08174C7E3D27C4D186A9F5D3E17AC7772F07206C58C990A65BDAD8)",
+    "address":"0xA51F9F3DF661B9529D8D062C77DC777AB5C8CBD8B9F602B496A91794FF4226EC",
+    "miniaddress":"MxG08553UFJRTJ1N599R3865HRTZTRQMN4CNM5PUZ1B95Y92UAFUGH6TWBCHKAT",
+    "simple":false,
+    "default":false,
+    "publickey":"0x00",
+    "track":true
+  }
+}
+
+
+-> tokencreate name:"aMDAE" amount:5000 decimals:0 state:{"0":"0xA51F9F3DF661B9529D8D062C77DC777AB5C8CBD8B9F602B496A91794FF4226EC", "1":"0xEC48E40FB2DA8BEEB5B892276085545969AFBC78DA6888C3C97B1FC396AFF0A5","2":"0x4C2141B21094D2FD08A1EF8C699859584E1B734AA45C21A3D19CD250374BAECA","3":"0xCFCD52617D08174C7E3D27C4D186A9F5D3E17AC7772F07206C58C990A65BDAD8","4":"0x5952FC2561BCE74F9AC3D80F80B759CF6F76256445DA8C1CBAE36A2F726AA818","5":"0x773DC6ABF2083B353A3357E2B9770D45833A8710AAF8A7FB6D8EF326A2489034","6":"0.2","7":"0.2","8":"0.2","9":"1"}
+
+Environment ADVERTISER:
+java -jar minima.jar -data edenbase2 -test -nop2p -port 10001 -connect 127.0.0.1:9001 -mdsenable -clean
+java -jar minima.jar -data edenbase2 -test -nop2p -port 10001 -connect 127.0.0.1:9001 -mdsenable
+
+
+Buyer address: 0x66C093946AF35956F811B48CC012394864F4F12FAA166727FF48685628E02996
+Buyer publickey: 0x324C79A5CA74AA63324372803AF4835A14F397B84839F87E7E0529AF4EEED2E9
+getaddress
+"response":{
+    "script":"RETURN SIGNEDBY(0x324C79A5CA74AA63324372803AF4835A14F397B84839F87E7E0529AF4EEED2E9)",
+    "address":"0x66C093946AF35956F811B48CC012394864F4F12FAA166727FF48685628E02996",
+    "miniaddress":"MxG0836Z29P8QNJB5BFG4DKHJ014EA8CJQF2BTA2PJWFVQ8D1B2HZ19WQQAMA87",
+    "simple":true,
+    "default":true,
+    "publickey":"0x324C79A5CA74AA63324372803AF4835A14F397B84839F87E7E0529AF4EEED2E9",
+    "track":true
+  }
+}
+
+
+-Send 10 tokens to advertiser (buyer) with all state variables set
+
+  send address:0x66C093946AF35956F811B48CC012394864F4F12FAA166727FF48685628E02996 amount:10 tokenid:0xFA150FF966F7B0BEFC034EB5A96B1FD709FDECF59B65D672B75BA71DC4289134  state:{"0":"0xA51F9F3DF661B9529D8D062C77DC777AB5C8CBD8B9F602B496A91794FF4226EC", "1":"0xEC48E40FB2DA8BEEB5B892276085545969AFBC78DA6888C3C97B1FC396AFF0A5","2":"0x4C2141B21094D2FD08A1EF8C699859584E1B734AA45C21A3D19CD250374BAECA","3":"0xCFCD52617D08174C7E3D27C4D186A9F5D3E17AC7772F07206C58C990A65BDAD8","4":"0x5952FC2561BCE74F9AC3D80F80B759CF6F76256445DA8C1CBAE36A2F726AA818","5":"0x773DC6ABF2083B353A3357E2B9770D45833A8710AAF8A7FB6D8EF326A2489034","6":"0.2","7":"0.2","8":"0.2","9":"1","10":"0x66C093946AF35956F811B48CC012394864F4F12FAA166727FF48685628E02996","11":"10","12":"0x324C79A5CA74AA63324372803AF4835A14F397B84839F87E7E0529AF4EEED2E9"}
+
+Configure Campaing:
+campaing address: 0xF0976BC223ECB75BE6EB133B4AE4CCD846C390B2C26570AEB1046CB402694B4D
+campaing name:  [TEST2]
+campaing token: 0xFA150FF966F7B0BEFC034EB5A96B1FD709FDECF59B65D672B75BA71DC4289134
