@@ -52,7 +52,7 @@
       <div class="INF Buytoken">
         <table>
   			<h2>SEND TOKENS MANUALLY</h2>
-        <p>Fill in the fiels and send Tokens.</p>
+        <p>Fill in the fields and send Tokens.</p>
   			<tr>
   				<td style="color:#FFF; text-align:right;">Token to Send: </td>
   				<td>
@@ -72,8 +72,8 @@
       <button type="button" id="buybutton" class="Button" onclick="sendTokens();">Send Tokens</button>
       </div>
       <div class="INF Tokencreate">
-        <h2>CREATE A TOKEN</h2>
-          <p>Fill in the fiels and create any Token.</p>
+        <h2>CREATE A SIMPLE TOKEN</h2>
+          <p>Fill in the fields and create any Token.</p>
           <table style="color:#FFF; border=0;">
             <tr>
       				<td style="color:#FFF; text-align:right;">Token Name: </td>
@@ -87,6 +87,68 @@
           <br>
           <button class="button Create Token" onclick='createToken();'>Create The Token</button>
       </div>
+    </div>
+    <div class="Box">
+      <h2>CREATE A COMPLEX TOKEN</h2>
+      <p>Fill in the fields:</p>
+      <table style="color:#FFF; border=0;">
+        <tr>
+          <td style="color:#FFF; text-align:right;">Token Name: </td>
+          <td><input type="text" id="ComplexTokenName" maxlength="64"></td>
+        </tr>
+        <tr>
+          <td style="text-align:right;">Amount: </td>
+          <td><input type="number" id="ComplexAmount" maxlength="64"></td>
+        </tr>
+        <tr>
+          <td style="text-align:right;">Decimals: </td>
+          <td><input type="number" id="ComplexDecimals" maxlength="64"></td>
+        </tr>
+        <tr>
+          <td style="color:#FFF; text-align:right;">VAULT Address: </td>
+        <td><input type="text" id="vault" maxlength="256"></td>
+        </tr>
+        <tr>
+          <td style="text-align:right;">Publickey 1 vault script: </td>
+          <td><input type="text" id="publickey1" maxlength="256"></td>
+        </tr>
+        <tr>
+          <td style="color:#FFF; text-align:right;">Publickey 2 vault script: </td>
+          <td><input type="text" id="publickey2" maxlength="256"></td>
+        </tr>
+        <tr>
+          <td style="text-align:right;">Publickey 3 vault script: </td>
+          <td><input type="text" id="publickey3" maxlength="256"></td>
+        </tr>
+        <tr>
+          <td style="text-align:right;">DAO Address: </td>
+          <td><input type="text" id="DAOAddress" maxlength="256"></td>
+        </tr>
+        <tr>
+          <td style="color:#FFF; text-align:right;">DAO Publickey: </td>
+          <td><input type="text" id="DAOPublickey" maxlength="256"></td>
+        </tr>
+        <tr>
+          <td style="text-align:right;">% Third party comission of the rewards to be received by DAO: </td>
+          <td><input type="number" id="PercentagePartyComission" maxlength="64"></td>
+        </tr>
+        <tr>
+          <td style="color:#FFF; text-align:right;">% Final user comission of the rewards to be received by DAO: </td>
+          <td><input type="number" id="PercentageUserComission" maxlength="64"></td>
+        </tr>
+        <tr>
+          <td style="text-align:right;">  % of the value of rewards if are not minimas to be received by DAO: </td>
+          <td><input type="number" id="PercentageValueRewards" maxlength="64"></td>
+        </tr>
+        <tr>
+          <td style="text-align:right;">Price of the token: </td>
+          <td><input type="number" id="ToeknPrice" maxlength="64"></td>
+        </tr>
+      </table>
+      <br>
+      <button class="button Create Token" onclick='createComplexToken();'>Create The Token</button>
+    </div>
+    <div class="wrapper">
       <div class="INF Tokenminima">
         <h2>MINIMA TOKEN BALANCE</h2>
         <p>Token: <span id="MinimaToken"></span></p>
@@ -130,87 +192,5 @@
     <div class="Box Credits">
       <p style="text-align: center;">Developed by Minima Innovation Challenge Team</p>
     </div>
-
-
-
-
-    <script type="text/javascript">
-      //document.getElementById("buybutton").disabled = true;
-      //Initialise the dongles and data
-      Getcontacts();
-      GetTokens();
-      //Send the Contacts available to the dongles
-      function Getcontacts() {
-        MDS.cmd("maxcontacts", function(result) {
-          //MDS.log(JSON.stringify(result));
-          var contact = result.response.contacts;
-          if (result.status) {
-            if(contact.length==0){
-        			return;
-        		}
-            else{
-              //Create the select dongles
-              var select = document.getElementById('contactslist');
-              while (select.hasChildNodes()) {
-                select.removeChild(select.firstChild);
-              }
-              //Add each Token
-              contact = result.response.contacts;
-              //Add the contacts to the dongle list contacts
-              for(var i = 0; i < contact.length; i++) {
-                var opt = document.createElement('option');
-                opt.value = contact[i].id;
-                opt.innerHTML = contact[i].extradata.name;
-                document.getElementById("contactname").innerText = contact[i].extradata.name;
-                document.getElementById("contactpublickey").innerText = contact[i].publickey;
-                document.getElementById("contactid").innerText = contact[i].currentaddress;
-                select.appendChild(opt);
-              }
-            }
-          }
-        })
-      }
-
-      //Send the Tokens available to the dongles
-      function GetTokens(){
-        MDS.cmd("balance",function(result){
-          //Create the select dongles
-          var select = document.getElementById('tokens');
-          while (select.hasChildNodes()) {
-            select.removeChild(select.firstChild);
-          }
-          var select2  = document.getElementById('tokens2');
-          while (select2.hasChildNodes()) {
-            select2.removeChild(select2.firstChild);
-          }
-          //Add each Token
-          balance = result.response;
-          //Add the tokens to the dongle Buy a Token (spend)
-          for(var i = 0; i < balance.length; i++) {
-            var opt = document.createElement('option');
-            if(balance[i].tokenid == "0x00"){
-              opt.value = balance[i].tokenid;
-              opt.innerHTML = balance[i].token;
-            }else{
-              opt.value = balance[i].tokenid;
-              opt.innerHTML = balance[i].token.name;
-            }
-            select.appendChild(opt);
-          }
-          //Add tokens to the dongle Token balance
-          for(var i = 0; i < balance.length; i++) {
-            var opt = document.createElement('option');
-            if(balance[i].tokenid == "0x00"){
-              opt.value = balance[i].tokenid;
-              opt.innerHTML = balance[i].token;
-            }else{
-              opt.value = balance[i].tokenid;
-              opt.innerHTML = balance[i].token.name;
-            }
-            select2.appendChild(opt);
-          }
-        });
-      }
-    </script>
   </body>
 </html>

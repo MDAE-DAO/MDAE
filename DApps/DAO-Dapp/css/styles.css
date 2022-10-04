@@ -1,5 +1,5 @@
 body{
-  margin: 0; 
+  margin: 0;
 }
 
 h1{
@@ -106,6 +106,8 @@ pre{
   margin-left: 1%;
   margin-right: 1%;
 }
+
+
 
 @media only screen and (min-width: 450px) and (max-width: 650px) {
   .wrapper{
