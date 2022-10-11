@@ -241,7 +241,7 @@ Procedure:
       - **state 11** : Amount of tokens to buy
       - **state 12** : Buyer publickey
       - **state 13** : CAMPAIGN name
-      - **state 14** : State of the token (0,1,2,3) non configured(empty),1 configured, sent, used
+      - **state 14** : State of the token (0,1,2,3) non configured(empty),1 configured, 2 sent, 3 used,
       - **state 15** : Amount of rewards to be received by the dapp(developer)
       - **state 16** : Type of rewards dapp (tokenid) (usualy 0x00)
       - **state 17** : Amount of rewards to be received by the final user

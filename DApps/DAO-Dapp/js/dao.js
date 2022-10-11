@@ -269,16 +269,16 @@ function createComplexToken(){
   var percentageValueRewards = document.getElementById('PercentageValueRewards').value;
   var toeknPrice = document.getElementById('ToeknPrice').value;
   var state_vars = '{'+
-      '"0":"['+vault+']",' +
-      '"1":"['+publickey1+']",' +
-      '"2":"['+publickey2+']",' +
-      '"3":"['+publickey3+']",' +
-      '"4":"['+dAOAddress+']",' +
-      '"5":"['+dAOPublickey+']",' +
-      '"6":"['+percentagePartyComission+']",' +
-      '"7":"['+percentageUserComission+']",' +
-      '"8":"['+percentageValueRewards+']",' +
-      '"9":"['+toeknPrice+']"}';
+      '"0":"'+vault+'",' +
+      '"1":"'+publickey1+'",' +
+      '"2":"'+publickey2+'",' +
+      '"3":"'+publickey3+'",' +
+      '"4":"'+dAOAddress+'",' +
+      '"5":"'+dAOPublickey+'",' +
+      '"6":"'+percentagePartyComission+'",' +
+      '"7":"'+percentageUserComission+'",' +
+      '"8":"'+percentageValueRewards+'",' +
+      '"9":"'+toeknPrice+'"}';
   CreateTokenFunction = "tokencreate name:"+tokenname+" amount:"+tokenamount+" decimals:"+complexDecimals+" state:"+state_vars;
   MDS.log("STATE VARS:"+CreateTokenFunction);
   MDS.cmd(CreateTokenFunction, function(resp) {
@@ -815,9 +815,10 @@ function sendTheTokensToTheBuyer(coin){
     if (coin.state[i].port == 3) client_amount_desired = coin.state[i].data;
     if (coin.state[i].port == 4) client_publickkey = coin.state[i].data;
   }
+
   MDS.log("Client Operation to Process: "+operation);
   if (operation == "[BUY]"){
-    if (coin.amount < client_amount_desired){
+    if (coin.amount == client_amount_desired){
       //*****Note that for now the exchage rate between tokens is 1:1******
       MDS.log("Transaction Checked with the Following coinid: "+coin.coinid);
       MDS.log("Sending the Tokens to the Client with the Following Client Address: "+client_wallet_address)
@@ -827,9 +828,9 @@ function sendTheTokensToTheBuyer(coin){
           //alert(JSON.stringify(res.response, undefined, 2));
 
           var state_vars = '{' + get_state_vars_string(res.response[0], 12) +
-              '"10":"['+client_wallet_address+']",' +
-              '"11":"['+client_amount_desired+']",' +
-              '"12":"['+client_publickkey+']"}';
+              '"10":"'+client_wallet_address+'",' +
+              '"11":"'+client_amount_desired+'",' +
+              '"12":"'+client_publickkey+'"}';
 
               alert("state vars:"+state_vars);
               //var command = 'send address:0x614190606CD54F2CF78D06813CE1BF4C71438C7897234C7D0F788D4F65F84BDE amount:'+token_amount+' state:'+state_vars;

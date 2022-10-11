@@ -10,18 +10,72 @@
 //    <script type="text/javascript" src="js/service.js"></script>
 
 
-var DAO_WALLET_ADDRESS = "0x7518EC03A64B1AC4BFCFC771437315FC71FEAA30A0FF8C821CE154C066A0EB34";
+var DAO_WALLET_ADDRESS = "";
+var ADVERTISER_WALLET_ADDRESS ="";
+var ADVERTISER_PUBLICKEY ="";
 var SENDPOLLUID ="";
 var GLOBAL = 0;
 var COUNT = 0;
 var BALANCE = {};
-const ADVERTISING_TOKENS = ["0xFA150FF966F7B0BEFC034EB5A96B1FD709FDECF59B65D672B75BA71DC4289134"];
+const ADVERTISING_TOKENS = [];
 var BUYER_ADDRESS ="";
 var BUYER_PUBLICKEY="";
-const CAMPAIGNS = new Object();
+var CAMPAIGNS = new Object();
+var TARGET_USERS = [];
+var TARGET_DEVELOPERS = [];
+
+//Main message handler..
+MDS.init(function(msg){
+  //Do initialitzation
+  if(msg.event == "inited"){
+    MDS.log("The service.js is initialising MDS also in the background...");
+    //createTheDB();
+		//preparingSendpoll()
+    listcampaignsDB(true);
+    MDS.cmd("status", function(res) {
+      if (res.status) {
+        // get the version number and the blockchain time from the Status object returned
+        const version = res.response.version;
+        document.getElementById("version").innerText = version;
+        const blockchaintime = res.response.chain.time;
+        document.getElementById("blockchaintime").innerText = blockchaintime;
+        //Keep cheking the blockchain time.
+        setInterval(updateTime, 100);
+      }
+    })
+    MDS.cmd("maxima", function(resp) {
+      if (resp.status) {
+        const maximaname = resp.response.name;
+        document.getElementById("maximacontactname").innerText = maximaname;
+      }
+    })
+    createTheDBDAOWalletAddress();
+    createTheDBAdvertiserWalletAddress()
+    createTheDBcampaign();
+  }
+  else if(msg.event == "NEWBLOCK"){
+  // the chain tip has changed
+  }
+  else if(msg.event == "NEWBALANCE"){
+    // user's balance has changed
+    MDS.log("New Balance Detected");
+		//Process the new event detected
+    //alert("NEW BALANCE");
+    getNewBalance();
+  }
+  else if(msg.event == "MINING"){
+  // mining has started or ended
+  }
+  else if(msg.event == "MINIMALOG"){
+  // new Minima log message
+  }
+  else{
+  }
+});
+
+
 
 //send address:0x9D90EE44464722B25EA05EBC443755FB81D8AAB1077726D5A2A09010BD041184 amount:7 tokenid:0x00 state:{"0":"[BUY]", "1":"0xC6496C916268F428259FA05A979A3FDE8E0901A52525A4D73578903AE2975634", "2":"0x00", "3":"7"}
-
 
 /////*****MAXIMA SECTION
 
@@ -62,15 +116,36 @@ function AddContact() {
   });
 }
 
+// Add the publicity token manually introduced
+function add_publicity_token(){
+  var tokenid = prompt("Please enter the Advertising Token id:", "");
+  ADVERTISING_TOKENS.push(tokenid);
+  GetTokens();
+}
 
+//Add the target user address manually introduced
+function add_user_address(){
+  var address = prompt("Please enter the User address:", "");
+  TARGET_USERS.push(address);
+  GetTokens();
+}
 
+//Add the target developer address manually introduced
+function add_developer_address(){
+  var address = prompt("Please enter the Developer address:", "");
+  TARGET_DEVELOPERS.push(address);
+  GetTokens();
+}
 //*****BALANCE SECTION
 
 //This function just list the Minima Token Balance
 //Modified to fetch the data from the global BALANCE variable
 function MinimaBalance(){
-		  //For each token do...
-		  for(var i = 0; i < BALANCE.length; i++) {
+  MDS.cmd("balance", function(res) {
+  //if the response status is true
+    if (res.status) {
+      BALANCE = res.response;
+      for(var i = 0; i < BALANCE.length; i++) {
         //Look for Minima token
         if(BALANCE[i].tokenid == "0x00"){
           //Get the values
@@ -86,6 +161,14 @@ function MinimaBalance(){
           document.getElementById("MinimaTotal").innerText = MinimaTotal;
   		  }
       }
+      GetTokens();
+      //alert("new balance event");
+    }
+    //if the response status is false
+    else{
+      document.getElementById("StatusBalances").innerText = "Warning: Could not retrieve current Balance Status";
+    }
+  });
 }
 
 
@@ -107,12 +190,15 @@ function BuyTokens(){
   var amount = document.getElementById('amount').value;             //minimas to use to buy tokens
   var amount_buy_tokens = document.getElementById('amounttobuy').value;
 
-  var state_vars = '{"0":"[BUY]","1":"'+buyer_address+'","2":"'+tokenid+'","3":"'+amount_buy_tokens+'","4:"'+BUYER_PUBLICKEY+'"}';
-  alert(state_vars);
+  var state_vars = '{"0":"[BUY]","1":"'+buyer_address+'","2":"'+tokenid+'","3":"'+amount_buy_tokens+'","4":"'+ADVERTISER_PUBLICKEY+'"}';
+  //alert(state_vars);
+  //alert(DAO_WALLET_ADDRESS);
   var CreateSend = "send address:"+DAO_WALLET_ADDRESS+" amount:"+amount+" tokenid:0x00" + " state:"+state_vars;
+  alert(CreateSend);
   MDS.cmd(CreateSend, function(resp) {
     if (resp.status) {
-      alert("Buy Tokens executed!");
+      MDS.log("Token Buyed "+CreateSend);
+      alert("Buy Tokens executed!"+ CreateSend);
       var nodeStatus = JSON.stringify(resp.response, undefined, 2);
       document.getElementById("status-object").innerText = nodeStatus;
     }
@@ -120,7 +206,7 @@ function BuyTokens(){
       var nodeStatus = JSON.stringify(resp, undefined, 2);
       document.getElementById("status-object").innerText = nodeStatus;
       alert("Could not buy the Tokens");
-      MDS.log("Token NOT Buyed");
+      MDS.log("Token NOT Buyed "+CreateSend);
       //MDS.log(JSON.stringify(resp));
     }
   });
@@ -147,16 +233,21 @@ function GetAddress(){
     if (resp.status) {
       var nodeStatus = JSON.stringify(resp.response, undefined, 2);
       document.getElementById("status-object").innerText = nodeStatus;
-      BUYER_ADDRESS = resp.response.address;
-      BUYER_PUBLICKEY = resp.response.publickey;
+      //BUYER_ADDRESS = resp.response.address;
+      //BUYER_PUBLICKEY = resp.response.publickey;
     }
   });
 }
 
 //This function just shows the main wallet address
+function mainWalletAddress(){
+  document.getElementById("daoaddress_id").innerText = DAO_WALLET_ADDRESS;
+}
 
-function MainWalletAddress(){
-  document.getElementById("status-object").innerText = "Actual DAO Wallet Address: "+DAO_WALLET_ADDRESS;
+//This function just shows the main wallet address
+function advertiserWalletAddress(){
+  document.getElementById("advertiseraddress_id").innerText = ADVERTISER_WALLET_ADDRESS;
+  document.getElementById("advertiserpublickey_id").innerText = ADVERTISER_PUBLICKEY;
 }
 
 //This function just list the coins
@@ -282,52 +373,10 @@ function updateTime(){
 }
 
 
-//Main message handler..
-MDS.init(function(msg){
-  //Do initialitzation
-  if(msg.event == "inited"){
-    MDS.log("The service.js is initialising MDS also in the background...");
-    //createTheDB();
-		//preparingSendpoll()
-    MDS.cmd("status", function(res) {
-      if (res.status) {
-        // get the version number and the blockchain time from the Status object returned
-        const version = res.response.version;
-        document.getElementById("version").innerText = version;
-        const blockchaintime = res.response.chain.time;
-        document.getElementById("blockchaintime").innerText = blockchaintime;
-        //Keep cheking the blockchain time.
-        setInterval(updateTime, 100);
-      }
-    })
-    MDS.cmd("maxima", function(resp) {
-      if (resp.status) {
-        const maximaname = resp.response.name;
-        document.getElementById("maximacontactname").innerText = maximaname;
-      }
-    })
-    createTheDBcampaign();
-  }
-  else if(msg.event == "NEWBLOCK"){
-  // the chain tip has changed
-  }
-  else if(msg.event == "NEWBALANCE"){
-    // user's balance has changed
-    MDS.log("New Balance Detected");
-		//Process the new event detected
-    //alert("NEW BALANCE");
-    getNewBalance();
-  }
-  else if(msg.event == "MINING"){
-  // mining has started or ended
-  }
-  else if(msg.event == "MINIMALOG"){
-  // new Minima log message
-  }
-  else{
-  }
-});
-
+function setBuyerAddressForm(){
+  document.getElementById('destinationaddress').value = ADVERTISER_WALLET_ADDRESS;
+  //alert(document.getElementById('destinationaddress').value);
+}
 
 //This function just list any Token Balance
 //Fetches the data from global variable BALANCE
@@ -355,7 +404,7 @@ function TokenBalance(){
 //This function just get the Balance of selected Advertiser token
 //Fetches the data from global variable BALANCE
 function TokenAdvertiserBalance(){
-      //Grab the token to look for its balance.
+      //Grab the token tofrom Status tools and Section clicking on <b>Get Address</b> look for its balance.
       var select = document.getElementById('select_advertiser_tokens');
       var value = select.options[select.selectedIndex].value;
       for(var i = 0; i < BALANCE.length; i++) {
@@ -437,6 +486,7 @@ function getNewBalance(){
     if (res.status) {
       BALANCE = res.response;
       GetTokens();
+      //alert("new balance event");
     }
     //if the response status is false
     else{
@@ -447,57 +497,227 @@ function getNewBalance(){
 
 
 function get_user_script(){
-  var script = "LET finalUserWallet=" +document.getElementById("user_wallet") +
-  " LET dappDeveloperWallet="+document.getElementById("developer_wallet") + " RETURN TRUE"
+  var select_users_wallets= document.getElementById("select_users_wallets");
+  var user_address = select_users_wallets.options[select_users_wallets.selectedIndex].value;
+  var select_developers_wallets= document.getElementById("select_developers_wallets");
+  var developer_address = select_developers_wallets.options[select_developers_wallets.selectedIndex].value;
+
+  var script = "LET finalUserWallet=" + user_address +
+  " LET dappDeveloperWallet="+developer_address+ " RETURN TRUE"
   return script;
 }
 
 
-// Send a hardcoded publicity token configured by hand to a script address composed of a user wallet and developer
-// wallet
+function get_minima_amount_available(){
+  for(var i=0; i < BALANCE.length; i++) {
+    if(BALANCE[i].tokenid == "0x00"){
+      return BALANCE[i].sendable;
+    }
+  }
+}
+
+
+// Build the transaction for sending a campaign to the final user
+// rewards_coinid[] is an array of coinid that all of them sum the quantity necesary, so that the configured campaign tokens
+// indicates to be sent to the final user, otherwise, if the rewards sent to the final user than the campaign dictates are
+// not send,the payouts on the final user will fail as well as the script that verify that the stablished rules
+// are meet.
+function getTxSendCampaignString(token, address, camapign_address, rewards_coinid, rewards_token, rewards_amount, pubicity_amout, advertiser_wallet, change_back, change_back_token){
+  //Create a random txn id..
+  var txnid = Math.floor(Math.random()*1000000000);
+
+  //Construct Transaction..
+  var txncreator = "txncreate id:"+txnid+";"+
+    "txninput id:"+txnid+" coinid:"+token.coinid+";"
+
+    //alert("txncreator: "+JSON.stringify(rewards_coinid));
+    for (var i=0; i<rewards_coinid.length; i++) {
+      txncreator += "txninput id:"+txnid+" coinid:"+rewards_coinid[i]+";"
+      //alert("txncreator: "+rewards_coinid[i]);
+    }
+
+    txncreator +=
+    "txnoutput id:"+txnid+" amount:"+rewards_amount+" address:"+address+" tokenid:"+rewards_token+" storestate:false;"+
+    "txnoutput id:"+txnid+" amount:"+pubicity_amout+" address:"+address+" tokenid:"+token.tokenid+" storestate:true;"
+    if (change_back > 0) {
+      txncreator += "txnoutput id:"+txnid+" amount:"+change_back+" address:"+advertiser_wallet+" tokenid:"+rewards_token+" storestate:false;"
+    }
+    if (change_back_token > 0) {
+      txncreator += "txnoutput id:"+txnid+" amount:"+change_back_token+" address:"+camapign_address+" tokenid:"+token.tokenid+" storestate:true;"
+    }
+    txncreator +=
+    "txnstate id:"+txnid+" port:0 value:"+token.state[0].data+";"+
+    "txnstate id:"+txnid+" port:1 value:"+token.state[1].data+";"+
+    "txnstate id:"+txnid+" port:2 value:"+token.state[2].data+";"+
+    "txnstate id:"+txnid+" port:3 value:"+token.state[3].data+";"+
+    "txnstate id:"+txnid+" port:4 value:"+token.state[4].data+";"+ //DAO wallet
+    "txnstate id:"+txnid+" port:5 value:"+token.state[5].data+";"+
+    "txnstate id:"+txnid+" port:6 value:"+token.state[6].data+";"+
+    "txnstate id:"+txnid+" port:7 value:"+token.state[7].data+";"+
+    "txnstate id:"+txnid+" port:8 value:"+token.state[8].data+";"+
+    "txnstate id:"+txnid+" port:9 value:"+token.state[9].data+";"+
+    "txnstate id:"+txnid+" port:10 value:"+token.state[10].data+";"+
+    "txnstate id:"+txnid+" port:11 value:"+token.state[11].data+";"+
+    "txnstate id:"+txnid+" port:12 value:"+token.state[12].data+";"+
+    "txnstate id:"+txnid+" port:13 value:"+token.state[13].data+";"+
+    "txnstate id:"+txnid+" port:14 value:2;"+     // 2:sent  -> set state to Token to used
+    "txnstate id:"+txnid+" port:15 value:"+token.state[15].data+";"+
+    "txnstate id:"+txnid+" port:16 value:"+token.state[16].data+";"+
+    "txnstate id:"+txnid+" port:17 value:"+token.state[17].data+";"+
+    "txnstate id:"+txnid+" port:18 value:"+token.state[18].data+";"+
+    "txnstate id:"+txnid+" port:19 value:"+token.state[19].data+";"+
+    "txnstate id:"+txnid+" port:20 value:"+token.state[20].data+";"+
+    "txnstate id:"+txnid+" port:21 value:"+token.state[21].data+";"+
+    "txnstate id:"+txnid+" port:22 value:"+token.state[22].data+";"+
+    "txnstate id:"+txnid+" port:23 value:"+token.state[23].data+";"+
+    "txnstate id:"+txnid+" port:24 value:"+token.state[24].data+";"+
+    "txnstate id:"+txnid+" port:25 value:"+token.state[25].data+";"+
+    "txnstate id:"+txnid+" port:26 value:"+token.state[26].data+";"+
+    "txnstate id:"+txnid+" port:27 value:"+token.state[27].data+";"+
+    "txnstate id:"+txnid+" port:28 value:"+token.state[28].data+";"+
+    "txnstate id:"+txnid+" port:29 value:"+token.state[29].data+";"+
+    "txnstate id:"+txnid+" port:30 value:"+token.state[30].data+";"+
+    "txnstate id:"+txnid+" port:31 value:"+token.state[31].data+";"+
+    "txnbasics id:"+txnid+";"+
+    "txnsign id:"+txnid+" publickey:auto;"+
+    "txnpost id:"+txnid+";"+
+    "txndelete id:"+txnid+";";
+    return txncreator;
+}
+
+
+// Send a publicity campaign token configured to the final user script address, composed of a user wallet and developer
+// walletWALLET_ADDRES as well as the rewards of the user and the developer in order to the final user script can make
+// the payouts when the publicty token will be watched
 function sendCampaign(){
   // get script address
   var command = 'runscript script:"'+get_user_script()+'"';
+
   MDS.cmd(command, function(res) {
   //if the response status is true
     if (res.status) {
-      var script_address = res.response.script.address;
+      var final_user_script_address = res.response.script.address;
+      var campaign_name_select= document.getElementById("select_campaigns");
+      var campaign_tokenid = campaign_name_select.options[campaign_name_select.selectedIndex].value;
+      var campaign_name = campaign_name_select.options[campaign_name_select.selectedIndex].text;
+      var campaign_address = CAMPAIGNS[campaign_name].campaign_address;
+      var campaign_amount = CAMPAIGNS[campaign_name].amount;
 
-      alert("Sending an advertising configured token to user Script address: "+ script_address);
+      MDS.cmd("coins address:"+campaign_address, function(res){
+        if (res.status) {
+          if (res.response.length == 0) {alert("There are no more tokens avaiable for this campaign");return;}
+          MDS.log("Getting token info to send the campaing to : "+res.response[0].tokenid);
+          //alert(JSON.stringify(res.response, undefined, 2));
 
-      var command = 'send address:'+script_address+' amount:1 tokenid:0x6F3D1B097DD5B73FF6D9CC018ADB2524BF1F854B32820DC695ECD58E199363B6'+
-      ' state:{"0":"0xA2784D94B13C114BB3937118BB2419A3712D871C767202A3B178F6905728D0DA","1":"0x39383D810DC3A733E22344E02B97C940EB7A7AD4FAE918403E71FB5998C9E3C8"'+
-      ',"2":"0x62A8D572CB69B82F3ED3AE215D16F340A0EF231164D9557D6B10D24D70C4DD06","3":"0x1B17E4607ABDD642A65409A1D27D28DF628219D77B4512FA3D58A4BBE613F309"'+
-      ',"4":"0x4712CD047BDC4233788709BF5258F5F88495B986CE1F0AFAEA9A89E8EEAFB441","5":"0xE9C2AD0CF3E65DC3F85DFB9C23FCE05B1EC4CEF09ADE5D48B31E347054E772EC"'+
-      ',"6":"0.2","7":"0.2","8":"0.2","9":"1","10":"0xD06BACC2B849FD373B20C1C2DFD6643F17CEDD60FF0421E57E46DEE4CC83EC31","11":"10"'+
-      ',"12":"0x98AB6980372FCF7F6B23CD757B420AAE06066C92D7B432DC11741F74ADF067D8","13":"[CAMPAIGN MANUAL HARDCODED]","14":"2","15":"10","16":"0x00","17":"10"'+
-      ',"18":"0x00","19":"2","20":"[https://i.postimg.cc/pLPWFsD6/images.jpg]","21":"[-]","22":"[click]","23":"[-]","24":"[-]","25":"[-]","26":"[-]","27":"[-]"'+
-      ',"28":"[-]","29":"[-]","30":"[-]","31":"[-]"};'+
-      'send address:'+script_address+' amount:20;'
-      var command="coins";
-      MDS.cmd(command, function(res){
-          if (res.status) {
-            alert ("Token Sent: "+JSON.stringify(res, undefined, 2));
-            var nodeStatus = JSON.stringify(res, undefined, 2);
-            document.getElementById("status-coin").innerText = nodeStatus;
-          } else{
-            alert("ERROR");
-            var nodeStatus = JSON.stringify(res, undefined, 2);
-            document.getElementById("status-coin").innerText = nodeStatus;
-            MDS.log(JSON.stringify(res));
+          const coin = res.response[0];
+          var tokenid = coin.tokenid;
+          var coinid  = coin.coinid;
+          var user_rewards = parseFloat(coin.state[17].data);
+          var developer_rewards = parseFloat(coin.state[15].data);
+          var total_rewards_to_send = developer_rewards + user_rewards;
+          var change_back_token = 0;
+
+          MDS.log(JSON.stringify(coin))
+          //alert(total_rewards_to_send+" ,"+developer_rewards+" ,"+user_rewards);
+
+          var advertiser_wallet = coin.state[10].data;   // buyer address
+
+          // Get the total amount of tokens for this campaign to get the change  back amount
+          var change_back_token = 0;  //coin.tokenamount - 1;
+          var total_amount_tokens = 0;
+          for (var i=0; i<res.response.length; i++){
+            var token = res.response[i];
+            if (token.tokenid != 0x00){
+              total_amount_tokens += token.tokenamount;
             }
-        });
-    }
-    else{
-        MDS.log("ERROR: Could not retrieve SCRIPT address: "+JSON.stringify(res));
-    }
-  });
+          }
+          if (total_amount_tokens > 0) change_back_token = total_amount_tokens - 1; // we send only one token at a time
+          alert("change_back_token: "+change_back_token);
+
+          // check if there are enough funds quantity to send along with the campaign token since the token specify
+          // the amount needed to send, so far we only consider minima token rewards
+          // we only look into ADVERTISER_WALLET_ADDRESS to assure the minimas we got are from the same node
+          // and not other coins from other nodes tracked
+          if (get_minima_amount_available() < total_rewards_to_send) {
+            alert("You don't have enough minima funds to send the campaign, you need: "+total_rewards_to_send+" minimas and only have: "+get_minima_amount_available);
+            return;
+          }else {
+            // ## Look for and fetch coinid minimas rewards to send on the transaciot
+            // we need to get all coinids  of minima tokens that sum at least the total_rewards_to_send
+            MDS.cmd("coins address:"+ADVERTISER_WALLET_ADDRESS+" tokenid:0x00", function(res){
+              if (res.status) {
+                var change_back = 0.0;
+                var coinid_rewards = [];
+                var total_minima_coinids = 0.0;
+
+                // Get the list of coinid that sum at least the ammount of rewards to send
+                for (var i=0; i<res.response.length; i++){
+                  var coinid = res.response[i];
+                  // discard minimas with state variables set
+                  if (coinid.state.length == 0){
+                    coinid_rewards.push(coinid.coinid);
+                    total_minima_coinids += parseFloat(coinid.amount);
+                    alert(total_minima_coinids+", "+total_rewards_to_send);
+                    if (total_minima_coinids >= parseFloat(total_rewards_to_send)) break;
+                  }
+                }
+                change_back = total_minima_coinids - total_rewards_to_send;
+                //alert("tokensChangeBack:"+coin.tokenamount - 1);
+                // SENDING campaign building a custom transaction
+                var command = getTxSendCampaignString(coin, final_user_script_address, campaign_address, coinid_rewards, "0x00", total_rewards_to_send, "1", advertiser_wallet, change_back, change_back_token);
+                MDS.log("Send Campaign minima command: "+command);
+                //alert(command);
+                MDS.log("PRINTING splitted command: ");
+                var split_command = command.split(';');
+                split_command.forEach(function (value) {
+                  MDS.log(value);
+                });
+
+                MDS.cmd(command, function(res){
+                  var status = true;
+                  for (var i=0; i<res.length; i++){ //CHECK  FOR ERRORS ON EVERY COMMAND OF TRANSACTION
+                      if (!res[i].status) { // if some comand fails
+                        alert("ERROR: Campaign tokens has not been sent");
+                        MDS.log("---ERROR--- Send Campaign "+campaign_name+" token : "+campaign_name+" command : "+res[i].command+" token : "+JSON.stringify(res[i].params)+" token : "+tokenid+" to address: "+campaign_address);
+                        var nodeStatus = JSON.stringify(res[i], undefined, 2);
+                        document.getElementById("status-object").innerText = nodeStatus;
+                        status = false;
+                        MDS.log(JSON.stringify(res[i]));
+                        break;
+                      }
+                  }
+                  if (status) {
+                    alert("Campaign "+campaign_name+" sento to final user script address: "+final_user_script_address);
+                    MDS.log("Send Campaign "+campaign_name+" token : "+tokenid+" to address: "+campaign_address);
+                    MDS.log("Send Campaign rewards amount:"+total_rewards_to_send);
+                    MDS.log("Send Campaign change back amount: "+change_back);
+                    // update campaing database and subtract 1 to the amount of tokens
+                    update_campaign_amount(campaign_name, campaign_amount - 1);
+                    var nodeStatus = JSON.stringify(res, undefined, 2);
+                    document.getElementById("status-object").innerText = nodeStatus;
+                  }
+                });
+              }else {
+                MDS.log(JSON.stringify(sqlmsg));
+              }
+            });
+          }
+        }else {
+          alert("There are not tokens on this address"+campaign_address);
+          MDS.log(JSON.stringify(sqlmsg));
+        }
+      });
+      }else{
+        MDS.log(JSON.stringify(sqlmsg));
+      }
+    });
 }
 
 
 //Send the Tokens available to the dongles
 //Fetch the data from BALANCE global variable
-//It is called from getNewBalance as it must be updated every time a NEWBALANCE even happens
+//It is called from getNewBalance as it must be updated every time a NEWBALANCE even happensç
+//And also fetches all selects combo info that need to update on load or every newbalance event
 function GetTokens(){
     //Create the select dongles
     var select = document.getElementById('tokens');
@@ -512,6 +732,10 @@ function GetTokens(){
     while (select3.hasChildNodes()) {
       select3.removeChild(select3.firstChild);
     }
+    var select4  = document.getElementById('select_campaigns');
+    while (select4.hasChildNodes()) {
+      select4.removeChild(select4.firstChild);
+    }
     var select_advertiser_tokens = document.getElementById('select_advertiser_tokens');
     while (select_advertiser_tokens.hasChildNodes()) {
       select_advertiser_tokens.removeChild(select_advertiser_tokens.firstChild);
@@ -524,7 +748,14 @@ function GetTokens(){
     while (select_tokens_type_reward_user.hasChildNodes()) {
       select_tokens_type_reward_user.removeChild(select_tokens_type_reward_user.firstChild);
     }
-
+    var select_users_wallets = document.getElementById('select_users_wallets');
+    while (select_users_wallets.hasChildNodes()) {
+      select_users_wallets.removeChild(select_users_wallets.firstChild);
+    }
+    var select_developers_wallets = document.getElementById('select_developers_wallets');
+    while (select_developers_wallets.hasChildNodes()) {
+      select_developers_wallets.removeChild(select_developers_wallets.firstChild);
+    }
 
     //Add each Token
     //Add the tokens to the dongle Buy a Token (spend)
@@ -555,23 +786,17 @@ function GetTokens(){
     }
 
     //Add tokens to the dongle buy a Token (buy)
-    for(var i = 0; i < BALANCE.length; i++) {
+
+    for(var i = 0; i < ADVERTISING_TOKENS.length; i++) {
       var opt = document.createElement('option');
-      isMinima = false;
-      if(BALANCE[i].tokenid == "0x00"){
-        //opt.value = BALANCE[i].tokenid;
-        //opt.innerHTML = BALANCE[i].token;
-        isMinima = true;
-      }else{
-        opt.value = BALANCE[i].tokenid;
-        opt.innerHTML = BALANCE[i].token.name;
-      }
-      if (! isMinima) select3.appendChild(opt);
-      isMinima = false;
+      opt.value = ADVERTISING_TOKENS[i];
+      opt.innerHTML = ADVERTISING_TOKENS[i];
+      select3.appendChild(opt);
     }
 
+
     //Add tokens to the dongle configure Advertiser token
-    //Add blank element on the first position, so in the change event the
+    //Add blank element on the first position, so in the changeGetTokens event the
     //amount of tokens can be triggered automatically
     var opt = document.createElement('option');
     select_advertiser_tokens.appendChild(opt);
@@ -612,7 +837,67 @@ function GetTokens(){
       }
       select_tokens_type_reward_user.appendChild(opt);
     }
+
+    //Add Target Users to the dongle Send Camapign
+    //alert(TARGET_USERS.length);
+    for(var i = 0; i < TARGET_USERS.length; i++) {
+      var opt = document.createElement('option');
+      opt.value = TARGET_USERS[i];
+      opt.innerHTML = TARGET_USERS[i];
+      select_users_wallets.appendChild(opt);
+    }
+
+    //Add Target Developers to the dongle Send Camapign
+    //alert(TARGET_DEVELOPERS.length);
+    for(var i = 0; i < TARGET_DEVELOPERS.length; i++) {
+      var opt = document.createElement('option');
+      opt.value = TARGET_DEVELOPERS[i];
+      opt.innerHTML = TARGET_DEVELOPERS[i];
+      select_developers_wallets.appendChild(opt);
+    }
+
+
+
+    //Add the configured campaigns from memory to the dongle Send Campaign
+    //alert(Object.keys(CAMPAIGNS));
+    setTimeout(() => {
+      //alert(Object.keys(CAMPAIGNS).length);
+      while (select4.hasChildNodes()) {
+        select4.removeChild(select4.firstChild);
+      }
+
+         Object.keys(CAMPAIGNS).forEach(function(key, idx) {
+           console.log("getting campaign: "+CAMPAIGNS[key].campaign_name + ": " + CAMPAIGNS[key].tokenid);
+           var opt = document.createElement('option');
+           opt.value = CAMPAIGNS[key].tokenid;
+           opt.innerHTML = CAMPAIGNS[key].campaign_name;
+           select4.appendChild(opt);
+           if (idx == 0) {  // first element, we updated the related fields
+             var campaign_tokenid = CAMPAIGNS[key].tokenid;
+             var campaign_name = CAMPAIGNS[key].campaign_name;
+             var campaign_address = CAMPAIGNS[key].campaign_address;
+             var token_amount = CAMPAIGNS[key].amount;
+             document.getElementById('availableTokensCampaign').innerHTML = token_amount;
+             document.getElementById('tokeidcampaign').innerHTML = campaign_tokenid;
+             document.getElementById('addresscampaign').innerHTML = campaign_address;
+           }
+        });
+    }, 300);
 }
+
+// Once a campaig in Send Campaing is selected it gets the info of the
+// campaign and sets it on the interface
+function onupdateSelectCapaignInfo(){
+  var campaign_name_select= document.getElementById("select_campaigns");
+  var campaign_tokenid = campaign_name_select.options[campaign_name_select.selectedIndex].value;
+  var campaign_name = campaign_name_select.options[campaign_name_select.selectedIndex].text;
+  var campaign_address = CAMPAIGNS[campaign_name].campaign_address;
+  var campaign_amount = CAMPAIGNS[campaign_name].amount;
+  document.getElementById('availableTokensCampaign').innerHTML = campaign_amount;
+  document.getElementById('tokeidcampaign').innerHTML = campaign_tokenid;
+  document.getElementById('addresscampaign').innerHTML = campaign_address;
+}
+
 
 // Returns true is a given tokenid is an Advertiser TokenName
 function isAdvertiserToken(tokenID){
@@ -635,12 +920,14 @@ function ConfigureCampaign(){
   var token_amount = document.getElementById("token_amount_configure").value;
   var tk = getTokenByTokenID(advertiser_token);
   //alert(token_amount+", "+tk.sendable);
-  if (token_amount > tk.sendable) {
+  var available = tk.sendable - token_amount;
+  if (available < 0) {
     alert("You cannot configure more tokens than you have, MAX available tokens amount: "+tk.sendable);
     return;
   }
   var type_advertise_select = document.getElementById("select_type_advertise");
   var type_advertise = type_advertise_select.options[type_advertise_select.selectedIndex].value;
+  //alert("Advertise type:"+type_advertise);
   var web_img = document.getElementById("web_img_input").value;
   var dapp_rewards = document.getElementById("dapp_rewards").value;
   var tokens_type_reward_dapp = document.getElementById("tokens_type_reward_dapp").value;
@@ -649,20 +936,24 @@ function ConfigureCampaign(){
   var actions_adv = document.getElementById("actions_adv").value;
   var rules_adv = document.getElementById("rules_adv").value;
   var text_0_adv = document.getElementById("text_0_adv").value;
-  var text_1_adv = document.getElementById("text_0_adv").value;
-  var text_2_adv = document.getElementById("text_0_adv").value;
-  var text_3_adv = document.getElementById("text_0_adv").value;
-  var text_4_adv = document.getElementById("text_0_adv").value;
-  var text_5_adv = document.getElementById("text_0_adv").value;
-  var text_6_adv = document.getElementById("text_0_adv").value;
-  var text_7_adv = document.getElementById("text_0_adv").value;
-  var text_8_adv = document.getElementById("text_0_adv").value;
+  var text_1_adv = document.getElementById("text_1_adv").value;
+  var text_2_adv = document.getElementById("text_2_adv").value;
+  var text_3_adv = document.getElementById("text_3_adv").value;
+  var text_4_adv = document.getElementById("text_4_adv").value;
+  var text_5_adv = document.getElementById("text_5_adv").value;
+  var text_6_adv = document.getElementById("text_6_adv").value;
+  var text_7_adv = document.getElementById("text_7_adv").value;
+  var text_8_adv = document.getElementById("text_8_adv").value;
 
 
     MDS.cmd("coins tokenid:"+advertiser_token, function(res){
       if (res.status) {
         MDS.log("Getting token info to Configure Campaign by tokenid: "+res.response[0].tokenid);
-        //alert(JSON.stringify(res.response, undefined, 2));
+        alert(JSON.stringify(res.response, undefined, 2));
+        var nodeStatus = JSON.stringify(res, undefined, 2);
+        document.getElementById("status-object").innerText = nodeStatus;
+        MDS.log(JSON.stringify(res));
+
 
         var coin = res.response[0];
         var state_vars = '{' + get_state_vars_string(coin, 12) +
@@ -672,8 +963,12 @@ function ConfigureCampaign(){
             '"16":"'+tokens_type_reward_dapp+'",' +
             '"17":"'+user_rewards+'",' +
             '"18":"'+tokens_type_reward_dapp+'",' +
-            '"19":"'+type_advertise+'",' +
-            '"20":"['+web_img+']",' +
+            '"19":"'+type_advertise+'",';
+            if (web_img.length == 0) state_vars += '"20":"['-']",';
+            else state_vars += '"20":"['+web_img+']",';
+
+
+            state_vars +=
             '"21":"['+actions_adv+']",' +
             '"22":"['+rules_adv+']",' +
             '"23":"['+text_0_adv+']",' +
@@ -688,32 +983,44 @@ function ConfigureCampaign(){
 
             MDS.log("STATE VARS:"+state_vars);
             // Send tokent to himself (buyer) = coin.state[10]
+
             //alert(JSON.stringify(res.response[0]));
-            register_token_campaign_script(advertiser_token, campaign, function(res1){
-              alert(JSON.stringify(res1));
-              var campaign_script_address = res1.response.address;
-              var command = 'send address:' + campaign_script_address + ' amount:'+token_amount+ ' tokenid:'+advertiser_token + ' state:'+state_vars;
-              alert(command);
-              MDS.cmd(command, function(res2){
-                if (res2.status) {
-                  //registers de campaign to the database
-                  register_campaing(campaign, advertiser_token, campaign_script_address, token_amount);
-                  MDS.log("Configured tokens Camapign with state vars of Campaign: "+campaign+" tokenid:"+advertiser_token+" campaign_script_address: "+campaign_script_address);
-                  //alert(JSON.stringify(res.response, undefined, 2));
-                  //alert("TOKEN SENT "+advertiser_token);
-                  var nodeStatus = JSON.stringify(res2, undefined, 2);
-                  document.getElementById("status-object").innerText = nodeStatus;
+            //Check if the campaign name exists on the database
+            MDS.sql("SELECT * from configured_campaign WHERE campaign_name='"+campaign+"'", function(sqlmsg){
+              if (sqlmsg.status) {
+                if (sqlmsg.count > 0){
+                  alert("The Campaign ALREADY EXISTS in the DB, choose another name");
+                  return;
+                }else {
+                  register_token_campaign_script(advertiser_token, campaign, function(res1){
+                    alert(JSON.stringify(res1));
+                    var campaign_script_address = res1.response.address;
+                    var command = 'send address:' + campaign_script_address + ' amount:'+token_amount+ ' tokenid:'+advertiser_token + ' state:'+state_vars;
+                    alert(command);
+                    MDS.cmd(command, function(res2){
+                      if (res2.status) {
+                        //registers de campaign to the database
+                        register_campaing(campaign, advertiser_token, campaign_script_address, token_amount);
+                        MDS.log("Configured tokens Camapign with state vars of Campaign: "+campaign+" tokenid:"+advertiser_token+" campaign_script_address: "+campaign_script_address);
+                        //alert(JSON.stringify(res.response, undefined, 2));
+                        //alert("TOKEN SENT "+advertiser_token);
+                        var nodeStatus = JSON.stringify(res2, undefined, 2);
+                        document.getElementById("status-object").innerText = nodeStatus;
+                      }
+                      else{
+                          alert("ERROR ConfigureCampaign tokens failed to be sent");
+                          var nodeStatus = JSON.stringify(res2, undefined, 2);
+                          document.getElementById("status-object").innerText = nodeStatus;
+                          MDS.log(JSON.stringify(res2));
+                        }
+                    });
+                  });
                 }
-                else{
-                    alert("ERROR ConfigureCampaign tokens failed to be sent");
-                    //var nodeStatus = JSON.stringify(res, undefined, 2);
-                    //document.getElementById("status-coin").innerText = nodeStatus;
-                    var nodeStatus = JSON.stringify(res, undefined, 2);
-                    document.getElementById("status-object").innerText = nodeStatus;
-                    MDS.log(JSON.stringify(res2));
-                  }
-              });
+              }else {
+                  MDS.log(JSON.stringify(sqlmsg));
+              }
             });
+
       }
       else{
           //alert("ERROR");
@@ -739,6 +1046,19 @@ function get_state_vars_string (coin, end){
 
 // new evolution Adveriser.
 
+//This function just create the databases if they are not yet
+function createTheDBDAOWalletAddress(){
+	initsql = "CREATE TABLE IF NOT EXISTS `daowalletaddress` ( "
+					+"  `id` IDENTITY PRIMARY KEY, "
+					+"  `walletaddress` varchar(512), "
+					+"  `date` bigint "
+					+" )";
+
+		MDS.sql(initsql,function(msg){
+			MDS.log("DB DAO Wallet Addresses Inited..");
+      setWalletDAO_Data();
+		});
+}
 
 //This function just create the databases if they are not yet
 function createTheDBcampaign(){
@@ -755,6 +1075,81 @@ function createTheDBcampaign(){
       MDS.log(JSON.stringify(res));
 			MDS.log("DB configured_camapaign created");
 		});
+}
+
+//This function just create the databases if they are not yet
+function createTheDBAdvertiserWalletAddress(){
+	initsql = "CREATE TABLE IF NOT EXISTS `advertiserwalletaddress` ( "
+					+"  `id` IDENTITY PRIMARY KEY, "
+					+"  `walletaddress` varchar(512), "
+          +"  `publickey` varchar(512), "
+					+"  `date` bigint "
+					+" )";
+
+		MDS.sql(initsql,function(msg){
+			MDS.log("DB Advertiser Wallet Addresses Inited..");
+      setWalletAdvertiser_Data();
+		});
+}
+
+function deleteCapmpaignsRegisters(){
+  var fullsql = "DELETE from configured_campaign";
+
+  MDS.sql(fullsql, function(resp){
+    MDS.log(JSON.stringify(resp));
+    if (resp.status) {
+      MDS.log("Deleting all campaigns from configured_campaign DB");
+      CAMPAIGNS = new Object();
+      GetTokens(); //Update the inteface
+    }
+    else {
+      MDS.log("The registers from configured_campaignDB HAS NOT BEEN deleted");
+    }
+  });
+}
+
+function setWalletDAO_Data(){
+  MDS.sql("SELECT * from daowalletaddress", function(sqlmsg){
+    if (sqlmsg.status) {
+      if (sqlmsg.count == 0){
+        MDS.log("Runing the Dapp for the first time..");
+        setDAOWalletAddress();
+        MDS.log("Runing the Dapp for the first time..setWalletDAO_Data");
+      }
+      else{
+        var sqlrows = sqlmsg.rows;
+        //Takes the last address recorded
+        let i = (sqlrows.length -1);
+        var sqlrow = sqlrows[i];
+        DAO_WALLET_ADDRESS = sqlrow.WALLETADDRESS;
+        mainWalletAddress();
+      }
+    }else {
+        alert(JSON.stringify(sqlmsg));
+      }
+  });
+}
+
+function setWalletAdvertiser_Data(){
+  MDS.sql("SELECT * from advertiserwalletaddress", function(sqlmsg){
+    if (sqlmsg.status) {
+      if (sqlmsg.count == 0){
+        MDS.log("Runing the Dapp for the first time..setWalletAdvertiser_Data");
+        setAdvertiserWalletAddress();
+      }
+      else{
+        var sqlrows = sqlmsg.rows;
+        //Takes the last address recorded
+        let i = (sqlrows.length -1);
+        var sqlrow = sqlrows[i];
+        ADVERTISER_WALLET_ADDRESS = sqlrow.WALLETADDRESS;
+        ADVERTISER_PUBLICKEY = sqlrow.PUBLICKEY;
+        advertiserWalletAddress();
+      }
+    }else {
+      alert(JSON.stringify(sqlmsg));
+    }
+  });
 }
 
 
@@ -802,14 +1197,16 @@ function register_campaing(campaign_name, tokenid, campaign_script_address, amou
               MDS.log("Campaign HAS BEEN Inserted Correctly in the DB");
               // Replicate on memory the campaing object of the database
               var campaign = new Object();
-                campaign [campaign_name] = campaign_name;
-                campaign [tokenid] = tokenid;
-                campaign [campaing_address] = campaign_script_address;
-                campaign [amount] = amount;
+                campaign.campaign_name = campaign_name;
+                campaign.tokenid = tokenid;
+                campaign.campaign_address = campaign_script_address;
+                campaign.amount = amount;
                 CAMPAIGNS [campaign_name] = campaign;    //Replicate the insert to the Global memory objec CAMPAIGNS
-                alert("Wallet CAMPAIGN has Saved Correctly"+campaign);
+                //alert("Wallet CAMPAIGN has Saved Correctly"+JSON.stringify(campaign));
+                //alert("Wallet CAMPAIGNS ARRAY:"+JSON.stringify(CAMPAIGNS));
                 // Registering the script to the node after inserting the camapign register to the database
                 // register_token_campaign_script(tokenid, campaign_name, amount);
+                //GetTokens();
             } else {
               MDS.log("The Campaign HAS NOT BEEN Inserted in the DB");
               alert("The Campaign HAS NOT BEEN Inserted in the DB");
@@ -835,11 +1232,12 @@ function register_campaing(campaign_name, tokenid, campaign_script_address, amou
   });
 }
 
-//Update the amount of tokens of the campaign
+//Update the amount of tokens of the campaign on the DB and also on the interface
 function update_campaign_amount(campaign_name, update_amountDB) {
-  MDS.sql("UPDATE campaigns SET amount="+update_amountDB+" WHERE campaign_name='"+campaign_name+"'", function(resp){
+  MDS.sql("UPDATE configured_campaign SET amount="+update_amountDB+" WHERE campaign_name='"+campaign_name+"'", function(resp){
     if (resp.status) {
-      CAMPAIGNS [campaign_name][amount] = update_amountDB;  //GLOBAL variable updated
+      CAMPAIGNS [campaign_name].amount = update_amountDB;  //GLOBAL variable updated
+      onupdateSelectCapaignInfo();
       MDS.log("Transaction update_campaign_amount in the Data Base amount: "+update_amountDB);
       MDS.log("update_campaign_amount TRANSACTION PROCESS ENDED CORRECTLY");
     }
@@ -856,7 +1254,7 @@ function register_token_campaign_script(tokenid, campaign_name, callback){
   var command = 'newscript trackall:true script:"'+script+'"'
 
   MDS.log("register_token_campaign_script: "+command);
-  //alert("command script: "+command);
+  //alert("command script: "+command);0x7518EC03A64B1AC4BFCFC771437315FC71FEAA30A0FF8C821CE154C066A0EB34
   MDS.cmd(command, function(res) {
   //if the response status is true
     if (res.status) {
@@ -871,65 +1269,89 @@ function register_token_campaign_script(tokenid, campaign_name, callback){
 }
 
 
-// Check if there is user wallet registered , and if not, it register it.
-// Also it triggers the script creation and set the global variables to keep it
-// all synchronized when the app starts
-function isthereaWallet(section){
-  var selectdb = "userwalletaddress";
-  MDS.log("Checking if there is a user wallet saved");
+//This function set the DAO wallet address
+function setDAOWalletAddress() {
+  let address = prompt("Please paste here the MAIN DAO Wallet Address:", "");
+  if (address == null || address == "") {
+    alert("Could not set the Address!");
+  }else{
+    var fullsql = "INSERT INTO daowalletaddress (walletaddress,date) VALUES "
+  			+"('"+address+"',"+Date.now()+")";
 
-  MDS.sql("SELECT * from "+selectdb+"", function(sqlmsg){
-    if (sqlmsg.status) {
-      if (sqlmsg.count == 0){
-        MDS.log("Inserting the user address for the first time..");
-        var address = prompt("Please enter the address where you want to receive the rewards: ", "");
-        if (address == null || address == "") {
-          alert("Could not set the address!, if you don't restart the Dapp, you wont be able to receive publicity");
-        } else {
-          var fullsql = "INSERT INTO userwalletaddress (walletaddress,date) VALUES "
-              +"('"+address+"',"+Date.now()+")";
+  	MDS.sql(fullsql, function(resp){
+      MDS.log(JSON.stringify(resp));
+  		if (resp.status) {
+        MDS.log("DAO Wallet Address has Changed Correctly in the DB with the Following address: "+address);
+        alert("DAO Wallet Address has Changed Correctly");
+        DAO_WALLET_ADDRESS = address;
+        mainWalletAddress();
+      }
+      else {
+        MDS.log("The Address Change HAS NOT BEEN Inserted in the DB");
+        alert("Could not set the DAO Wallet Address on the DB!");
+      }
+  	});
+  }
+}
 
-          MDS.sql(fullsql, function(resp){
-            MDS.log(JSON.stringify(resp));
-            if (resp.status) {
-              MDS.log("Address HAS BEEN Inserted Correctly in the DB");
-              alert("Wallet Address has Changed Correctly");
-              WalletAddress("user", address);
-              USER_WALLET = address;
-              register_user_script(get_user_script());
-            }
-            else {
-              MDS.log("The Address HAS NOT BEEN Inserted in the DB");
-            }
-          });
+//This function set the Advertiser wallet address from the command getaddress
+function setAdvertiserWalletAddress() {
+  var command = 'getaddress';
+  MDS.cmd(command, function(res) {
+  //if the response status is true
+    if (res.status) {
+      var address = res.response.address;
+      var publickey = res.response.publickey;
+      var fullsql = "INSERT INTO advertiserwalletaddress (walletaddress,publickey,date) VALUES "
+          +"('"+address+"','"+publickey+"',"+Date.now()+")";
+
+      MDS.sql(fullsql, function(resp){
+        MDS.log(JSON.stringify(resp));
+        if (resp.status) {
+          MDS.log("ADVERTISER Wallet Address has Changed Correctly in the DB with the Following address: "+address);
+          alert("ADVERTISER Wallet Address has Changed Correctly");
+          ADVERTISER_WALLET_ADDRESS = address;
+          ADVERTISER_PUBLICKEY = publickey;
+          BUYER_ADDRESS = address;
+          BUYER_PUBLICKEY = publickey;
+          advertiserWalletAddress();
         }
-        if (sqlmsg.status) {
-        }else{
-          MDS.log(JSON.stringify(sqlmsg));
+        else {
+          MDS.log("The Address Change HAS NOT BEEN Inserted in the DB");
+          alert("Could not set the DAO Wallet Address on the DB!");
         }
-      }
-      else{
-        var sqlrows = sqlmsg.rows;
-        //Takes the last address recorded
-        let i = (sqlrows.length -1);
-        var sqlrow = sqlrows[i];
-        var nodeStatus = JSON.stringify(sqlrow, undefined, 2);
-        getwalletaddress = sqlrow.WALLETADDRESS;
-        USER_WALLET = getwalletaddress;
-        WalletAddress("user", USER_WALLET);
-        register_user_script(get_user_script());
-      }
+      });
+    }
+    else {
+      MDS.log("The setAdvertiserWalletAddress: command getaddres has failed");
     }
   });
 }
 
-//This function lists ALL the campaign_name of the  Data Base
-function listcampaignsDB(){
+
+//This function lists ALL the campaign_name of the  Data Base and also sets
+// them as a memory object CAMPAIGNS if start variable is set to true (at startup application)
+function listcampaignsDB(start){
   MDS.sql("SELECT * FROM configured_campaign",function(sqlmsg){
     if (sqlmsg.status) {
-      var nodeStatus = JSON.stringify(sqlmsg, undefined, 2);
-      document.getElementById("status-object").innerText = nodeStatus;
-      MDS.log(JSON.stringify(sqlmsg));
+      // the app starts ups and sets the database of campaings as a javascript object on memory
+      if (start) {
+        var sqlrows = sqlmsg.rows;
+        for(var i = 0; i < sqlrows.length ; i++) {
+          var sqlrow = sqlrows[i];
+          var campaign = new Object();
+            campaign.campaign_name = sqlrow.CAMPAIGN_NAME;
+            campaign.tokenid = sqlrow.TOKENID;
+            campaign.campaign_address = sqlrow.CAMPAING_ADDRESS;
+            campaign.amount = sqlrow.AMOUNT;
+            CAMPAIGNS [sqlrow.CAMPAIGN_NAME] = campaign;    //Replicate the insert to the Global memory objec CAMPAIGNS
+        }
+        //alert("Wallet CAMPAIGNS ARRAY:"+JSON.stringify(CAMPAIGNS));
+      }else {
+        var nodeStatus = JSON.stringify(sqlmsg, undefined, 2);
+        document.getElementById("status-object").innerText = nodeStatus;
+        MDS.log(JSON.stringify(sqlmsg));
+      }
     }else{
       var nodeStatus = JSON.stringify(sqlmsg, undefined, 2);
       document.getElementById("status-object").innerText = nodeStatus;

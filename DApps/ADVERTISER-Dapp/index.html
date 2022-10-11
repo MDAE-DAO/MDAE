@@ -14,6 +14,10 @@
     <p class="statusdata">Maxima User Name: <span class="maindata" id="maximacontactname"></span></p>
     <p class="statusdata">Current Node Version: <span class="maindata" id="version"></span></p>
     <p class="statusdata">Current blockchain Time: <span class="maindata" id="blockchaintime"></span></p>
+    <p class="statusdata">Current DAO Address: <span class="maindata" id="daoaddress_id"></span></p>
+    <p class="statusdata">Current ADVERTISER Address: <span class="maindata" id="advertiseraddress_id"></span></p>
+    <p class="statusdata">Current ADVERTISER Publickey: <span class="maindata" id="advertiserpublickey_id"></span></p>
+
     <div class="wrapper">
       <div class="INF Createcontact">
         <h2>SEND MANUAL CAMPAING TOKEN</h2>
@@ -27,13 +31,34 @@
           wiht the rewards set on the state variables of the configured publicity Token.</p>
         <table class="">
           <tr>
-            <td style="color:#FFF; text-align:right;">User Wallet: </td>
-    				<td><input type="text" id='user_wallet'></td>
+            <td style="color:#FFF; text-align:right;">Campaigns: </td>
+            <td>
+              <select id="select_campaigns" onchange="onupdateSelectCapaignInfo();"></select>
+            </td>
+          <tr>
+            <td style="color:#FFF; text-align:right;">Available Tokens: </td>
+            <td style="color:#FFF; text-align:left;"><span id="availableTokensCampaign" style="color:yellow;font-weight:bold;font-size:1.3em;"></span> </td>
           </tr>
           <tr>
-            <td style="color:#FFF; text-align:right;">Developer Wallet: </td>
-    				<td><input type="text" id='developer_wallet'></td>
-    			</tr>
+            <td style="color:#FFF; text-align:right;">Tokenid: </td>
+            <td style="color:#FFF; text-align:right;"><span id="tokeidcampaign" style="color:yellow;font-weight:bold;font-size:1em;"></span> </td>
+          </tr>
+          <tr>
+            <td style="color:#FFF; text-align:right;">Campaign address: </td>
+            <td style="color:#FFF; text-align:right;"><span id="addresscampaign" style="color:yellow;font-weight:bold;font-size:1em;"></span> </td>
+          </tr>
+          <tr>
+            <td style="color:#FFF; text-align:right;">User's wallets: </td>
+            <td>
+              <select id="select_users_wallets"></select>
+            </td>
+          </tr>
+          <tr>
+            <td style="color:#FFF; text-align:right;">Developer's wallets: </td>
+            <td>
+              <select id="select_developers_wallets"></select>
+            </td>
+          </tr>
         </table>
         <table>
           <tr>
@@ -69,7 +94,7 @@
       <div class="INF Buytoken">
         <table>
   			<h2>BUY ADVERTSING TOKENS TO THE DAO </h2>
-        <p>Select the amount of minimas to spend , 1 minima price per token, the Amount of tokens to buy and the Address where you wnat to Receive the Tokens.</p>
+        <p>Select the amount of minimas to spend , 1 minima price per token, the Amount of tokens to buy and them will be delivered to Advertiser wallet.</p>
   			<tr>
   				<td style="color:#FFF; text-align:right;">Token to Spend: </td>
   				<td>
@@ -78,7 +103,7 @@
   			</tr>
   			<tr>
   				<td style=" color:#FFF; text-align:right;">Amount: </td>
-  				<td><input type="number" id='amount' maxlength='64'></td>
+  				<td><input type="number" id='amount' maxlength='12'></td>
   			</tr>
         <tr>
   				<td style="color:#FFF; text-align:right;">Operation: </td>
@@ -97,14 +122,14 @@
   			</tr>
         <tr>
   				<td style=" color:#FFF; text-align:right;">Amount to buy: </td>
-  				<td><input type="text" id='amounttobuy' maxlength='32'></td>
+  				<td><input type="text" id='amounttobuy' maxlength='12'></td>
   			</tr>
         <tr>
   				<td style=" color:#FFF; text-align:right;">Buyer Wallet: </td>
-  				<td><input type="text" id='destinationaddress' maxlength='66'></td>
+  				<td><input type="text" id='destinationaddress' maxlength='66' onmouseover='setBuyerAddressForm()'></td>
   			</tr>
         <td>
-          <td><span style="font-size:1.2em;">Get the Buyer address from Status tools and Section clicking on <b>Get Address</b>, The tokens bought will be delivered on this address
+          <td><span style="font-size:1.2em;">The Buyer address, on first time at startup is set running command getaddress and saved to a database, The tokens bought will be delivered on this address
           and also the <b>publickey</b> of this address will be used internally</span></td>
         </tr>
   		</table>
@@ -131,7 +156,7 @@
   				<td style=" color:#FFF; text-align:right;">Amount: </td>
   				<td><input type="number" id='token_amount_configure' maxlength='64'></td>
           <td style=" color:#FFF; text-align:right;">Text-0: </td>
-          <td><input type="text" id='text_0_adv' maxlength='64' value=" "></td>
+          <td><input type="text" id='text_0_adv' maxlength='64' value="-"></td>
   			</tr>
         <tr>
   				<td style="color:#FFF; text-align:right;">Type Advertiser: </td>
@@ -147,19 +172,19 @@
             </select>
   				</td>
           <td style=" color:#FFF; text-align:right;">Text-1: </td>
-          <td><input type="text" id='text_1_adv' maxlength='64' value=" "></td>
+          <td><input type="text" id='text_1_adv' maxlength='64' value="-"></td>
   			</tr>
         <tr>
           <td style=" color:#FFF; text-align:right;">Web Page / Image: </td>
           <td><input type="text" id='web_img_input' maxlength='128' disabled ></td>
           <td style=" color:#FFF; text-align:right;">Text-2: </td>
-          <td><input type="text" id='text_2_adv' maxlength='64' value=" "></td>
+          <td><input type="text" id='text_2_adv' maxlength='64' value="-"></td>
         </tr>
         <tr>
   				<td style=" color:#FFF; text-align:right;">Dapp rewards amount: </td>
   				<td><input type="number" id='dapp_rewards' maxlength='64'></td>
           <td style=" color:#FFF; text-align:right;">Text-3: </td>
-          <td><input type="text" id='text_3_adv' maxlength='64' value=" "></td>
+          <td><input type="text" id='text_3_adv' maxlength='64' value="-"></td>
   			</tr>
         <tr>
           <td style="color:#FFF; text-align:right;">Dapp rewards type: </td>
@@ -167,13 +192,13 @@
             <select id="tokens_type_reward_dapp"></select>
           </td>
           <td style=" color:#FFF; text-align:right;">Text-4: </td>
-          <td><input type="text" id='text_4_adv' maxlength='64' value=" "></td>
+          <td><input type="text" id='text_4_adv' maxlength='64' value="-"></td>
         </tr>
         <tr>
           <td style=" color:#FFF; text-align:right;">Final user rewards amount: </td>
           <td><input type="number" id='user_rewards' maxlength='64'></td>
           <td style=" color:#FFF; text-align:right;">Text-5: </td>
-          <td><input type="text" id='text_5_adv' maxlength='64' value=" "></td>
+          <td><input type="text" id='text_5_adv' maxlength='64' value="-"></td>
         </tr>
         <tr>
           <td style="color:#FFF; text-align:right;">User rewards type: </td>
@@ -181,13 +206,13 @@
             <select id="tokens_type_reward_user"></select>
           </td>
           <td style=" color:#FFF; text-align:right;">Text-6: </td>
-          <td><input type="text" id='text_6_adv' maxlength='64' value=" "></td>
+          <td><input type="text" id='text_6_adv' maxlength='64' value="-"></td>
         </tr>
         <tr>
   				<td style=" color:#FFF; text-align:right;">Actions: </td>
   				<td><input type="text" id='actions_adv' maxlength='64' disabled value="-"></td>
           <td style=" color:#FFF; text-align:right;">Text-7: </td>
-          <td><input type="text" id='text_7_adv' maxlength='64' value=" "></td>
+          <td><input type="text" id='text_7_adv' maxlength='64' value="-"></td>
   			</tr>
         <tr>
   				<td style=" color:#FFF; text-align:right;">Rules: </td>
@@ -234,7 +259,11 @@
       <button class="button" onclick='Contact();'>Maxima</button>
       <button class="button" onclick='SetMaximaName();'>Set a Maxima Name</button>
       <button class="button" onclick='ListtokensreceivedDB();'>List DB Transactions</button>
-        <button class="button" onclick='listcampaignsDB();'>List DB CAMPAIGNS</button>
+      <button class="button" onclick='listcampaignsDB();'>List DB CAMPAIGNS</button>
+      <button class="button" onclick='deleteCapmpaignsRegisters();'>Delete CAMPAIGNS from DB</button>
+      <button class="button" onclick='add_publicity_token();'>Add Publicity tokenid</button>
+      <button class="button" onclick='add_user_address();'>Add User Adress</button>
+      <button class="button" onclick='add_developer_address();'>Add Developer Adress</button>
       <pre id="status-object"></pre>
       <div class="visualconsole"></div>
     </div>
