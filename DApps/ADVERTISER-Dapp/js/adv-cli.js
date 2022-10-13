@@ -23,6 +23,12 @@ var BUYER_PUBLICKEY="";
 var CAMPAIGNS = new Object();
 var TARGET_USERS = [];
 var TARGET_DEVELOPERS = [];
+// MAXIMA
+//   - contact
+//   - publicKey
+//   - name
+//   - info [{},{}]     // the info received when asked for it to DAO thru maxima
+var MAXIMA = new Object();
 
 //Main message handler..
 MDS.init(function(msg){
@@ -43,15 +49,10 @@ MDS.init(function(msg){
         setInterval(updateTime, 100);
       }
     })
-    MDS.cmd("maxima", function(resp) {
-      if (resp.status) {
-        const maximaname = resp.response.name;
-        document.getElementById("maximacontactname").innerText = maximaname;
-      }
-    })
     createTheDBDAOWalletAddress();
     createTheDBAdvertiserWalletAddress()
     createTheDBcampaign();
+    getMaximaInfo()
   }
   else if(msg.event == "NEWBLOCK"){
   // the chain tip has changed
@@ -63,14 +64,60 @@ MDS.init(function(msg){
     //alert("NEW BALANCE");
     getNewBalance();
   }
-  else if(msg.event == "MINING"){
-  // mining has started or ended
-  }
-  else if(msg.event == "MINIMALOG"){
-  // new Minima log message
-  }
-  else{
-  }
+  else if(msg.event == "MAXIMA"){
+
+    //Is it for maxsolo..
+    if(msg.data.application == "Advertiser-Dapp-data"){
+      function hexToUtf8(s)
+      {
+        return decodeURIComponent(
+           s.replace(/\s+/g, '') // remove spaces
+            .replace(/[0-9A-F]{2}/g, '%$&') // add '%' before each 2 characters
+        );
+      }
+      //Relevant data
+      //var pubkey 	= msg.data.from;
+      //alert(JSON.stringify(msg.data, undefined, 2));
+      //remove the leading 0x
+      //var datastr	= msg.data.data.substring(2);
+      //var datastr	= msg.data.data;
+      //alert(JSON.stringify(datastr, undefined, 2));
+
+
+      //Relevant data
+    //  var pubkey 	= msg.data.from;
+
+      //remove the leading 0x
+      var datastr	= msg.data.data.substring(2);
+
+      //Convert the data..
+      var jsonstr = hexToUtf8(datastr);
+
+      //And create the actual JSON
+      var maxjson = JSON.parse(jsonstr);
+      alert(JSON.stringify(maxjson, undefined, 2));
+      //URL encode the message and deal with apostrophe..
+      //let encoded = encodeURIComponent(maxjson.message).replace("'", "%27");
+
+
+
+
+
+
+      //MDS.log("Received Maxima data: "+ JSON.stringify(maxjson, undefined, 2));
+      //MDS.log("Received Maxima data: "+ JSON.stringify(datastr, undefined, 2));
+      MDS.log("Received Maxima data: "+ JSON.stringify(maxjson, undefined, 2));
+    }
+
+    else if(msg.event == "MINING"){
+    // mining has started or ended
+    }
+    else if(msg.event == "MINIMALOG"){
+    // new Minima log message
+    }
+    else{
+    }
+    }
 });
 
 
@@ -88,6 +135,83 @@ function Contact(){
     }
   });
 }
+
+//This function shows the Maxima contact of your node on top of screen and Also
+// as a global variable MAXIMA object, that would hold the following properties
+// MAXIMA
+//   - contact
+//   - publicKey
+//   - name
+//   - info [{},{}]     // the info received when asked for it to DAO thru maxima
+function getMaximaInfo() {
+  //Get the information
+
+  MDS.cmd("maxima action:info", function(resp) {
+    if (resp.status) {
+      //alert("Contact maxima action info!");
+      MDS.log("getting MAXIMA info....");
+      MDS.log("Maxima info:"+JSON.stringify(resp.response, undefined, 2));
+      MAXIMA.contact = resp.response.contact;
+      MAXIMA.publickey = resp.response.publickey;
+      MAXIMA.name = resp.response.name;
+      MAXIMA.info = [];
+      document.getElementById('max_namecontact').innerText = MAXIMA.name;
+      document.getElementById('max_publickeycontact').innerText = MAXIMA.publickey;
+      document.getElementById('max_contactid').innerText = MAXIMA.contact;
+      var nodeStatus = JSON.stringify(resp.response, undefined, 2);
+      document.getElementById("status-object").innerText = nodeStatus;
+    }
+    //if the response status is false
+    else{
+      var nodeStatus = JSON.stringify(resp, undefined, 2);
+      MDS.log("ERROR getmaxsoloting MAXIMA info...."+nodeStatus);
+      document.getElementById("status-object").innerText = nodeStatus;
+      //alert("Could not create the Contact");
+      //MDS.log("Contact: "+CreateContact);
+      //MDS.log(JSON.stringify(resp));
+    }
+  });
+}
+
+
+
+/*GET_INFO
+port == 0 operation
+port == 1 dappcode
+port == 2 topics_of_interest
+port == 3 contactid
+port == 4 publickey
+
+send address:0xADD56E54F84D6A76EB05B8227FC2ECE9CAB13ECD205D9198354DB940C3C906B6 amount:1 tokenid:0x00 state:{"0":"[GET_INFO]", "1":"buyer_address7646796", "2":"[sports]", "3":"[MxG18HGG6FJ038614Y8CW46US6G20810K0070CD00Z83282G60G1CJNTAZHK4Q990JHACB6JM7UHVHC7T8K1RAFQB2943G1ZYM6S1FZAAFM41J1USJDNW9CTDH61PM0RCKEZ2N0829GKDVA2SN5RRYC1V4W1Y39512SVEKQEUSK62WJNTWYUKUFR2BFMW5VB0DCGY58TQY637ARNDTKC4TJ85F4SMG2FDK8YAPR7F23P1VEQCE152UHYQQNKBYPR410608004655WDM@192.168.1.190:10001]",  "4":"0x30819F300D06092A864886F70D010101050003818D0030818902818100A8ADDC95096C2E3529FA7A1C91282F5867ED4EF204B71A3F46C0651F38FADBD8C57AADA74BD2692E675B8DAE75E8E8132DAA6AD93DC738AC92A418C02CB52CFC8B478A9288D3EC811C9558DD4A29E01ACC21D85F38B66A951CEA469EC3C793CA5CFB07D281572906FA7607F7548A59837030C99B3B8F51461A500548B3105DAD0203010001"}
+}*/
+function get_dao_advertising_data(topic){
+  //Get the information
+  MDS.log("get_dao_advertising_data "+topic);
+  alert(topic);
+  var state_vars = '{"0":"[GET_INFO]","1":"'+ADVERTISER_WALLET_ADDRESS+'","2":"['+topic+']","3":"['+MAXIMA.contact+']","4":"['+MAXIMA.publickey+']"}';
+  alert(state_vars);
+  //alert(DAO_WALLET_ADDRESS);
+  var CreateSend = "send address:"+DAO_WALLET_ADDRESS+" amount:1 tokenid:0x00" + " state:"+state_vars;
+  alert(CreateSend);
+  MDS.cmd(CreateSend, function(resp) {
+    if (resp.status) {
+      MDS.log("get_dao_advertising_data "+topic);
+
+      // The DAO will respond sending a message thru MAXIMA
+
+      var nodeStatus = JSON.stringify(resp.response, undefined, 2);
+      document.getElementById("status-object").innerText = nodeStatus;
+    }
+    else{
+      var nodeStatus = JSON.stringify(resp, undefined, 2);
+      document.getElementById("status-object").innerText = nodeStatus;
+      //alert("Could not buy the Tokens");
+      MDS.log("ERROR: get_dao_advertising_data "+topic);
+      MDS.log(JSON.stringify(resp, undefined, 2));
+    }
+  });
+}
+
 
 //This function add a Maxima contact
 function AddContact() {
@@ -170,6 +294,7 @@ function MinimaBalance(){
     }
   });
 }
+
 
 
 

@@ -11,12 +11,14 @@
   </head>
   <body>
     <h1>The ADVERTISER/CLIENT Dapp</h1>
-    <p class="statusdata">Maxima User Name: <span class="maindata" id="maximacontactname"></span></p>
     <p class="statusdata">Current Node Version: <span class="maindata" id="version"></span></p>
     <p class="statusdata">Current blockchain Time: <span class="maindata" id="blockchaintime"></span></p>
     <p class="statusdata">Current DAO Address: <span class="maindata" id="daoaddress_id"></span></p>
     <p class="statusdata">Current ADVERTISER Address: <span class="maindata" id="advertiseraddress_id"></span></p>
     <p class="statusdata">Current ADVERTISER Publickey: <span class="maindata" id="advertiserpublickey_id"></span></p>
+    <p class="statusdata">Current Maxima Name: <span class="maindata" id="max_namecontact"></span></p>
+    <p class="statusdata">Current Maxima Contact: <span class="maindata" id="max_contactid"></span></p>
+    <p class="statusdata">Current Maxima Publickey: <span class="maindata" id="max_publickeycontact"></span></p>
 
     <div class="wrapper">
       <div class="INF Createcontact">
@@ -256,9 +258,7 @@
       <button class="button" onclick='MainWalletAddress();'>Main Wallet Address</button>
       <button class="button" onclick='Coins();'>Coins</button>
       <button class="button" onclick='Scripts();'>Scripts</button>
-      <button class="button" onclick='Contact();'>Maxima</button>
-      <button class="button" onclick='SetMaximaName();'>Set a Maxima Name</button>
-      <button class="button" onclick='ListtokensreceivedDB();'>List DB Transactions</button>
+      <button class="button" onclick='get_dao_advertising_data("Sports");'>Ask DAO advertising data</button>
       <button class="button" onclick='listcampaignsDB();'>List DB CAMPAIGNS</button>
       <button class="button" onclick='deleteCapmpaignsRegisters();'>Delete CAMPAIGNS from DB</button>
       <button class="button" onclick='add_publicity_token();'>Add Publicity tokenid</button>

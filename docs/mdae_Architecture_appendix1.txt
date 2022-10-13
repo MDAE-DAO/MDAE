@@ -180,8 +180,10 @@ getaddress
   }
 }
 
+#### Environment TRACKER DAPP
 
-
+->java -Xmx1G -jar minima.jar -data edenbase4 -test -nop2p -port 12001 -connect 127.0.0.1:9001 -mdsenable
+mds action:install file:./TRACKER-Dapp.mds.zip trust:write
 
 
 

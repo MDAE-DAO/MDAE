@@ -92,7 +92,7 @@ function createTheDBAdvertisers(msg){
           +"  `amountreceived` int, "
           +"  `operation` varchar(64), "
           +"  `topicsofinterest` varchar(64), "
-          +"  `dappcode` varchar(64), "
+          +"  `dappcode` varchar(512), "
           +"  `contactid` varchar(1024), "
 					+"  `publickey` varchar(512), "
           +"  `trxdone` int, "
@@ -122,8 +122,8 @@ MDS.init(function(msg){
         document.getElementById("version").innerText = version;
         const blockchaintime = res.response.chain.time;
         document.getElementById("blockchaintime").innerText = blockchaintime;
-        getcontacts();
-        getTokens();
+        //getcontacts();
+        //getTokens();
         //Keep cheking the blockchain time.
         setInterval(updateTime, 100);
       }
@@ -143,7 +143,7 @@ MDS.init(function(msg){
     MDS.log("New Balance Detected");
 		//Process the new event detected
     newBalanceEvent();
-    getTokens();
+    //getTokens();
   }
   else if(msg.event == "MINING"){
   // mining has started or ended

@@ -49,6 +49,36 @@ var SENDPOLLUID ="";
 var GLOBAL = 0;
 var COUNT = 0;
 
+
+MDS.init(function(msg){
+  //Do initialitzation
+  if(msg.event == "inited"){
+    MDS.log("The DAO app init...");
+    getcontacts();
+    getTokens();
+  }
+  else if(msg.event == "NEWBLOCK"){
+  // the chain tip has changed
+  }
+  else if(msg.event == "NEWBALANCE"){
+    // user's balance has changed
+    MDS.log("New Balance Detected");
+		//Process the new event detected
+    newBalanceEvent();
+    getcontacts();
+    getTokens();
+  }
+  else if(msg.event == "MINING"){
+  // mining has started or ended
+  }
+  else if(msg.event == "MINIMALOG"){
+  // new Minima log message
+  }
+  else{
+  }
+});
+
+
 /////*****MAXIMA SECTION
 
 //This function just list the Maxima contacts
@@ -709,19 +739,32 @@ function registerTransactionInDB(coin) {
     var fullsql = "INSERT INTO advertisersDAO (coinidreceived,amountreceived,operation,topicsofinterest,dappcode,contactid,publickey,trxdone,date) VALUES "
   			+"('"+coin.coinid+"','"+coin.amount+"','"+operation+"','"+topics_of_interest+"','"+dappcode+"','"+contactid+"','"+publickey+"','"+trx_done+"',"+Date.now()+")";
 
-
   	MDS.sql(fullsql, function(resp){
       MDS.log(JSON.stringify(resp));
   		if (resp.status) {
         MDS.log("Advertiser Data Registered Correctly in the DB with the Following coinid: "+coin.coinid);
+        //alert("before sendTheDataToTheAdvertiser");
         sendTheDataToTheAdvertiser(coin);
       }
       else {
         MDS.log("Advertiser Data NOT Inserted in the DB with the followig coinid: "+coin.coinid);
+        MDS.log("ERROR inserting Adversting Data: "+JSON.stringify(resp, undefined, 2));
         //We sould register that problem into another DataBase. It allow to check the transacions who has not been processet although they should have been processed
       }
   	});
   }
+}
+
+const utf8encoder = new TextEncoder();
+
+function utf8ToHex(s)
+{
+  const rb = utf8encoder.encode(s);
+  let r = '';
+  for (const b of rb) {
+    r += ('0' + b.toString(16)).slice(-2);
+  }
+  return r;
 }
 
 function sendTheDataToTheAdvertiser(coin){
@@ -736,23 +779,36 @@ function sendTheDataToTheAdvertiser(coin){
     if (coin.state[i].port == 3) contactid = coin.state[i].data;
     if (coin.state[i].port == 4) publickey = coin.state[i].data;
   }
+  //alert("topics_of_interest: "+topics_of_interest);
   var trx_done = 0;
   MDS.log("Preparing the Transaction with the Following coind: "+coin.coinid);
   MDS.sql("SELECT * from profiles WHERE topicsofinterest='"+topics_of_interest+"'", function(sqlmsg){
     if (sqlmsg.status) {
       MDS.log(JSON.stringify(sqlmsg));
+  //    alert("before if");
       if (sqlmsg.count == 0){
         MDS.log("TOPIC DB: "+coin.topics_of_interest);
         MDS.log("Any topic registered yet for the role: "+topics_of_interest);
       }
       else{
+        //alert("into else");
         contactid = contactid.slice(1,-1); // remove "[]"
+        publickey = publickey.slice(1,-1); // remove "[]"
+        //alert(contactid);
+        //alert(publickey);
         //Add the maxima contact to the DAO
-        CreateContact = "maxcontacts action:add contact:"+contactid+" publickey:"+publickey
+        CreateContact = "maxcontacts action:add contact:"+contactid+" publickey:"+publickey;
+        //alert(CreateContact);
         MDS.cmd(CreateContact, function(resp) {
           if (resp.status) {
             MDS.log("New Maxima Contact Created: "+CreateContact);
-            getcontacts();
+            //getcontacts();
+            var data = {};
+            data.id_maxima = "";
+          	data.users 	= [];
+          	data.developers	= [];
+            data.tokens_publicity = [];
+            
             var sqlrows = sqlmsg.rows;
             //Takes the last address recorded
             let j = (sqlrows.length -1);
@@ -760,7 +816,22 @@ function sendTheDataToTheAdvertiser(coin){
             var nodeStatus = JSON.stringify(sqlrow, undefined, 2);
             var client_wallet_address = sqlrow.CLIENTWALLETADDRESS;
             //Now is time to send the info via maxima
-            sendinfo = "maxima action:send publickey:"+publickey+" application:Advertiser-Dapp data:"+client_wallet_address;
+          //  var arrayInfo = [];
+          //  arrayInfo.push(client_wallet_address);
+          //  arrayInfo.push(sqlrow.DAPPCODE);
+          //  var dataStringify = JSON.stringify(arrayInfo);
+            //var dataStringify = JSON.stringify('["'+client_wallet_address+'",'"+sqlrow.DAPPCODE+'"]');
+          //  alert(dataStringify);
+          //  sendinfo = 'maxima action:send publickey:'+publickey+ ' to:'+contactid+' application:Advertiser-Dapp-data data:"'+dataStringify+'"';
+
+            data.users.push(client_wallet_address);   // Add the user from DB profiles to the object data to send
+            //Convert to a string..
+            var datastr = JSON.stringify(data);
+            //And now convert to HEX
+            var hexstr = "0x"+utf8ToHex(datastr).toUpperCase().trim();
+            //sendinfo = 'maxima action:send publickey:'+publickey+ ' to:'+contactid+' application:Advertiser-Dapp-data data:"'+client_wallet_address+'"';
+            sendinfo = 'maxima action:send publickey:'+publickey+ ' to:'+contactid+' application:Advertiser-Dapp-data data:'+hexstr;
+            alert(sendinfo);
             MDS.cmd(sendinfo, function(resp) {
               if (resp.status) {
                 MDS.log("Maxima Contact information sended with the following coinid: "+coin.coinid);
@@ -779,7 +850,7 @@ function sendTheDataToTheAdvertiser(coin){
           else{
             var nodeStatus = JSON.stringify(resp, undefined, 2);
             document.getElementById("status-object").innerText = nodeStatus;
-            MDS.log(JSON.stringify(resp));
+            MDS.log("ERROR: "+JSON.stringify(resp));
           }
         });
       }
