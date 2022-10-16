@@ -915,6 +915,9 @@ function utf8ToHex(s)
 /*
 .................... From MAXSOLO END ------------------
 */
+function searchDeveloperProfileonDB(){
+
+}
 
 
 // Is using MAXIMA for rturning the asked data
@@ -933,15 +936,16 @@ function sendTheDataToTheAdvertiser(coin){
   //alert("topics_of_interest: "+topics_of_interest);
   var trx_done = 0;
   MDS.log("Preparing the Transaction with the Following coind: "+coin.coinid);
-  MDS.sql("SELECT * from profiles WHERE topicsofinterest='"+topics_of_interest+"'", function(sqlmsg){
+  //MDS.sql("SELECT * from profiles WHERE topicsofinterest='"+topics_of_interest+"'", function(sqlmsg){
+  MDS.sql("SELECT * from profiles WHERE topicsofinterest='"+topics_of_interest+"' AND profile='user'", function(sqlmsg){
     if (sqlmsg.status) {
       MDS.log(JSON.stringify(sqlmsg));
   //    alert("before if");
-      if (sqlmsg.count == 0){
-        MDS.log("TOPIC DB: "+coin.topics_of_interest);
-        MDS.log("Any topic registered yet for the role: "+topics_of_interest);
-      }
-      else{
+      //if (sqlmsg.count == 0){
+        //MDS.log("TOPIC DB: "+coin.topics_of_interest);
+        //MDS.log("Any user has registered the tòpic: "+topics_of_interest);
+      //}
+      //else{
         //alert("into else");
         contactid = contactid.slice(1,-1); // remove "[]"
         publickey = publickey.slice(1,-1); // remove "[]"
@@ -961,24 +965,42 @@ function sendTheDataToTheAdvertiser(coin){
           	data.users 	= [];
           	data.developers	= [];
             data.tokens_publicity = [];
+            if (sqlmsg.count > 0){
+              var sqlrows = sqlmsg.rows;
+              //Takes the last address recorded
+              let j = (sqlrows.length -1);
+              var sqlrow = sqlrows[j];
+              var nodeStatus = JSON.stringify(sqlrow, undefined, 2);
+              var client_wallet_address = sqlrow.CLIENTWALLETADDRESS;
 
-            var sqlrows = sqlmsg.rows;
-            //Takes the last address recorded
-            let j = (sqlrows.length -1);
-            var sqlrow = sqlrows[j];
-            var nodeStatus = JSON.stringify(sqlrow, undefined, 2);
-            var client_wallet_address = sqlrow.CLIENTWALLETADDRESS;
-            //Now is time to send the info via maxima
-          //  var arrayInfo = [];
-          //  arrayInfo.push(client_wallet_address);
-          //  arrayInfo.push(sqlrow.DAPPCODE);
-          //  var dataStringify = JSON.stringify(arrayInfo);
-            //var dataStringify = JSON.stringify('["'+client_wallet_address+'",'"+sqlrow.DAPPCODE+'"]');
-          //  alert(dataStringify);
-          //  sendinfo = 'maxima action:send publickey:'+publickey+ ' to:'+contactid+' application:Advertiser-Dapp-data data:"'+dataStringify+'"';
+              //  var arrayInfo = [];
+              //  arrayInfo.push(client_wallet_address);
+              //  arrayInfo.push(sqlrow.DAPPCODE);
+              //  var dataStringify = JSON.stringify(arrayInfo);
+              //  var dataStringify = JSON.stringify('["'+client_wallet_address+'",'"+sqlrow.DAPPCODE+'"]');
+              //  alert(dataStringify);
+              //  sendinfo = 'maxima action:send publickey:'+publickey+ ' to:'+contactid+' application:Advertiser-Dapp-data data:"'+dataStringify+'"';
 
-            data.users.push(client_wallet_address);   // Add the user from DB profiles to the object data to send
-            //Convert to a string..
+              data.users.push(client_wallet_address);
+            }
+
+            MDS.sql("SELECT * from profiles WHERE topicsofinterest='"+topics_of_interest+"' AND profile='developer'", function(sqlmsg2){
+              if (sqlmsg2.status) {
+                MDS.log(JSON.stringify(sqlmsg2));
+                if (sqlmsg2.count > 0){
+                  var sqlrows2 = sqlmsg2.rows;
+                  //Takes the last address recorded
+                  let m = (sqlrows2.length -1);
+                  var sqlrow2 = sqlrows2[m];
+                  var nodeStatus = JSON.stringify(sqlrow2, undefined, 2);
+                  var client_wallet_address2 = sqlrow2.CLIENTWALLETADDRESS;
+                  data.developers.push(client_wallet_address2);
+                }
+              }
+            });
+
+
+            //Convert all the data object to a string..
             var datastr = JSON.stringify(data);
             //And now convert to HEX
             var hexstr = "0x"+utf8ToHex(datastr).toUpperCase().trim();
@@ -1006,7 +1028,7 @@ function sendTheDataToTheAdvertiser(coin){
             MDS.log("ERROR: "+JSON.stringify(resp));
           }
         });
-      }
+      
     }
   });
 }
