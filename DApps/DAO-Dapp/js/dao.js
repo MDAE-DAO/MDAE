@@ -37,6 +37,12 @@ port == 1 client_wallet_address
 port == 2 profile
 port == 3 topics_of_interest
 send address:0xADD56E54F84D6A76EB05B8227FC2ECE9CAB13ECD205D9198354DB940C3C906B6 amount:10 tokenid:0x00 state:{"0":"[PROFILE]", "1":"0xE71CD49075969D6B290BD732841A7672976E15737BF5C5511712CCA5C9BBD91E", "2":"[user]", "3":"[sports]"}
+
+/*CONFIGURE_TOKENS
+port == 0 operation
+port == 1 contactid
+port == 2 publickey
+
 */
 
 
@@ -48,7 +54,7 @@ var DAO_WALLET_ADDRESS = "";
 var SENDPOLLUID ="";
 var GLOBAL = 0;
 var COUNT = 0;
-
+var ADVERTISING_TOKENS =[];
 
 MDS.init(function(msg){
   //Do initialitzation
@@ -56,6 +62,7 @@ MDS.init(function(msg){
     MDS.log("The DAO app init...");
     getcontacts();
     getTokens();
+    loadAdvertisingTokensFromNode();
   }
   else if(msg.event == "NEWBLOCK"){
   // the chain tip has changed
@@ -67,6 +74,7 @@ MDS.init(function(msg){
     newBalanceEvent();
     getcontacts();
     getTokens();
+    loadAdvertisingTokensFromNode();
   }
   else if(msg.event == "MINING"){
   // mining has started or ended
@@ -294,10 +302,12 @@ function createComplexToken(){
   var publickey3 = document.getElementById('publickey3').value;
   var dAOAddress = document.getElementById('DAOAddress').value;
   var dAOPublickey = document.getElementById('DAOPublickey').value;
+  var nameOfToken = document.getElementById('ComplexTokenName').value;
   var percentagePartyComission = document.getElementById('PercentagePartyComission').value;
   var percentageUserComission = document.getElementById('PercentageUserComission').value;
   var percentageValueRewards = document.getElementById('PercentageValueRewards').value;
   var toeknPrice = document.getElementById('ToeknPrice').value;
+  var tokenname = nameOfToken;
   var state_vars = '{'+
       '"0":"'+vault+'",' +
       '"1":"'+publickey1+'",' +
@@ -308,8 +318,11 @@ function createComplexToken(){
       '"6":"'+percentagePartyComission+'",' +
       '"7":"'+percentageUserComission+'",' +
       '"8":"'+percentageValueRewards+'",' +
-      '"9":"'+toeknPrice+'"}';
-  CreateTokenFunction = "tokencreate name:"+tokenname+" amount:"+tokenamount+" decimals:"+complexDecimals+" state:"+state_vars;
+      '"9":"'+toeknPrice+'",' +
+      '"99":"['+tokenname+']",' +
+      '"100":"[MDAE]"}';
+
+  CreateTokenFunction = "tokencreate name:"+nameOfToken+" amount:"+tokenamount+" decimals:"+complexDecimals+" state:"+state_vars;
   MDS.log("STATE VARS:"+CreateTokenFunction);
   MDS.cmd(CreateTokenFunction, function(resp) {
     if (resp.status) {
@@ -317,7 +330,31 @@ function createComplexToken(){
       var nodeStatus = JSON.stringify(resp.response, undefined, 2);
       document.getElementById("status-object").innerText = nodeStatus;
       MDS.log("TOKEN: "+CreateTokenFunction);
-      MDS.log(JSON.stringify(resp));
+      //MDS.log(JSON.stringify(resp.response, undefined, 2));
+
+ //        !!!!! The tokenid is not saved on the db, we will perform a node search instead when required
+
+/*
+      //Saving to the database ...... skipping, too tricky as you only will get the tokenid once created
+      //after the transaction is minted, so no easy way to get this tokenid , so instead to keeping it INTO
+      //a database we will search on the node for those tokens with specific state variable setted
+      var fullsql = "INSERT INTO tokenmdae (tokenid,name,description,date) VALUES "
+    			+"('"+address+"',"+Date.now()+")";
+
+    	MDS.sql(fullsql, function(resp){
+        MDS.log(JSON.stringify(resp));
+    		if (resp.status) {
+          MDS.log("DAO Wallet Address has Changed Correctly in the DB with the Following address: "+address);
+          alert("DAO Wallet Address has Changed Correctly");
+          DAO_WALLET_ADDRESS = address;
+          mainWalletAddress();
+        }
+        else {
+          MDS.log("The Address Change HAS NOT BEEN Inserted in the DB");
+          alert("Could not set the DAO Wallet Address on the DB!");
+        }
+    	});
+*/
     }
     //if the response status is false
     else{
@@ -328,6 +365,71 @@ function createComplexToken(){
   });
   getTokens();
   minimaBalance();
+}
+
+
+// Returns true is a given tokenid is an Advertiser TokenName
+function isAdvertiserToken(tokenID){
+  for (var i=0; i < ADVERTISING_TOKENS.length; i++) {
+    if (ADVERTISING_TOKENS[i].tokenid === tokenID) return true;
+  }
+  return false;
+}
+
+// Get the state vars specifc port data of a coin
+function get_state_vars_port_data (coin, port){
+  var data = null;
+      for(var z = 0; z < coin.state.length; z++) {
+        if (coin.state[z].port == port) {
+          data = coin.state[z].data;
+          break;
+        }
+      }
+
+  //alert(state_vars);
+  return data;
+}
+
+// It should be triggered on the init once the app loads
+// This will look for publicity tokens on the node and it will set it on ADVERSING_TOKENS var
+function loadAdvertisingTokensFromNode(){
+  MDS.log("Loading Tokens of publicity from node to memory : ");
+
+  // Get all tokens and only choose the publicity ones [MDAE] 100 and load to ADVERSING_TOKENS var
+  MDS.cmd("coins", function(res){
+    if (res.status) {
+      if (res.response.length == 0) {MDS.log("...there are not coins yet to load");return;}
+
+      //alert(JSON.stringify(res.response, undefined, 2));
+
+      // Get the list of tokens that are publicity tokens [MDAE] state vars 100
+      // skip the repeated using isAdvertiserToken()functions.
+
+      for (var i=0; i<res.response.length; i++){
+        var coin = res.response[i];
+        // pick the coins with state variables set to MDAE and not minimas
+        //alert(cointoken);
+        if (coin.state.length != 0 && coin.tokenid !== "0x00"){
+          var data = get_state_vars_port_data(coin, 100);
+          //alert(data+", "+coin.token.name.name);
+          if (data != null){
+            if (data === "[MDAE]") {
+              // if not repeated
+              if (!isAdvertiserToken(coin.tokenid)){   // if true, means is already on memory,so skip it
+                ADVERTISING_TOKENS.push(coin);
+                MDS.log(".....loaded token:"+" "+coin.token.name.name+" -> "+coin.tokenid);
+              }
+            }
+          }
+        }
+      }
+    }  //if the response status is false
+    else{
+        MDS.log("ERROR:.....loaded token process failed, tokens are not loaded !!");
+        var nodeStatus = JSON.stringify(resp, undefined, 2);
+        document.getElementById("status-object").innerText = nodeStatus;
+      }
+    });
 }
 
 //Send the Tokens available to the dongles
@@ -375,7 +477,7 @@ function getTokens(){
 
 //***** STAUS AND TOOLS SECTION
 
-//This function just create a new address
+//This function just create a new addressgetTokens
 function newAddress(){
   MDS.cmd("newaddress", function(resp) {
     if (resp.status) {
@@ -430,7 +532,7 @@ function setMaximaName(){
         alert("Could not set the name!");
       }
     });
-  }
+  }ADVERTISING_TOKENS
 }
 
 //This function just shows the main wallet address
@@ -515,7 +617,7 @@ function listadvertisersDB(){
   MDS.sql("SELECT * FROM advertisersDAO",function(sqlmsg){
     if (sqlmsg.status) {
       var nodeStatus = JSON.stringify(sqlmsg, undefined, 2);
-      document.getElementById("status-object").innerText = nodeStatus;
+      document.getElementById("status-object").igetTokensnnerText = nodeStatus;
       MDS.log(JSON.stringify(sqlmsg));
     }else{
       var nodeStatus = JSON.stringify(sqlmsg, undefined, 2);
@@ -578,7 +680,7 @@ function tokenFromClient (coin){
     if (coin.state[j].port == 0) operation = coin.state[j].data;
   }
   MDS.log("Is it a Client Transaction?");
-  if (operation == "[BUY]" || operation == "[SELL]" || operation == "[PROFILE]" || operation == "[GET_INFO]") {
+  if (operation == "[BUY]" || operation == "[SELL]" || operation == "[PROFILE]" || operation == "[GET_INFO]" || operation == "[CONFIGURE_TOKENS]") {
     return true
   }else{
     return false
@@ -638,6 +740,18 @@ function searchSQL(coins){
       });
     }
     if (operation == "[GET_INFO]"){
+      MDS.log("With Operation: "+operation);
+      MDS.sql("SELECT * from advertisersDAO WHERE coinidreceived='"+coin.coinid+"'", function(sqlmsg){
+        if (sqlmsg.status) {
+          COUNT = COUNT-1;
+          checkTokenReceived(coin, sqlmsg);
+          if (COUNT >= 0){
+            searchSQL(coins);
+          }
+        }
+      });
+    }
+    if (operation == "[CONFIGURE_TOKENS]"){
       MDS.log("With Operation: "+operation);
       MDS.sql("SELECT * from advertisersDAO WHERE coinidreceived='"+coin.coinid+"'", function(sqlmsg){
         if (sqlmsg.status) {
@@ -742,19 +856,51 @@ function registerTransactionInDB(coin) {
   	MDS.sql(fullsql, function(resp){
       MDS.log(JSON.stringify(resp));
   		if (resp.status) {
-        MDS.log("Advertiser Data Registered Correctly in the DB with the Following coinid: "+coin.coinid);
+        MDS.log("Advertiser Data GET_INFO Registered Correctly in the DB with the Following coinid: "+coin.coinid);
         //alert("before sendTheDataToTheAdvertiser");
         sendTheDataToTheAdvertiser(coin);
       }
       else {
-        MDS.log("Advertiser Data NOT Inserted in the DB with the followig coinid: "+coin.coinid);
-        MDS.log("ERROR inserting Adversting Data: "+JSON.stringify(resp, undefined, 2));
+        MDS.log("Advertiser Data GET_INFO NOT Inserted in the DB with the followig coinid: "+coin.coinid);
+        MDS.log("ERROR inserting Adversting Data GET_INFO: "+JSON.stringify(resp, undefined, 2));
+        //We sould register that problem into another DataBase. It allow to check the transacions who has not been processet although they should have been processed
+      }
+  	});
+  }
+  if (operation == "[CONFIGURE_TOKENS]"){
+    //Operation from a client who wants to get info from the DAO profiles DB
+    MDS.log("Registering the Transaction from an ADVERTISER Client operation [CONFIGURE_TOKENS] in the DB..");
+    var dappcode="";
+    var topics_of_interest="";
+    var contactid;
+    var publickey;
+    for(var i = 0; i < coin.state.length; i++) {
+      if (coin.state[i].port == 1) contactid = coin.state[i].data;
+      if (coin.state[i].port ==2) publickey = coin.state[i].data;
+    }
+    var trx_done = 0;
+    var fullsql = "INSERT INTO advertisersDAO (coinidreceived,amountreceived,operation,topicsofinterest,dappcode,contactid,publickey,trxdone,date) VALUES "
+  			+"('"+coin.coinid+"','"+coin.amount+"','"+operation+"','"+topics_of_interest+"','"+dappcode+"','"+contactid+"','"+publickey+"','"+trx_done+"',"+Date.now()+")";
+
+  	MDS.sql(fullsql, function(resp){
+      MDS.log(JSON.stringify(resp));
+  		if (resp.status) {
+        MDS.log("Advertiser Data CONFIGURE_TOKENS Registered[CONFIGURE_TOKENS] Correctly in the DB with the Following coinid: "+coin.coinid);
+        //alert("before sendTheDataToTheAdvertiser");
+        sendConfigureDataOverMaxima(coin);
+      }
+      else {
+        MDS.log("Advertiser Data CONFIGURE_TOKENS NOT Inserted in the DB with the followig coinid: "+coin.coinid);
+        MDS.log("ERROR inserting Adversting Data CONFIGURE_TOKENS: "+JSON.stringify(resp, undefined, 2));
         //We sould register that problem into another DataBase. It allow to check the transacions who has not been processet although they should have been processed
       }
   	});
   }
 }
 
+/*
+.................... From MAXSOLO -------------------
+*/
 const utf8encoder = new TextEncoder();
 
 function utf8ToHex(s)
@@ -766,7 +912,12 @@ function utf8ToHex(s)
   }
   return r;
 }
+/*
+.................... From MAXSOLO END ------------------
+*/
 
+
+// Is using MAXIMA for rturning the asked data
 function sendTheDataToTheAdvertiser(coin){
   //For now only load the last user who has insert this topic and set manually the DAPP..
   var dappcode;
@@ -803,12 +954,14 @@ function sendTheDataToTheAdvertiser(coin){
           if (resp.status) {
             MDS.log("New Maxima Contact Created: "+CreateContact);
             //getcontacts();
+
+            //Object to send over MAXIMA
             var data = {};
             data.id_maxima = "";
           	data.users 	= [];
           	data.developers	= [];
             data.tokens_publicity = [];
-            
+
             var sqlrows = sqlmsg.rows;
             //Takes the last address recorded
             let j = (sqlrows.length -1);
@@ -858,16 +1011,102 @@ function sendTheDataToTheAdvertiser(coin){
   });
 }
 
+// Is using MAXIMA for rturning the asked data
+function sendConfigureDataOverMaxima(coin){
+  var contactid;
+  var publickey;
+  for(var i = 0; i < coin.state.length; i++) {
+    if (coin.state[i].port == 1) contactid = coin.state[i].data;
+    if (coin.state[i].port == 2) {publickey = coin.state[i].data;break;}    //exit when found
+  }
+
+  MDS.log("Preparing the Transaction with the Following coind: "+coin.coinid);
+
+  //alert("into else");
+  contactid = contactid.slice(1,-1); // remove "[]"
+  publickey = publickey.slice(1,-1); // remove "[]"
+  //alert(contactid);
+  //alert(publickey);
+  //Add the maxima contact to the DAO
+  CreateContact = "maxcontacts action:add contact:"+contactid+" publickey:"+publickey;
+  //alert(CreateContact);
+  MDS.cmd(CreateContact, function(resp) {
+    if (resp.status){
+      MDS.log("New Maxima Contact Created: "+CreateContact);
+
+      //Object to send over MAXIMA
+      var data = {};
+      data.id_maxima = "";
+    	data.users 	= [];
+    	data.developers	= [];
+      data.tokens_publicity = ADVERTISING_TOKENS;
+      //alert(ADVERTISING_TOKENS.length);
+      //Convert to a string..
+      var datastr = JSON.stringify(data);
+      //And now convert to HEX
+      var hexstr = "0x"+utf8ToHex(datastr).toUpperCase().trim();
+      //sendinfo = 'maxima action:send publickey:'+publickey+ ' to:'+contactid+' application:Advertiser-Dapp-data data:"'+client_wallet_address+'"';
+      sendinfo = 'maxima action:send publickey:'+publickey+ ' to:'+contactid+' application:Advertiser-Dapp-data-configure data:'+hexstr;
+      alert(sendinfo);
+      MDS.cmd(sendinfo, function(resp) {
+        if (resp.status) {
+          MDS.log("Maxima CONFIGURE_TOKENS information sended coinid: "+coin.coinid);
+          MDS.log(JSON.stringify(data, undefined, 2));
+        }
+        //if the response status is false
+        else{
+          var nodeStatus = JSON.stringify(resp, undefined, 2);
+          document.getElementById("status-object").innerText = nodeStatus;
+          MDS.log("ERROR: Sending maxima data of Publicity Tokens: "+JSON.stringify(resp));
+        }
+      });
+    }else{
+      var nodeStatus = JSON.stringify(resp, undefined, 2);
+      document.getElementById("status-object").innerText = nodeStatus;
+      MDS.log("ERROR: "+JSON.stringify(resp));
+    }
+  });
+}
+
+/*// Get the state vars of a tokenID until the last number specified by end
+// The string returned is not the Json object, it is a string of type ( "0":"abc", "1":"56", "2":"ght")
+function get_state_vars_string (coin, end){
+  var state_vars = '';
+
+  if (end+1 <= coin.state.length) {
+      for(var z = 0; z < end+1; z++) {
+        //alert(JSON.stringify(coin.state[z], undefined, 2));
+        if (coin.state[z] != undefined) {
+            state_vars += '"'+coin.state[z].port+'":'+'"'+coin.state[z].data+'",';
+            //alert("Length: "+coin.state.length+", z: "+z+", state: "+'"'+coin.state[z].port+'":'+'"'+coin.state[z].data+'",');
+            if(coin.state[z].port == 99) state_vars += '"'+coin.state[z].port+'":'+'"'+coin.state[z].data+'",';
+            if(coin.state[z].port == 100) state_vars += '"'+coin.state[z].port+'":'+'"[MDAE]",';
+        }
+      }
+  }
+  //alert("into get_state_vars_string: "+state_vars);
+  return state_vars;
+}
+*/
 // Get the state vars of a tokenID until the last number specified by end
 // The string returned is not the Json object, it is a string of type ( "0":"abc", "1":"56", "2":"ght")
 function get_state_vars_string (coin, end){
   var state_vars = '';
-      for(var z = 0; z < coin.state.length; z++) {
-        if (coin.state[z].port < end+1) {
-          state_vars += '"'+coin.state[z].port+'":'+'"'+coin.state[z].data+'",';
-        } else break;
+
+  //alert("get_state_vars_string "+end+", "+coin.state.length);
+  //alert(JSON.stringify(coin.state, undefined, 2));
+  if (end+1 <= coin.state.length) {
+      for(var z = 0; z < end+1; z++) {
+        //alert(JSON.stringify(coin.state[z], undefined, 2));
+        if (coin.state[z] != undefined) {
+            state_vars += '"'+coin.state[z].port+'":'+'"'+coin.state[z].data+'",';
+            //alert("Length: "+coin.state.length+", z: "+z+", state: "+'"'+coin.state[z].port+'":'+'"'+coin.state[z].data+'",');
+            if(coin.state[z].port == 99) state_vars += '"'+coin.state[z].port+'":'+'"'+coin.state[z].data+'",';
+            if(coin.state[z].port == 100) state_vars += '"'+coin.state[z].port+'":'+'"[MDAE]",';
+        }
       }
-  //alert(state_vars);
+  }
+//  alert("into get_state_vars_string: "+state_vars);
   return state_vars;
 }
 
@@ -898,7 +1137,8 @@ function sendTheTokensToTheBuyer(coin){
           MDS.log("Getting tokenid info: "+res.response[0].tokenid);
           //alert(JSON.stringify(res.response, undefined, 2));
 
-          var state_vars = '{' + get_state_vars_string(res.response[0], 12) +
+          // 9 state vars plus 99 and 100 = 11
+          var state_vars = '{' + get_state_vars_string(res.response[0], 11) +
               '"10":"'+client_wallet_address+'",' +
               '"11":"'+client_amount_desired+'",' +
               '"12":"'+client_publickkey+'"}';

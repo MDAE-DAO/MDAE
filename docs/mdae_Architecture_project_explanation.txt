@@ -259,7 +259,8 @@ Procedure:
       - **state 29** : Text 6 publicity
       - **state 30** : Text 7 publicity
       - **state 31** : Text 8 publicity
-
+      - **state 99** : A specific name for the token  (not used so far)
+      - **state 100**; [MDAE] It means is a publicity token, to detect it faster and speed up the searches
     -----------------------------------------------------------------
 
       7.- Generating VAULT script address:

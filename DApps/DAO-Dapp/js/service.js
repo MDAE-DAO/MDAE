@@ -31,6 +31,20 @@ function preparingSendpoll(){
   });
 }
 
+//This function just create the databases if they are not yet
+function createTheDBTokens(msg){
+	initsql = "CREATE TABLE IF NOT EXISTS `tokensmdae` ( "
+					+"  `id` IDENTITY PRIMARY KEY, "
+					+"  `tokenid` varchar(512), "
+          +"  `name` varchar(64), "
+          +"  `description` varchar(256), "
+					+"  `date` bigint "
+					+" )";
+
+		MDS.sql(initsql,function(msg){
+			MDS.log("DB tokensMDAE Inited..");
+		});
+}
 
 //This function just create the databases if they are not yet
 function createTheDBtokensreceived(msg){
@@ -114,6 +128,7 @@ MDS.init(function(msg){
     createTheDBDAOWalletAddress();
     createTheDBProfiles();
     createTheDBAdvertisers();
+    createTheDBTokens();
 		preparingSendpoll();
     MDS.cmd("status", function(res) {
       if (res.status) {
