@@ -1028,7 +1028,7 @@ function sendTheDataToTheAdvertiser(coin){
             MDS.log("ERROR: "+JSON.stringify(resp));
           }
         });
-      
+
     }
   });
 }
@@ -1159,16 +1159,28 @@ function sendTheTokensToTheBuyer(coin){
           MDS.log("Getting tokenid info: "+res.response[0].tokenid);
           //alert(JSON.stringify(res.response, undefined, 2));
 
-          // 9 state vars plus 99 and 100 = 11
-          var state_vars = '{' + get_state_vars_string(res.response[0], 11) +
+          // Look for coinid which amount is bigger the amoount asked
+          var token_to_send;
+          for(var i = 0; i < res.response.length; i++) {
+            var coin2 = res.response[i];
+            if (coin2.tokenamount > client_amount_desired){
+              token_to_send = coin2;
+              break;
+            }
+          }
+          MDS.log("Got the token to send, coinid: "+token_to_send.coinid);
+
+            var state_vars = '{' +
               '"10":"'+client_wallet_address+'",' +
               '"11":"'+client_amount_desired+'",' +
               '"12":"'+client_publickkey+'"}';
+              //alert("state vars:"+state_vars);
 
-              alert("state vars:"+state_vars);
               //var command = 'send address:0x614190606CD54F2CF78D06813CE1BF4C71438C7897234C7D0F788D4F65F84BDE amount:'+token_amount+' state:'+state_vars;
-              var command = "sendpoll address:"+client_wallet_address+" amount:"+client_amount_desired+" tokenid:"+client_token_id+" state:"+state_vars +" uid:"+SENDPOLLUID;
+              //var command = "sendpoll address:"+client_wallet_address+" amount:"+client_amount_desired+" tokenid:"+client_token_id+" state:"+state_vars +" uid:"+SENDPOLLUID;
+              var command = getManualSendTXtoken_string(token_to_send, client_amount_desired, client_wallet_address, DAO_WALLET_ADDRESS, state_vars);
               alert(command);
+
               MDS.cmd(command, function(res){
                 if (res.status) {
                   MDS.log("The Tokens HAS BEEN SENT to Following Client Address: "+client_wallet_address);
@@ -1200,6 +1212,7 @@ function sendTheTokensToTheBuyer(coin){
 }
 
 
+
 //***** SERVICE.JS FUNCTIONS SECTION
 
 //This function just update the Blockchain time
@@ -1228,4 +1241,76 @@ function processData(){
       }
     }
   });
+}
+
+////////////////////////////////////////
+//It emulates send minima command, but this version keep the change back state variables.
+//Returns the changeback to the address specified
+//We need to use this function whenever we want to send tokens than must preserve his state variables on the
+//origin when the change back is returned
+function getManualSendTXtoken_string(token, amount, targetAddress, change_back_address, state_vars){
+  var change_back = token.tokenamount - amount;
+  //alert(JSON.stringify(state_vars, undefined, 2));
+  //Create a random txn id..
+  var txnid = Math.floor(Math.random()*1000000000);
+
+  //Construct Transaction..
+  var txncreator = "txncreate id:"+txnid+";"
+
+    // Constructs state variables, getting the tokens statevars,
+    for (var i=0; i<token.state.length; i++){
+      txncreator += "txnstate id:"+txnid+" port:"+token.state[i].port+" value:"+token.state[i].data+";";
+    }
+
+    //Add the new state_vars to the transaction
+    const obj = JSON.parse(state_vars);
+    Object.keys(obj).forEach(function(key, idx) {
+      txncreator += "txnstate id:"+txnid+" port:"+key+" value:"+obj[key]+";";
+      //alert("states vars to add: "+" port:"+key+" value:"+obj[key]);
+      //alert(txncreator);
+    });
+/*    // Adding the new state vars to the transaction
+    for (var i=0; i<obj.length; i++){
+      var port = obj[i][0];
+      var value = obj[i][1];
+      txncreator += "txnstate id:"+txnid+" port:"+port+" value:"+value+";";
+    }
+*/
+    //input token
+    txncreator += "txninput id:"+txnid+" coinid:"+token.coinid+";";
+
+    //outputs the token and the change back
+    txncreator +=
+    "txnoutput id:"+txnid+" amount:"+amount+" address:"+targetAddress+" tokenid:"+token.tokenid+" storestate:true;";
+
+    if (change_back > 0) {
+      txncreator += "txnoutput id:"+txnid+" amount:"+change_back+" address:"+change_back_address+" tokenid:"+token.tokenid+" storestate:true;";
+    }
+
+    txncreator +=
+    "txnbasics id:"+txnid+";"+
+    "txnsign id:"+txnid+" publickey:auto;"+
+    "txnpost id:"+txnid+";"+
+    "txndelete id:"+txnid+";";
+
+    var nodeStatus = JSON.stringify(txncreator, undefined, 2);
+    document.getElementById("status-object").innerText = nodeStatus;
+    MDS.log(JSON.stringify(txncreator, undefined, 2));
+    alert("TXNCREATOR end function: "+JSON.stringify(txncreator, undefined, 2));
+    return txncreator;
+}
+
+// Get the state vars of a tokenID until the last number specified by end
+// The string returned is not the Json object, it is a string of type ( "0":"abc", "1":"56", "2":"ght")
+function get_state_vars_string2 (coin, end){
+  //Duplicate the object only until end parameters
+  const newStatevars = new Object();
+  const statevars = JSON.parse(JSON.stringify(coin.state));
+
+  Object.keys(statevars).forEach(function(key, idx) {
+    if (idx <= end) newStatevars.key = statevars[key];
+  });
+  alert("into get_state_vars_string2_slice:"+JSON.stringify(coin.state));
+  alert("into get_state_vars_string2_slice: "+JSON.stringify(newStatevars).slice[1,-1]);
+  return JSON.stringify(newStatevars).slice[1,-1];
 }

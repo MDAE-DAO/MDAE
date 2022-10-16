@@ -301,6 +301,8 @@ function get_publiciy_token_rewards(token_coinid){
         "txnstate id:"+txnid+" port:29 value:"+token.state[29].data+";"+
         "txnstate id:"+txnid+" port:30 value:"+token.state[30].data+";"+
         "txnstate id:"+txnid+" port:31 value:"+token.state[31].data+";"+
+        "txnstate id:"+txnid+" port:99 value:"+token.state[99].data+";"+
+        "txnstate id:"+txnid+" port:100 value:"+token.state[100].data+";"+
 				"txnbasics id:"+txnid+";"+
 				"txnpost id:"+txnid+";"+
 				"txndelete id:"+txnid+";";

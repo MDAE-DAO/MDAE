@@ -17,7 +17,7 @@ var SENDPOLLUID ="";
 var GLOBAL = 0;
 var COUNT = 0;
 var BALANCE = {};
-const ADVERTISING_TOKENS = [];
+var ADVERTISING_TOKENS = [];
 var BUYER_ADDRESS ="";
 var BUYER_PUBLICKEY="";
 var CAMPAIGNS = new Object();
@@ -38,6 +38,10 @@ MDS.init(function(msg){
     //createTheDB();
 		//preparingSendpoll()
     listcampaignsDB(true);
+    createTheDBDAOWalletAddress();
+    createTheDBAdvertiserWalletAddress()
+    createTheDBcampaign();
+    getMaximaInfo();
     MDS.cmd("status", function(res) {
       if (res.status) {
         // get the version number and the blockchain time from the Status object returned
@@ -48,11 +52,11 @@ MDS.init(function(msg){
         //Keep cheking the blockchain time.
         setInterval(updateTime, 100);
       }
-    })
-    createTheDBDAOWalletAddress();
-    createTheDBAdvertiserWalletAddress()
-    createTheDBcampaign();
-    getMaximaInfo()
+    });
+
+    setTimeout(() => {
+      getPublicityTokensFromDAO();
+    }, 450);
   }
   else if(msg.event == "NEWBLOCK"){
   // the chain tip has changed
@@ -68,24 +72,8 @@ MDS.init(function(msg){
 
     //Is it for maxsolo..
     if(msg.data.application == "Advertiser-Dapp-data"){
-      function hexToUtf8(s)
-      {
-        return decodeURIComponent(
-           s.replace(/\s+/g, '') // remove spaces
-            .replace(/[0-9A-F]{2}/g, '%$&') // add '%' before each 2 characters
-        );
-      }
-      //Relevant data
-      //var pubkey 	= msg.data.from;
-      //alert(JSON.stringify(msg.data, undefined, 2));
-      //remove the leading 0x
-      //var datastr	= msg.data.data.substring(2);
-      //var datastr	= msg.data.data;
-      //alert(JSON.stringify(datastr, undefined, 2));
-
 
       //Relevant data
-    //  var pubkey 	= msg.data.from;
 
       //remove the leading 0x
       var datastr	= msg.data.data.substring(2);
@@ -95,32 +83,47 @@ MDS.init(function(msg){
 
       //And create the actual JSON
       var maxjson = JSON.parse(jsonstr);
+
       alert(JSON.stringify(maxjson, undefined, 2));
-      //URL encode the message and deal with apostrophe..
-      //let encoded = encodeURIComponent(maxjson.message).replace("'", "%27");
-
-
-
-
-
-
-      //MDS.log("Received Maxima data: "+ JSON.stringify(maxjson, undefined, 2));
-      //MDS.log("Received Maxima data: "+ JSON.stringify(datastr, undefined, 2));
       MDS.log("Received Maxima data: "+ JSON.stringify(maxjson, undefined, 2));
     }
+    // CONFIGURE data: Advertiser-Dapp-data-configure"
+    if(msg.data.application == "Advertiser-Dapp-data-configure"){
 
-    else if(msg.event == "MINING"){
+      //Relevant data
+
+      //remove the leading 0x
+      var datastr	= msg.data.data.substring(2);
+
+      //Convert the data..
+      var jsonstr = hexToUtf8(datastr);
+
+      //And create the actua object data received
+      var maxjson = JSON.parse(jsonstr);
+      ADVERTISING_TOKENS = maxjson.tokens_publicity;
+      alert(JSON.stringify(maxjson, undefined, 2));
+      getNewBalance();
+      MDS.log("Received Maxima data: "+ JSON.stringify(maxjson, undefined, 2));
+    }
+  }
+  else if(msg.event == "MINING"){
     // mining has started or ended
-    }
-    else if(msg.event == "MINIMALOG"){
-    // new Minima log message
-    }
-    else{
-    }
-    }
+  }
+  else if(msg.event == "MINIMALOG"){
+  // new Minima log message
+  }
+  else{
+  }
 });
 
 
+function hexToUtf8(s)
+{
+  return decodeURIComponent(
+     s.replace(/\s+/g, '') // remove spaces
+      .replace(/[0-9A-F]{2}/g, '%$&') // add '%' before each 2 characters
+  );
+}
 
 //send address:0x9D90EE44464722B25EA05EBC443755FB81D8AAB1077726D5A2A09010BD041184 amount:7 tokenid:0x00 state:{"0":"[BUY]", "1":"0xC6496C916268F428259FA05A979A3FDE8E0901A52525A4D73578903AE2975634", "2":"0x00", "3":"7"}
 
@@ -212,6 +215,37 @@ function get_dao_advertising_data(topic){
   });
 }
 
+/*CONFIGURE_TOKENS
+port == 0 operation
+port == 1 Maxima Contact
+port == 2 Publickey
+*/
+function getPublicityTokensFromDAO(){
+  //Get the information
+  MDS.log("getPublicityTokensFromDAO ");
+
+  var state_vars = '{"0":"[CONFIGURE_TOKENS]","1":"['+MAXIMA.contact+']","2":"['+MAXIMA.publickey+']"}';
+  //alert(state_vars);
+  //alert(DAO_WALLET_ADDRESS);
+  var CreateSend = "send address:"+DAO_WALLET_ADDRESS+" amount:1 tokenid:0x00" + " state:"+state_vars;
+  alert("- Wallwet -> Maxima reesponse command:\n -:"+CreateSend);
+  MDS.cmd(CreateSend, function(resp) {
+    if (resp.status) {
+      MDS.log("getPublicityTokensFromDAO command sent ");
+
+      // The DAO will respond sending a message thru MAXIMA
+
+      var nodeStatus = JSON.stringify(resp.response, undefined, 2);
+      document.getElementById("status-object").innerText = nodeStatus;
+    }
+    else{
+      var nodeStatus = JSON.stringify(resp, undefined, 2);
+      document.getElementById("status-object").innerText = nodeStatus;
+      MDS.log("ERROR: getPublicityTokensFromDAO ");
+      MDS.log(JSON.stringify(resp, undefined, 2));
+    }
+  });
+}
 
 //This function add a Maxima contact
 function AddContact() {
@@ -641,6 +675,19 @@ function get_minima_amount_available(){
   }
 }
 
+// Get the state vars specifc port data of a coin
+function get_state_vars_port_data (coin, port){
+  var data = null;
+      for(var z = 0; z < coin.state.length; z++) {
+        if (coin.state[z].port == port) {
+          data = coin.state[z].data;
+          break;
+        }
+      }
+
+  //alert(state_vars);
+  return data;
+}
 
 // Build the transaction for sending a campaign to the final user
 // rewards_coinid[] is an array of coinid that all of them sum the quantity necesary, so that the configured campaign tokens
@@ -671,38 +718,40 @@ function getTxSendCampaignString(token, address, camapign_address, rewards_coini
       txncreator += "txnoutput id:"+txnid+" amount:"+change_back_token+" address:"+camapign_address+" tokenid:"+token.tokenid+" storestate:true;"
     }
     txncreator +=
-    "txnstate id:"+txnid+" port:0 value:"+token.state[0].data+";"+
-    "txnstate id:"+txnid+" port:1 value:"+token.state[1].data+";"+
-    "txnstate id:"+txnid+" port:2 value:"+token.state[2].data+";"+
-    "txnstate id:"+txnid+" port:3 value:"+token.state[3].data+";"+
-    "txnstate id:"+txnid+" port:4 value:"+token.state[4].data+";"+ //DAO wallet
-    "txnstate id:"+txnid+" port:5 value:"+token.state[5].data+";"+
-    "txnstate id:"+txnid+" port:6 value:"+token.state[6].data+";"+
-    "txnstate id:"+txnid+" port:7 value:"+token.state[7].data+";"+
-    "txnstate id:"+txnid+" port:8 value:"+token.state[8].data+";"+
-    "txnstate id:"+txnid+" port:9 value:"+token.state[9].data+";"+
-    "txnstate id:"+txnid+" port:10 value:"+token.state[10].data+";"+
-    "txnstate id:"+txnid+" port:11 value:"+token.state[11].data+";"+
-    "txnstate id:"+txnid+" port:12 value:"+token.state[12].data+";"+
-    "txnstate id:"+txnid+" port:13 value:"+token.state[13].data+";"+
+    "txnstate id:"+txnid+" port:0 value:"+get_state_vars_port_data(token, 0)+";"+
+    "txnstate id:"+txnid+" port:1 value:"+get_state_vars_port_data(token, 1)+";"+
+    "txnstate id:"+txnid+" port:2 value:"+get_state_vars_port_data(token, 2)+";"+
+    "txnstate id:"+txnid+" port:3 value:"+get_state_vars_port_data(token, 3)+";"+
+    "txnstate id:"+txnid+" port:4 value:"+get_state_vars_port_data(token, 4)+";"+ //DAO wallet
+    "txnstate id:"+txnid+" port:5 value:"+get_state_vars_port_data(token, 5)+";"+
+    "txnstate id:"+txnid+" port:6 value:"+get_state_vars_port_data(token, 6)+";"+
+    "txnstate id:"+txnid+" port:7 value:"+get_state_vars_port_data(token, 7)+";"+
+    "txnstate id:"+txnid+" port:8 value:"+get_state_vars_port_data(token, 8)+";"+
+    "txnstate id:"+txnid+" port:9 value:"+get_state_vars_port_data(token, 9)+";"+
+    "txnstate id:"+txnid+" port:10 value:"+get_state_vars_port_data(token, 10)+";"+
+    "txnstate id:"+txnid+" port:11 value:"+get_state_vars_port_data(token, 11)+";"+
+    "txnstate id:"+txnid+" port:12 value:"+get_state_vars_port_data(token, 12)+";"+
+    "txnstate id:"+txnid+" port:13 value:"+get_state_vars_port_data(token, 13)+";"+
     "txnstate id:"+txnid+" port:14 value:2;"+     // 2:sent  -> set state to Token to used
-    "txnstate id:"+txnid+" port:15 value:"+token.state[15].data+";"+
-    "txnstate id:"+txnid+" port:16 value:"+token.state[16].data+";"+
-    "txnstate id:"+txnid+" port:17 value:"+token.state[17].data+";"+
-    "txnstate id:"+txnid+" port:18 value:"+token.state[18].data+";"+
-    "txnstate id:"+txnid+" port:19 value:"+token.state[19].data+";"+
-    "txnstate id:"+txnid+" port:20 value:"+token.state[20].data+";"+
-    "txnstate id:"+txnid+" port:21 value:"+token.state[21].data+";"+
-    "txnstate id:"+txnid+" port:22 value:"+token.state[22].data+";"+
-    "txnstate id:"+txnid+" port:23 value:"+token.state[23].data+";"+
-    "txnstate id:"+txnid+" port:24 value:"+token.state[24].data+";"+
-    "txnstate id:"+txnid+" port:25 value:"+token.state[25].data+";"+
-    "txnstate id:"+txnid+" port:26 value:"+token.state[26].data+";"+
-    "txnstate id:"+txnid+" port:27 value:"+token.state[27].data+";"+
-    "txnstate id:"+txnid+" port:28 value:"+token.state[28].data+";"+
-    "txnstate id:"+txnid+" port:29 value:"+token.state[29].data+";"+
-    "txnstate id:"+txnid+" port:30 value:"+token.state[30].data+";"+
-    "txnstate id:"+txnid+" port:31 value:"+token.state[31].data+";"+
+    "txnstate id:"+txnid+" port:15 value:"+get_state_vars_port_data(token, 15)+";"+
+    "txnstate id:"+txnid+" port:16 value:"+get_state_vars_port_data(token, 16)+";"+
+    "txnstate id:"+txnid+" port:17 value:"+get_state_vars_port_data(token, 17)+";"+
+    "txnstate id:"+txnid+" port:18 value:"+get_state_vars_port_data(token, 18)+";"+
+    "txnstate id:"+txnid+" port:19 value:"+get_state_vars_port_data(token, 19)+";"+
+    "txnstate id:"+txnid+" port:20 value:"+get_state_vars_port_data(token, 20)+";"+
+    "txnstate id:"+txnid+" port:21 value:"+get_state_vars_port_data(token, 21)+";"+
+    "txnstate id:"+txnid+" port:22 value:"+get_state_vars_port_data(token, 22)+";"+
+    "txnstate id:"+txnid+" port:23 value:"+get_state_vars_port_data(token, 23)+";"+
+    "txnstate id:"+txnid+" port:24 value:"+get_state_vars_port_data(token, 24)+";"+
+    "txnstate id:"+txnid+" port:25 value:"+get_state_vars_port_data(token, 25)+";"+
+    "txnstate id:"+txnid+" port:26 value:"+get_state_vars_port_data(token, 26)+";"+
+    "txnstate id:"+txnid+" port:27 value:"+get_state_vars_port_data(token, 27)+";"+
+    "txnstate id:"+txnid+" port:28 value:"+get_state_vars_port_data(token, 28)+";"+
+    "txnstate id:"+txnid+" port:29 value:"+get_state_vars_port_data(token, 29)+";"+
+    "txnstate id:"+txnid+" port:30 value:"+get_state_vars_port_data(token, 30)+";"+
+    "txnstate id:"+txnid+" port:31 value:"+get_state_vars_port_data(token, 31)+";"+
+    "txnstate id:"+txnid+" port:99 value:"+get_state_vars_port_data(token, 99)+";"+
+    "txnstate id:"+txnid+" port:31 value:"+get_state_vars_port_data(token, 100)+";"+
     "txnbasics id:"+txnid+";"+
     "txnsign id:"+txnid+" publickey:auto;"+
     "txnpost id:"+txnid+";"+
@@ -914,8 +963,8 @@ function GetTokens(){
 
     for(var i = 0; i < ADVERTISING_TOKENS.length; i++) {
       var opt = document.createElement('option');
-      opt.value = ADVERTISING_TOKENS[i];
-      opt.innerHTML = ADVERTISING_TOKENS[i];
+      opt.value = ADVERTISING_TOKENS[i].tokenid;
+      opt.innerHTML = ADVERTISING_TOKENS[i].token.name.name;
       select3.appendChild(opt);
     }
 
@@ -1027,7 +1076,7 @@ function onupdateSelectCapaignInfo(){
 // Returns true is a given tokenid is an Advertiser TokenName
 function isAdvertiserToken(tokenID){
   for (var i=0; i < ADVERTISING_TOKENS.length; i++) {
-    if (ADVERTISING_TOKENS[i] === tokenID) return true;
+    if (ADVERTISING_TOKENS[i].tokenid === tokenID) return true;
   }
   return false;
 }
@@ -1081,7 +1130,8 @@ function ConfigureCampaign(){
 
 
         var coin = res.response[0];
-        var state_vars = '{' + get_state_vars_string(coin, 12) +
+        // Includes port 99 and 100 13+2
+        var state_vars = '{' + get_state_vars_string(coin, 15) +
             '"13":"['+campaign+']",' +
             '"14":"1",' +
             '"15":"'+dapp_rewards+'",' +
@@ -1160,15 +1210,27 @@ function ConfigureCampaign(){
 // The string returned is not the Json object, it is a string of type ( "0":"abc", "1":"56", "2":"ght")
 function get_state_vars_string (coin, end){
   var state_vars = '';
-      for(var z = 0; z < coin.state.length; z++) {
-        if (coin.state[z].port < end+1) {
-          state_vars += '"'+coin.state[z].port+'":'+'"'+coin.state[z].data+'",';
-        } else break;
+
+  alert("get_state_vars_string-1 "+end+", "+coin.state.length);
+  alert("get_state_vars_string-2 "+JSON.stringify(coin, undefined, 2));
+  if (end+1 <= coin.state.length) {
+      for(var z = 0; z < end+1; z++) {
+        alert("z:"+z+" , "+JSON.stringify(coin.state[z], undefined, 2));
+        if (coin.state[z] != undefined) {
+            if(coin.state[z].port == 99 || coin.state[z].port == 100){
+              //alert("Length: "+coin.state.length+", z: "+z+", state: "+'"'+coin.state[z].port+'":'+'"'+coin.state[z].data+'",');
+              if(coin.state[z].port == 99) state_vars += '"'+coin.state[z].port+'":'+'"'+coin.state[z].data+'",';
+              if(coin.state[z].port == 100) state_vars += '"'+coin.state[z].port+'":'+'"[MDAE]",';
+            } else {
+              state_vars += '"'+coin.state[z].port+'":'+'"'+coin.state[z].data+'",';
+              alert(state_vars);
+            }
+        }
       }
-  //alert(state_vars);
+  }
+  alert("into get_state_vars_string FINAL: "+state_vars);
   return state_vars;
 }
-
 // new evolution Adveriser.
 
 //This function just create the databases if they are not yet
