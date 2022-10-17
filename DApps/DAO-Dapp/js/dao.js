@@ -935,100 +935,91 @@ function sendTheDataToTheAdvertiser(coin){
   }
   //alert("topics_of_interest: "+topics_of_interest);
   var trx_done = 0;
+  //Object to send over MAXIMA
+  var data = {};
+  data.id_maxima = "";
+  data.users 	= [];
+  data.developers	= [];
+  data.tokens_publicity = [];
+
   MDS.log("Preparing the Transaction with the Following coind: "+coin.coinid);
   //MDS.sql("SELECT * from profiles WHERE topicsofinterest='"+topics_of_interest+"'", function(sqlmsg){
   MDS.sql("SELECT * from profiles WHERE topicsofinterest='"+topics_of_interest+"' AND profile='user'", function(sqlmsg){
     if (sqlmsg.status) {
-      MDS.log(JSON.stringify(sqlmsg));
-  //    alert("before if");
-      //if (sqlmsg.count == 0){
-        //MDS.log("TOPIC DB: "+coin.topics_of_interest);
-        //MDS.log("Any user has registered the tòpic: "+topics_of_interest);
-      //}
-      //else{
-        //alert("into else");
-        contactid = contactid.slice(1,-1); // remove "[]"
-        publickey = publickey.slice(1,-1); // remove "[]"
-        //alert(contactid);
-        //alert(publickey);
-        //Add the maxima contact to the DAO
-        CreateContact = "maxcontacts action:add contact:"+contactid+" publickey:"+publickey;
-        //alert(CreateContact);
-        MDS.cmd(CreateContact, function(resp) {
-          if (resp.status) {
-            MDS.log("New Maxima Contact Created: "+CreateContact);
-            //getcontacts();
+      if (sqlmsg.count > 0){
+        var sqlrows = sqlmsg.rows;
+        //Takes the last address recorded
+        let j = (sqlrows.length -1);
+        var sqlrow = sqlrows[j];
+        MDS.log(JSON.stringify(sqlmsg));
+        var client_wallet_address = sqlrow.CLIENTWALLETADDRESS;
+        data.users.push(client_wallet_address);
 
-            //Object to send over MAXIMA
-            var data = {};
-            data.id_maxima = "";
-          	data.users 	= [];
-          	data.developers	= [];
-            data.tokens_publicity = [];
-            if (sqlmsg.count > 0){
-              var sqlrows = sqlmsg.rows;
+        MDS.sql("SELECT * from profiles WHERE topicsofinterest='"+topics_of_interest+"' AND profile='developer'", function(sqlmsg2){
+          if (sqlmsg2.status) {
+            MDS.log(JSON.stringify(sqlmsg2));
+            if (sqlmsg2.count > 0){
+              var sqlrows2 = sqlmsg2.rows;
               //Takes the last address recorded
-              let j = (sqlrows.length -1);
-              var sqlrow = sqlrows[j];
-              var nodeStatus = JSON.stringify(sqlrow, undefined, 2);
-              var client_wallet_address = sqlrow.CLIENTWALLETADDRESS;
+              let m = (sqlrows2.length -1);
+              var sqlrow2 = sqlrows2[m];
+              var client_wallet_address2 = sqlrow2.CLIENTWALLETADDRESS;
+              MDS.log(JSON.stringify(sqlmsg2));
+              data.developers.push(client_wallet_address2);
+              MDS.log(JSON.stringify(sqlmsg));
+                contactid = contactid.slice(1,-1); // remove "[]"
+                publickey = publickey.slice(1,-1); // remove "[]"
 
-              //  var arrayInfo = [];
-              //  arrayInfo.push(client_wallet_address);
-              //  arrayInfo.push(sqlrow.DAPPCODE);
-              //  var dataStringify = JSON.stringify(arrayInfo);
-              //  var dataStringify = JSON.stringify('["'+client_wallet_address+'",'"+sqlrow.DAPPCODE+'"]');
-              //  alert(dataStringify);
-              //  sendinfo = 'maxima action:send publickey:'+publickey+ ' to:'+contactid+' application:Advertiser-Dapp-data data:"'+dataStringify+'"';
-
-              data.users.push(client_wallet_address);
+                //Add the maxima contact to the DAO
+                CreateContact = "maxcontacts action:add contact:"+contactid+" publickey:"+publickey;
+                //alert(CreateContact);
+                MDS.cmd(CreateContact, function(resp) {
+                  if (resp.status) {
+                    MDS.log("New Maxima Contact Created: "+CreateContact);
+                    //Convert all the data object to a string..
+                    var datastr = JSON.stringify(data);
+                    //And now convert to HEX
+                    var hexstr = "0x"+utf8ToHex(datastr).toUpperCase().trim();
+                    //sendinfo = 'maxima action:send publickey:'+publickey+ ' to:'+contactid+' application:Advertiser-Dapp-data data:"'+client_wallet_address+'"';
+                    sendinfo = 'maxima action:send publickey:'+publickey+ ' to:'+contactid+' application:Advertiser-Dapp-data data:'+hexstr;
+                    alert(sendinfo);
+                    MDS.cmd(sendinfo, function(resp) {
+                      if (resp.status) {
+                        MDS.log("Maxima Contact information sended with the following coinid: "+coin.coinid);
+                        MDS.log(JSON.stringify(resp));
+                        //Needs to update the trxdone at the database.
+                      }
+                      //if the response status is false
+                      else{
+                        var nodeStatus = JSON.stringify(resp, undefined, 2);
+                        document.getElementById("status-object").innerText = nodeStatus;
+                        MDS.log(JSON.stringify(resp));
+                      }
+                    });
+                  }
+                  //if the response status is false
+                  else{
+                    var nodeStatus = JSON.stringify(resp, undefined, 2);
+                    document.getElementById("status-object").innerText = nodeStatus;
+                    MDS.log("ERROR: "+JSON.stringify(resp));
+                  }
+                });
+            } else {
+              MDS.log("Warning: no results on database: "+JSON.stringify(sqlmsg2, undefined, 2));
             }
-
-            MDS.sql("SELECT * from profiles WHERE topicsofinterest='"+topics_of_interest+"' AND profile='developer'", function(sqlmsg2){
-              if (sqlmsg2.status) {
-                MDS.log(JSON.stringify(sqlmsg2));
-                if (sqlmsg2.count > 0){
-                  var sqlrows2 = sqlmsg2.rows;
-                  //Takes the last address recorded
-                  let m = (sqlrows2.length -1);
-                  var sqlrow2 = sqlrows2[m];
-                  var nodeStatus = JSON.stringify(sqlrow2, undefined, 2);
-                  var client_wallet_address2 = sqlrow2.CLIENTWALLETADDRESS;
-                  data.developers.push(client_wallet_address2);
-                }
-              }
-            });
-
-
-            //Convert all the data object to a string..
-            var datastr = JSON.stringify(data);
-            //And now convert to HEX
-            var hexstr = "0x"+utf8ToHex(datastr).toUpperCase().trim();
-            //sendinfo = 'maxima action:send publickey:'+publickey+ ' to:'+contactid+' application:Advertiser-Dapp-data data:"'+client_wallet_address+'"';
-            sendinfo = 'maxima action:send publickey:'+publickey+ ' to:'+contactid+' application:Advertiser-Dapp-data data:'+hexstr;
-            alert(sendinfo);
-            MDS.cmd(sendinfo, function(resp) {
-              if (resp.status) {
-                MDS.log("Maxima Contact information sended with the following coinid: "+coin.coinid);
-                MDS.log(JSON.stringify(resp));
-                //Needs to update the trxdone at the database.
-              }
-              //if the response status is false
-              else{
-                var nodeStatus = JSON.stringify(resp, undefined, 2);
-                document.getElementById("status-object").innerText = nodeStatus;
-                MDS.log(JSON.stringify(resp));
-              }
-            });
-          }
-          //if the response status is false
-          else{
-            var nodeStatus = JSON.stringify(resp, undefined, 2);
+          } else {
+            var nodeStatus = JSON.stringify(sqlmsg2, undefined, 2);
             document.getElementById("status-object").innerText = nodeStatus;
-            MDS.log("ERROR: "+JSON.stringify(resp));
+            MDS.log("ERROR: "+JSON.stringify(sqlmsg2));
           }
         });
-
+      } else {
+        MDS.log("Warning: no results on database: "+JSON.stringify(sqlmsg, undefined, 2));
+      }
+    }else {
+      var nodeStatus = JSON.stringify(sqlmsg2, undefined, 2);
+      document.getElementById("status-object").innerText = nodeStatus;
+      MDS.log("ERROR: "+JSON.stringify(sqlmsg2));
     }
   });
 }
@@ -1055,7 +1046,7 @@ function sendConfigureDataOverMaxima(coin){
   MDS.cmd(CreateContact, function(resp) {
     if (resp.status){
       MDS.log("New Maxima Contact Created: "+CreateContact);
-
+      alert("CreateContact: "+JSON.stringify(resp, undefined, 2));
       //Object to send over MAXIMA
       var data = {};
       data.id_maxima = "";
@@ -1088,48 +1079,6 @@ function sendConfigureDataOverMaxima(coin){
       MDS.log("ERROR: "+JSON.stringify(resp));
     }
   });
-}
-
-/*// Get the state vars of a tokenID until the last number specified by end
-// The string returned is not the Json object, it is a string of type ( "0":"abc", "1":"56", "2":"ght")
-function get_state_vars_string (coin, end){
-  var state_vars = '';
-
-  if (end+1 <= coin.state.length) {
-      for(var z = 0; z < end+1; z++) {
-        //alert(JSON.stringify(coin.state[z], undefined, 2));
-        if (coin.state[z] != undefined) {
-            state_vars += '"'+coin.state[z].port+'":'+'"'+coin.state[z].data+'",';
-            //alert("Length: "+coin.state.length+", z: "+z+", state: "+'"'+coin.state[z].port+'":'+'"'+coin.state[z].data+'",');
-            if(coin.state[z].port == 99) state_vars += '"'+coin.state[z].port+'":'+'"'+coin.state[z].data+'",';
-            if(coin.state[z].port == 100) state_vars += '"'+coin.state[z].port+'":'+'"[MDAE]",';
-        }
-      }
-  }
-  //alert("into get_state_vars_string: "+state_vars);
-  return state_vars;
-}
-*/
-// Get the state vars of a tokenID until the last number specified by end
-// The string returned is not the Json object, it is a string of type ( "0":"abc", "1":"56", "2":"ght")
-function get_state_vars_string (coin, end){
-  var state_vars = '';
-
-  //alert("get_state_vars_string "+end+", "+coin.state.length);
-  //alert(JSON.stringify(coin.state, undefined, 2));
-  if (end+1 <= coin.state.length) {
-      for(var z = 0; z < end+1; z++) {
-        //alert(JSON.stringify(coin.state[z], undefined, 2));
-        if (coin.state[z] != undefined) {
-            state_vars += '"'+coin.state[z].port+'":'+'"'+coin.state[z].data+'",';
-            //alert("Length: "+coin.state.length+", z: "+z+", state: "+'"'+coin.state[z].port+'":'+'"'+coin.state[z].data+'",');
-            if(coin.state[z].port == 99) state_vars += '"'+coin.state[z].port+'":'+'"'+coin.state[z].data+'",';
-            if(coin.state[z].port == 100) state_vars += '"'+coin.state[z].port+'":'+'"[MDAE]",';
-        }
-      }
-  }
-//  alert("into get_state_vars_string: "+state_vars);
-  return state_vars;
 }
 
 //This function sends the tokens to the buyer once all has been checked
