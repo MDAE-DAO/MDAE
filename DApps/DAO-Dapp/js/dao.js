@@ -944,7 +944,7 @@ function sendTheDataToTheAdvertiser(coin){
 
   MDS.log("Preparing the Transaction with the Following coind: "+coin.coinid);
   //MDS.sql("SELECT * from profiles WHERE topicsofinterest='"+topics_of_interest+"'", function(sqlmsg){
-  MDS.sql("SELECT * from profiles WHERE topicsofinterest='"+topics_of_interest+"' AND profile='user'", function(sqlmsg){
+  MDS.sql("SELECT * from profiles WHERE topicsofinterest='"+topics_of_interest+"' AND profile='[user]'", function(sqlmsg){
     if (sqlmsg.status) {
       if (sqlmsg.count > 0){
         var sqlrows = sqlmsg.rows;
@@ -955,7 +955,7 @@ function sendTheDataToTheAdvertiser(coin){
         var client_wallet_address = sqlrow.CLIENTWALLETADDRESS;
         data.users.push(client_wallet_address);
 
-        MDS.sql("SELECT * from profiles WHERE topicsofinterest='"+topics_of_interest+"' AND profile='developer'", function(sqlmsg2){
+        MDS.sql("SELECT * from profiles WHERE topicsofinterest='"+topics_of_interest+"' AND profile='[developer]'", function(sqlmsg2){
           if (sqlmsg2.status) {
             MDS.log(JSON.stringify(sqlmsg2));
             if (sqlmsg2.count > 0){
@@ -977,7 +977,7 @@ function sendTheDataToTheAdvertiser(coin){
                   if (resp.status) {
                     MDS.log("New Maxima Contact Created: "+CreateContact);
                     //Convert all the data object to a string..
-                    var datastr = JSON.stringify(data);
+  /*---->*/         var datastr = JSON.stringify(data);
                     //And now convert to HEX
                     var hexstr = "0x"+utf8ToHex(datastr).toUpperCase().trim();
                     //sendinfo = 'maxima action:send publickey:'+publickey+ ' to:'+contactid+' application:Advertiser-Dapp-data data:"'+client_wallet_address+'"';
