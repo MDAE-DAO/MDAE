@@ -50,9 +50,10 @@ MDS.init(function(msg){
     // user's balance has changed
     MDS.log("New Balance Detected");
 		//Process the new event detected
-    if (SCRIPT_ADDRESS.length != 0) get_publicity_tokens(SCRIPT_ADDRESS);
+    if (SCRIPT_ADDRESS.length > 0) get_publicity_tokens(SCRIPT_ADDRESS);
   }
   else if(msg.event == "MINING"){
+    //alert("newbalance: "+JSON.stringify(msg, undefined, 2));
   // mining has started or ended
   }
   else if(msg.event == "MINIMALOG"){
@@ -76,15 +77,15 @@ function set_user_wallet(user_wallet){
 }
 
 function set_user_script(dapp_wallet, user_wallet){
-  var script = "LET finalUserWallet=" + user_wallet +
-  " LET dappDeveloperWallet="+dapp_wallet + " RETURN TRUE"
+  var script = "LET finaluserwallet=" + user_wallet +
+  " LET dappdeveloperwallet="+dapp_wallet + " RETURN TRUE"
   SCRIPT = script;
   return script;
 }
 
 function get_user_script(){
-  var script = "LET finalUserWallet=" + USER_WALLET +
-  " LET dappDeveloperWallet="+DAPP_WALLET + " RETURN TRUE"
+  var script = "LET finaluserwallet=" + USER_WALLET +
+  " LET dappdeveloperwallet="+DAPP_WALLET + " RETURN TRUE"
   return script;
 }
 
@@ -108,7 +109,8 @@ function get_user_script_address(){
 
 // Retunr addrress script on target html element
 function get_user_script_variable_address(target_html) {
-  	document.getElementById(target_html).innerHTML = SCRIPT_ADDRESS;
+  register_user_script(get_user_script(),target_html);
+  	//document.getElementById(target_html).innerHTML = SCRIPT_ADDRESS;
 }
 
 // Simulate newBalanceEvent to load new Developer Wallet and new Publicity Tokens to refresh screen
@@ -123,7 +125,8 @@ function update_publicity_tokens(){
 // on the API when the APP start up.
 // Also get all publicity tokens of that script address and set them as global variables.
 // get_publicity_tokens
-function register_user_script(script){
+function register_user_script(script, target_html){
+  alert("REGSITERING SCRIPT: "+script);
   var command = 'newscript trackall:true script:"'+script+'"'
   MDS.log("register_user_script: "+command);
   //alert("command script: "+command);
@@ -132,6 +135,7 @@ function register_user_script(script){
     if (res.status) {
       //alert(res.response.address);
       SCRIPT_ADDRESS = res.response.address;
+      if (target_html != null) document.getElementById(target_html).innerHTML = SCRIPT_ADDRESS;
       MDS.log("OK: Final User SCRIPT registered: "+JSON.stringify(res.response));
       get_publicity_tokens(SCRIPT_ADDRESS);
     }
@@ -141,6 +145,7 @@ function register_user_script(script){
     }
   });
 }
+
 
 // Add the publicity token manually introduced
 function add_publicity_token(){
@@ -154,8 +159,18 @@ function add_publicity_token(){
 function add_wallet_developer(){
   var address = prompt("Please enter the Developer address:", "");
   DAPP_WALLET = address;
-  register_user_script(get_user_script());
+  //register_user_script(get_user_script());
 }
+
+// Add the user wallet manually introduced And register the new script where the publicity tokens will arrive
+// It let you simulate to have two different users app installed
+// Every new wallet added acts as a new App so a new script developer wallet plus user wallet has to be created
+function add_wallet_user(){
+  var address = prompt("Please enter the User address:", "");
+  USER_WALLET = address;
+  //register_user_script(get_user_script());
+}
+
 // Needs to be called on a NEWBALANCE event if it is a publiciy token
 // Returns an javascript array of publicity tokens as Javascript Objects of parsed JSON objects of
 // publicity tokens sent to the final user script as a global variable USER_PUBLICITY_TOKENS
@@ -183,7 +198,8 @@ function get_publicity_tokens(script_address){
       for(var i = 0; i < res.response.length; i++) {
         var coin = res.response[i];
         if(coin.tokenid != "0x00"){
-          if (isAdvertiserToken(coin.tokenid)) {
+          //if (isAdvertiserToken(coin.tokenid)) {
+          if (isAdvertiserTokenCoin(coin)) {
             MDS.log("->get_publicity_tokens: Found publicity tokenName: "+coin.token.name.name +" tokenid: "+coin.tokenid );
             var obj_token = JSON.parse(JSON.stringify(coin))
             USER_PUBLICITY_TOKENS.tokens.push(obj_token);
@@ -191,7 +207,7 @@ function get_publicity_tokens(script_address){
             // look for the minima coinid that holds the rewards to pay for that token and push INTO
             // USER_PUBLICITY_TOKENS.minimas so the token and minima keeps syncronized positions on both arrays
             var totalRewards = parseFloat(obj_token.state[15].data) + parseFloat(obj_token.state[17].data);
-            alert(totalRewards);
+            alert("Total Rewards received: "+totalRewards);
             for (j=0; j < minimaCoins.length; j++){
               var obj_minima = minimaCoins[j];
               if (obj_minima != null) {
@@ -215,6 +231,136 @@ function get_publicity_tokens(script_address){
     });
 }
 
+function roundUsing(func, number, prec) {
+    var tempnumber = number * Math.pow(10, prec);
+    tempnumber = func(tempnumber);
+    return tempnumber / Math.pow(10, prec);
+}
+
+//Excute a transaction on the clicked publicity Token (a coinid is the token)
+//And that transaction pays to all parties all rewaards and returns the publicity Token to the DAO
+function get_publiciy_token_rewards(token_coinid){
+  if (token_coinid == null) {
+    alert("This is a sample image, still no publicity tokens received on your script user");
+    return;
+  }
+  var tokens = USER_PUBLICITY_TOKENS.tokens;
+  var minimas = USER_PUBLICITY_TOKENS.minimas;
+
+  //alert(JSON.stringify(tokens));
+  //alert(JSON.stringify(minimas));
+  for (i=0; i < tokens.length; i++){
+    if (tokens[i] == null) continue;
+    var token = tokens[i];
+    if (token == null) continue; //skip this step loop
+    if (token.coinid == token_coinid) {
+      var minima = minimas[i];
+      var minima_coinid = minima.coinid;
+
+      var vault = token.state[0].data;
+      var dao = token.state[4].data;
+      var avertiser_buyer = token.state[10].data;
+      var commissionDappDao = (token.state[6].data/100) * token.state[15].data;
+      alert(commissionDappDao);
+      commissionDappDao = roundUsing(Math.floor, commissionDappDao, 4);
+      alert(commissionDappDao);
+      var commissionDapp = token.state[15].data - commissionDappDao;
+      var commissionUserDao = (token.state[7].data/100) * token.state[17].data;
+      commissionUserDao = roundUsing(Math.floor, commissionUserDao, 4);
+      var commissionUser = token.state[17].data - commissionUserDao;
+
+
+      // Show on the html page all the payouts
+      document.getElementById("rew_vault_dev").innerHTML = commissionDappDao;
+      document.getElementById("rew_vault_user").innerHTML = commissionUserDao;
+      document.getElementById("rew_dao_token").innerHTML = token.tokenid;
+      document.getElementById("rew_dev").innerHTML = commissionDapp;
+      document.getElementById("rew_user").innerHTML = commissionUser;
+
+
+      // do the transaction and pay all parts according to state vairables of the token
+
+			//Create a random txn id..
+			var txnid = Math.floor(Math.random()*1000000000);
+
+
+//Construct Transaction..
+			var txncreator = "txncreate id:"+txnid+";";
+
+//StateVars
+      // Constructs state variables, getting the tokens statevars,
+      for (var i=0; i<token.state.length; i++){
+        txncreator += "txnstate id:"+txnid+" port:"+token.state[i].port+" value:"+token.state[i].data+";";
+      }
+      txncreator += "txnstate id:"+txnid+" port:14 value:3;" ;   // 3:used  -> set state to Token used
+//inputs
+			txncreator += "txninput id:"+txnid+" coinid:"+token_coinid+";"+
+      "txninput id:"+txnid+" coinid:"+minima_coinid+";";
+//outputs
+      txncreator += "txnoutput id:"+txnid+" amount:1 address:"+avertiser_buyer+" tokenid:"+token.tokenid+" storestate:true;";
+      if (commissionDapp>0) txncreator += "txnoutput id:"+txnid+" amount:"+commissionDapp+" address:"+DAPP_WALLET+" tokenid:0x00 storestate:false;";
+      if (commissionUser>0) txncreator += "txnoutput id:"+txnid+" amount:"+commissionUser+" address:"+USER_WALLET+" tokenid:0x00 storestate:false;"
+      if (commissionDappDao>0) txncreator += "txnoutput id:"+txnid+" amount:"+commissionDappDao+" address:"+vault+" tokenid:0x00 storestate:false;";
+      if (commissionUserDao>0) txncreator += "txnoutput id:"+txnid+" amount:"+commissionUserDao+" address:"+vault+" tokenid:0x00 storestate:false;";
+//endingTX
+      txncreator +=
+			"txnbasics id:"+txnid+";"+
+    //  "txnsign id:"+txnid+" publickey:auto;"+
+			"txnpost id:"+txnid+";"+
+			"txndelete id:"+txnid+";";
+
+//run transaction
+        MDS.cmd(txncreator, function(res) {
+          var status = true;
+          for (var i=0; i<res.length; i++){ //CHECK  FOR ERRORS ON EVERY COMMAND OF TRANSACTION
+              if (!res[i].status) { // if some comand fails
+                alert("ERROR: Campaign tokens rewards have not been payout");
+                MDS.log("---ERROR--- Getting Rewards Campaign "+campaign_name+" token : "+campaign_name+" command : "+res[i].command+" token : "+JSON.stringify(res[i].params)+" token : "+tokenid+" to address: "+campaign_address);
+                var nodeStatus = JSON.stringify(res[i], undefined, 2);
+                document.getElementById("status-object").innerText = nodeStatus;
+                status = false;
+                MDS.log(JSON.stringify(res[i]));
+                break;
+              }
+          }
+          if (status) {
+            alert("Campaign tokens rewards have been payout to the parties");
+            MDS.log("PRINTING splitted command: ");
+            var split_command = txncreator.split(';');
+            split_command.forEach(function (value) {
+              MDS.log(value);
+            });
+            MDS.log("get_publiciy_token_rewards: transaction commands: "+txncreator);
+            MDS.log("get_publiciy_token_rewards: Execute all payouts of pulicity token: " +JSON.stringify(res.response));
+            MDS.log("payout vault address:"+ vault);
+            MDS.log("payout vault developer amount:"+ commissionDappDao);
+            MDS.log("payout vault user amount:"+ commissionUserDao);
+            MDS.log("payout developer address:"+ DAPP_WALLET);
+            MDS.log("payout developer amount:"+ commissionDapp);
+            MDS.log("payout user address:"+ USER_WALLET);
+            MDS.log("payout user amount:"+ commissionUser);
+            MDS.log("payout advertiser address:"+ avertiser_buyer);
+            MDS.log("payout advertiser 1 token, tokenid:"+ token.tokenid);
+            USER_PUBLICITY_TOKENS.tokens[i] = null;  //delete the spent token
+            USER_PUBLICITY_TOKENS.minimas[i] = null; //delete the spent minimas
+            var nodeStatus = JSON.stringify(res, undefined, 2);
+            document.getElementById("status-object").innerText = nodeStatus;
+            //  MDS.log(JSON.stringify(res));
+          }
+          //if the response status is false
+          //else{
+          //   MDS.log("ERROR: Could not execute get_publiciy_token_rewards: ");//+JSON.stringify(res));
+          //}
+        });
+
+
+        break; // exits loop for
+    }
+  }
+}
+
+
+/*
 //Excute a transaction on the clicked publicity Token (a coinid is the token)
 //And that transaction pays to all parties all rewaards and returns the publicity Token to the DAO
 function get_publiciy_token_rewards(token_coinid){
@@ -355,6 +501,21 @@ function get_publiciy_token_rewards(token_coinid){
     }
   }
 }
+*/
+
+// Get the state vars specifc port data of a coin
+function get_state_vars_port_data (coin, port){
+  var data = null;
+      for(var z = 0; z < coin.state.length; z++) {
+        if (coin.state[z].port == port) {
+          data = coin.state[z].data;
+          break;
+        }
+      }
+
+  //alert(state_vars);
+  return data;
+}
 
 // Returns true is a given tokenid is an Advertiser TokenName
 function isAdvertiserToken(tokenID){
@@ -362,6 +523,26 @@ function isAdvertiserToken(tokenID){
     if (ADVERTISING_TOKENS[i] === tokenID) return true;
   }
   return false;
+}
+
+// Returns true is a given coin is an Advertiser Token checking state var port 100
+function isAdvertiserTokenCoin(coin){
+  var found = false;
+  if (coin.state.length != 0){
+    var data = get_state_vars_port_data(coin, 100);
+    //alert(data+", "+coin.token.name.name);
+    if (data != null){
+      if (data === "[MDAE]") {
+        found = true;
+        // if not repeated
+        if (!isAdvertiserToken(coin.tokenid)){   // if true, means is already on memory,so skip it
+          ADVERTISING_TOKENS.push(coin);
+          //MDS.log(".....loaded token:"+" "+coin.token.name.name+" -> "+coin.tokenid);
+        }
+      }
+    }
+  }
+  return found;
 }
 
 // Show publicity from the tokens deposited on script finall user to
@@ -478,7 +659,7 @@ function isthereaWallet(section){
               alert("Wallet Address has Changed Correctly");
               WalletAddress("user", address);
               USER_WALLET = address;
-              register_user_script(get_user_script());
+//              register_user_script(get_user_script());
             }
             else {
               MDS.log("The Address HAS NOT BEEN Inserted in the DB");
@@ -499,7 +680,7 @@ function isthereaWallet(section){
         getwalletaddress = sqlrow.WALLETADDRESS;
         USER_WALLET = getwalletaddress;
         WalletAddress("user", USER_WALLET);
-        register_user_script(get_user_script());
+//        register_user_script(get_user_script());
       }
     }
   });

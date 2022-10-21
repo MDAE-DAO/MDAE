@@ -70,11 +70,12 @@ MDS.init(function(msg){
   else if(msg.event == "NEWBALANCE"){
     // user's balance has changed
     MDS.log("New Balance Detected");
-		//Process the new event detected
+		//Process the new event detectedload
     newBalanceEvent();
     getcontacts();
     getTokens();
     loadAdvertisingTokensFromNode();
+    minimaBalance();
   }
   else if(msg.event == "MINING"){
   // mining has started or ended
@@ -363,8 +364,8 @@ function createComplexToken(){
       alert("Could not create the Token");
     }
   });
-  getTokens();
-  minimaBalance();
+  //getTokens();
+  //minimaBalance();
 }
 
 
@@ -1053,7 +1054,6 @@ function sendConfigureDataOverMaxima(coin){
     	data.users 	= [];
     	data.developers	= [];
       data.tokens_publicity = ADVERTISING_TOKENS;
-      //alert(ADVERTISING_TOKENS.length);
       //Convert to a string..
       var datastr = JSON.stringify(data);
       //And now convert to HEX
@@ -1112,12 +1112,12 @@ function sendTheTokensToTheBuyer(coin){
           var token_to_send;
           for(var i = 0; i < res.response.length; i++) {
             var coin2 = res.response[i];
-            if (coin2.tokenamount > client_amount_desired){
+            if (coin2.tokenamount > parseFloat(client_amount_desired)){
               token_to_send = coin2;
               break;
             }
           }
-          MDS.log("Got the token to send, coinid: "+token_to_send.coinid);
+          MDS.log("Got the token to send, amount, coinid: "+token_to_send.tokenamount+", "+token_to_send.coinid);
 
             var state_vars = '{' +
               '"10":"'+client_wallet_address+'",' +
@@ -1128,8 +1128,8 @@ function sendTheTokensToTheBuyer(coin){
               //var command = 'send address:0x614190606CD54F2CF78D06813CE1BF4C71438C7897234C7D0F788D4F65F84BDE amount:'+token_amount+' state:'+state_vars;
               //var command = "sendpoll address:"+client_wallet_address+" amount:"+client_amount_desired+" tokenid:"+client_token_id+" state:"+state_vars +" uid:"+SENDPOLLUID;
               var command = getManualSendTXtoken_string(token_to_send, client_amount_desired, client_wallet_address, DAO_WALLET_ADDRESS, state_vars);
-              alert(command);
-
+              alert(command.split(";"));
+              MDS.log(command.split(";"));
               MDS.cmd(command, function(res){
                 if (res.status) {
                   MDS.log("The Tokens HAS BEEN SENT to Following Client Address: "+client_wallet_address);
@@ -1262,4 +1262,18 @@ function get_state_vars_string2 (coin, end){
   alert("into get_state_vars_string2_slice:"+JSON.stringify(coin.state));
   alert("into get_state_vars_string2_slice: "+JSON.stringify(newStatevars).slice[1,-1]);
   return JSON.stringify(newStatevars).slice[1,-1];
+}
+
+function deleteProfilesRegisters(){
+  var fullsql = "DROP TABLE profiles";
+
+  MDS.sql(fullsql, function(resp){
+    MDS.log(JSON.stringify(resp));
+    if (resp.status) {
+      MDS.log("Deleting all profiles from Profiles DB");
+    }
+    else {
+      MDS.log("The registers from profiles HAS NOT BEEN deleted");
+    }
+  });
 }
