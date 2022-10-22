@@ -142,13 +142,13 @@ MDS.init(function(msg){
         //Keep cheking the blockchain time.
         setInterval(updateTime, 100);
       }
-    })
+    });
     MDS.cmd("maxima", function(resp) {
       if (resp.status) {
         const maximaname = resp.response.name;
         document.getElementById("maximacontactname").innerText = maximaname;
       }
-    })
+    });
   }
   else if(msg.event == "NEWBLOCK"){
   // the chain tip has changed
