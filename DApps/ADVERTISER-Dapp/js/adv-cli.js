@@ -1287,11 +1287,12 @@ function ConfigureCampaign(){
 
 /*->*/MDS.cmd("coins address:"+ADVERTISER_WALLET_ADDRESS+" tokenid:"+advertiser_token, function(res){
       if (res.status) {
-        MDS.log("Getting token info to Configure Campaign by tokenid: "+res.response[0].tokenid);
+        //MDS.log("Getting token info to Configure Campaign by tokenid: "+res.response[0].tokenid);
+        MDS.log("Getting all tokens of publicity to Configure Campaign by tokenid number tokens: "+res.response.length);
         //alert(JSON.stringify(res.response, undefined, 2));
         var nodeStatus = JSON.stringify(res, undefined, 2);
         document.getElementById("status-object").innerText = nodeStatus;
-        MDS.log(JSON.stringify(res));
+        //MDS.log(JSON.stringify(res));
 
 
         // Got the Token to use that have enough ammount units required to configure thecampaign
@@ -1323,7 +1324,7 @@ function ConfigureCampaign(){
             '"17":"'+user_rewards+'",' +
             '"18":"'+tokens_type_reward_dapp+'",' +
             '"19":"'+type_advertise+'",';
-            if (web_img.length == 0) state_vars += '"20":"['-']",';
+            if (web_img.length == 0) state_vars += '"20":"[-]",';
             else state_vars += '"20":"['+web_img+']",';
 
 
@@ -1340,7 +1341,7 @@ function ConfigureCampaign(){
             '"30":"['+text_7_adv+']",' +
             '"31":"['+text_8_adv+']"}';
 
-            MDS.log("STATE VARS:"+state_vars);
+            MDS.log("STATE VARS to configure:"+state_vars);
 
             //alert(JSON.stringify(res.response[0]));
             //Check if the campaign name exists on the database
@@ -1351,12 +1352,12 @@ function ConfigureCampaign(){
                   return;
                 }else {
                   register_token_campaign_script(advertiser_token, campaign, function(res1){
-                    alert(JSON.stringify(res1));
+                    MDS.log("Campaign script has been registered , address: "+res1.response.address);
                     var campaign_script_address = res1.response.address;
 
   /*--->*/          var command = getManualSendTXtoken_stringSPLIT(token_to_send, token_amount, campaign_script_address, ADVERTISER_WALLET_ADDRESS, state_vars);
                     //var command = 'send address:' + campaign_script_address + ' amount:'+token_amount+ ' tokenid:'+advertiser_token + ' state:'+state_vars;
-                    alert(command);
+                    alert("TRANSACTION TO EXECUTE configure Campapaign: "+command);
                     MDS.log("TRANSACTION TO EXECUTE configure Campapaign: "+command);
   /*--->*/          MDS.cmd(command, function(res2){
                       var status = true;

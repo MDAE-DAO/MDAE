@@ -551,7 +551,7 @@ function displayPublicity(section){
   var targetPublicity = "advertiserbanner";
   if (section != null) targetPublicity = section;
   var url_image;
-  var url_text = [];
+  var url_text;
 
   if (USER_PUBLICITY_TOKENS.tokens.length == 0) {
         MDS.log("Any Publicity token recibed yet");
@@ -582,17 +582,17 @@ function displayPublicity(section){
         //  faiqueuactionlinks + "<img title='Access Activity Log' class='modified20' src='/QMSWebApp/Images/info[1].jpg' onclick='genericActivityLog('miscdisplay2'," + firstArticleV8.getRecseq() + ",'drawmfaial','RECSEQ','L')' >";
   				document.getElementById(targetPublicity).innerHTML = addsection;
         }else if (token.state[19].data == 0) {
-          addsection = "<DIV class='advertiser' onclick=\"get_publiciy_token_rewards(\"" +token.coinid+ "\")>"+
-          "<span>"+ token.state[23].data +"</span>"+
-          "<span>"+ token.state[24].data +"</span>"+
-          "<span>"+ token.state[25].data +"</span>"+
-          "<span>"+ token.state[26].data +"</span>"+
-          "<span>"+ token.state[27].data +"</span>"+
-          "<span>"+ token.state[28].data +"</span>"+
-          "<span>"+ token.state[29].data +"</span>"+
-          "<span>"+ token.state[30].data +"</span>"+
-          "<span>"+ token.state[31].data +"</span>"+
-          "</DIV>";
+          addsection = "<div class='advertiser' style='border:2px solid red;' onclick='data_value=\""+token.coinid+"\";get_publiciy_token_rewards(data_value);'>"+
+          "<p>"+ token.state[23].data.replace('[', '').replace(']', '') +"</p>"+
+          "<p>"+ token.state[24].data.replace('[', '').replace(']', '') +"</p>"+
+          "<p>"+ token.state[25].data.replace('[', '').replace(']', '') +"</p>"+
+          "<p>"+ token.state[26].data.replace('[', '').replace(']', '') +"</p>"+
+          "<p>"+ token.state[27].data.replace('[', '').replace(']', '') +"</p>"+
+          "<p>"+ token.state[28].data.replace('[', '').replace(']', '') +"</p>"+
+          "<p>"+ token.state[29].data.replace('[', '').replace(']', '') +"</p>"+
+          "<p>"+ token.state[30].data.replace('[', '').replace(']', '') +"</p>"+
+          "<p>"+ token.state[31].data.replace('[', '').replace(']', '') +"</p>"+
+          "</div>";
           document.getElementById(targetPublicity).innerHTML = addsection;
         }
 	 }

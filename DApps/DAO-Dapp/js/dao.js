@@ -51,10 +51,15 @@ port == 2 publickey
 
 
 var DAO_WALLET_ADDRESS = "";
+var DAO_WALLET_KEY = "";
 var SENDPOLLUID ="";
 var GLOBAL = 0;
 var COUNT = 0;
 var ADVERTISING_TOKENS =[];
+var VAULT_ADDRESS = "";
+var VAULT_KEY1 = "";
+var VAULT_KEY2 = "";
+var VAULT_KEY3 = "";
 
 MDS.init(function(msg){
   //Do initialitzation
@@ -1275,5 +1280,33 @@ function deleteProfilesRegisters(){
     else {
       MDS.log("The registers from profiles HAS NOT BEEN deleted");
     }
+  });
+}
+
+// Register on the node a multisig vault script based on three publickeys
+// All rewards received from the advertising campaigns are sent to the Vault address script
+function createVAULT(){
+  var key1 = document.getElementById("vault_key1").value;
+  var key2 = document.getElementById("vault_key2").value;
+  var key3 = document.getElementById("vault_key3").value;
+  var command = 'newscript trackall:true script:"RETURN MULTISIG(2 '+key1+' '+key2+' '+key3+'"'
+
+  MDS.log("creating vault script: "+command);
+  MDS.cmd(command, function(res) {
+    if (res.status) {
+      MDS.log("VAULT script created with address: "+res.response.address);
+      VAULT_ADDRESS = res.response.address;
+      VAULT_KEY1 = key1;
+      VAULT_KEY2 = key2;
+      VAULT_KEY3 = key3;
+      document.getElementById("vault").value = VAULT_ADDRESS;
+      document.getElementById("publickey1").value = VAULT_KEY1;
+      document.getElementById("publickey2").value = VAULT_KEY2;
+      document.getElementById("publickey3").value = VAULT_KEY3;
+      alert("VAULT script created with address: "+res.response.address);
+    }
+      else{
+          MDS.log("ERROR: Could not register the script, createVAULT: "+JSON.stringify(res));
+      }
   });
 }

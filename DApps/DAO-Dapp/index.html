@@ -2,7 +2,7 @@
   <head>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <script type="text/javascript" src="js/mds.js"></script>
-    <script type="text/javascript" src="js/service.js"></script>
+  <!--  <script type="text/javascript" src="js/service.js"></script> -->
     <script type="text/javascript" src="js/dao.js"></script>
     <link rel="icon" type="image/x-icon" href="images/favicon.ico">
     <link rel="stylesheet" href="css/styles.css">
@@ -71,6 +71,7 @@
       <br>
       <button type="button" id="buybutton" class="Button" onclick="sendTokens();">Send Tokens</button>
       </div>
+      <!--
       <div class="INF Tokencreate">
         <h2>CREATE A SIMPLE TOKEN</h2>
           <p>Fill in the fields and create any Token.</p>
@@ -87,6 +88,31 @@
           <br>
           <button class="button Create Token" onclick='createToken();'>Create The Token</button>
       </div>
+    -->
+    <div class="INF Vaultcreate">
+      <h2>CREATE A VAULT</h2>
+        <p>Fill in the fields to create a VAULT.</p>
+        <table style="color:#FFF; border=0;">
+          <tr>
+            <td style="color:#FFF; text-align:right;">Name of Vault: </td>
+            <td><input type="text" id="name_vault" maxlength="64"></td>
+          </tr>
+          <tr>
+            <td style="color:#FFF; text-align:right;">Publick key 1: </td>
+            <td><input type="text" id="vault_key1" maxlength="128"></td>
+          </tr>
+          <tr>
+            <td style="color:#FFF; text-align:right;">Publick key 1: </td>
+            <td><input type="text" id="vault_key2" maxlength="128"></td>
+          </tr>
+          <tr>
+            <td style="color:#FFF; text-align:right;">Publick key 1: </td>
+            <td><input type="text" id="vault_key3" maxlength="128"></td>
+          </tr>
+        </table>
+        <br>
+        <button class="button Create Vault" onclick='createVAULT();'>Create The VAULT</button>
+    </div>
     </div>
     <div class="Box">
       <h2>CREATE A COMPLEX TOKEN</h2>
@@ -214,7 +240,7 @@
     </div>
     <div class="Box Statussection">
       <h2>STATUS AND TOOLS SECTION</h2>
-      <button class="button" onclick='newAddress();'>New Address</button>
+    <!--  <button class="button" onclick='newAddress();'>New Address</button> -->
       <button class="button" onclick='getAddress();'>Get Address</button>
       <button class="button" onclick='coins();'>Coins</button>
       <button class="button" onclick='mainWalletAddress();'>Show DAO Wallet Address</button>
@@ -231,5 +257,12 @@
     <div class="Box Credits">
       <p style="text-align: center;">Developed by Minima Innovation Challenge Team</p>
     </div>
+
+    <script type="text/javascript">
+      document.getElementById("vault").value = VAULT_ADDRESS;
+      document.getElementById("publickey1").value = VAULT_KEY1;
+      document.getElementById("publickey2").value = VAULT_KEY2;
+      document.getElementById("publickey3").value = VAULT_KEY3;
+    </script>
   </body>
 </html>
