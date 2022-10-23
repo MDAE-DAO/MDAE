@@ -6,6 +6,7 @@
 *********
 */
 
+/*
 //This function just create the sendpoll if it is not yet
 function preparingSendpoll(){
   MDS.cmd("sendpoll action:list", function(res){
@@ -14,8 +15,9 @@ function preparingSendpoll(){
       if (res.response.total == 0){
         MDS.log("Creating a uid sendpoll");
 				MDS.cmd("sendpoll action:add", function(res){
-			    if (res.status) {}
-			    else{
+			    if (res.status) {
+
+          }else{
 			      var nodeStatus = JSON.stringify(res, undefined, 2);
 			      document.getElementById("status-object").innerText = nodeStatus;
 			      MDS.log(JSON.stringify(res));
@@ -118,13 +120,13 @@ function createTheDBAdvertisers(msg){
 		});
 }
 
-
+*/
 //Main message handler..
 MDS.init(function(msg){
   //Do initialitzation
   if(msg.event == "inited"){
     MDS.log("The service.js is initialising MDS also in the background...");
-    createTheDBtokensreceived();
+  /*  createTheDBtokensreceived();
     createTheDBDAOWalletAddress();
     createTheDBProfiles();
     createTheDBAdvertisers();
@@ -148,24 +150,12 @@ MDS.init(function(msg){
         const maximaname = resp.response.name;
         document.getElementById("maximacontactname").innerText = maximaname;
       }
-    });
-  }
-  else if(msg.event == "NEWBLOCK"){
-  // the chain tip has changed
-  }
-  else if(msg.event == "NEWBALANCE"){
+    });*/
+  }else if(msg.event == "NEWBALANCE"){
     // user's balance has changed
     MDS.log("New Balance Detected");
 		//Process the new event detected
     newBalanceEvent();
     //getTokens();
-  }
-  else if(msg.event == "MINING"){
-  // mining has started or ended
-  }
-  else if(msg.event == "MINIMALOG"){
-  // new Minima log message
-  }
-  else{
   }
 });
