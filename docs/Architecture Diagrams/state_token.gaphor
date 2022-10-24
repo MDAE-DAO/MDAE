@@ -1,0 +1,1247 @@
+<?xml version="1.0" encoding="utf-8"?>
+<gaphor xmlns="http://gaphor.sourceforge.net/model" version="3.0" gaphor-version="2.12.1">
+<StyleSheet id="58d6989a-66f8-11ec-b4c8-0456e5e540ed"/>
+<Package id="58d6c2e8-66f8-11ec-b4c8-0456e5e540ed">
+<name>
+<val>New model</val>
+</name>
+<ownedDiagram>
+<reflist>
+<ref refid="58d6c536-66f8-11ec-b4c8-0456e5e540ed"/>
+</reflist>
+</ownedDiagram>
+<ownedType>
+<reflist>
+<ref refid="f5372d5b-52ce-11ed-be6c-bbafa601978e"/>
+</reflist>
+</ownedType>
+</Package>
+<Diagram id="58d6c536-66f8-11ec-b4c8-0456e5e540ed">
+<element>
+<ref refid="58d6c2e8-66f8-11ec-b4c8-0456e5e540ed"/>
+</element>
+<name>
+<val>main</val>
+</name>
+<ownedPresentation>
+<reflist>
+<ref refid="f5383b7c-52ce-11ed-a753-bbafa601978e"/>
+<ref refid="0b5b7656-52cf-11ed-89b2-bbafa601978e"/>
+<ref refid="2378c5d3-52cf-11ed-803b-bbafa601978e"/>
+<ref refid="a8dbac90-52d0-11ed-9a00-bbafa601978e"/>
+<ref refid="b546b51a-52d0-11ed-a42b-bbafa601978e"/>
+<ref refid="d40c0a6e-52d0-11ed-a276-bbafa601978e"/>
+<ref refid="eef744eb-52d0-11ed-96e3-bbafa601978e"/>
+<ref refid="971d70c0-52d1-11ed-93a6-bbafa601978e"/>
+<ref refid="e29fd2c8-52d1-11ed-b572-bbafa601978e"/>
+<ref refid="5312e291-52d2-11ed-ab46-bbafa601978e"/>
+<ref refid="eb4386a8-52d2-11ed-8720-bbafa601978e"/>
+<ref refid="122b748c-52d3-11ed-9dd0-bbafa601978e"/>
+<ref refid="4b39b652-52d3-11ed-a221-bbafa601978e"/>
+<ref refid="2960b07a-52d5-11ed-8746-bbafa601978e"/>
+<ref refid="f024918f-52d5-11ed-80d5-bbafa601978e"/>
+<ref refid="c28260c7-52d8-11ed-bd41-bbafa601978e"/>
+<ref refid="c19f7d88-52d9-11ed-b649-bbafa601978e"/>
+<ref refid="8b68ac2e-52db-11ed-8ceb-bbafa601978e"/>
+<ref refid="8647f2fb-52d0-11ed-a23a-bbafa601978e"/>
+<ref refid="1e36b4ff-52d1-11ed-bcf9-bbafa601978e"/>
+<ref refid="2534a521-52d1-11ed-9bc6-bbafa601978e"/>
+<ref refid="340ed896-52d1-11ed-a895-bbafa601978e"/>
+<ref refid="44b02935-52d1-11ed-8fba-bbafa601978e"/>
+<ref refid="d144e340-52d1-11ed-ae9d-bbafa601978e"/>
+<ref refid="18e76e0c-52d2-11ed-8042-bbafa601978e"/>
+<ref refid="c6797148-52d2-11ed-b71c-bbafa601978e"/>
+<ref refid="08792a48-52d3-11ed-a693-bbafa601978e"/>
+<ref refid="405a47a1-52d3-11ed-875f-bbafa601978e"/>
+<ref refid="08ee5824-52d5-11ed-a55d-bbafa601978e"/>
+<ref refid="a0445c88-52d5-11ed-9d9a-bbafa601978e"/>
+<ref refid="8aa45e25-52d8-11ed-93b1-bbafa601978e"/>
+<ref refid="ad92b626-52d9-11ed-a301-bbafa601978e"/>
+<ref refid="4cf79f67-52dc-11ed-bd2c-bbafa601978e"/>
+</reflist>
+</ownedPresentation>
+</Diagram>
+<StateMachine id="f5372d5b-52ce-11ed-be6c-bbafa601978e">
+<name>
+<val>Token States</val>
+</name>
+<package>
+<ref refid="58d6c2e8-66f8-11ec-b4c8-0456e5e540ed"/>
+</package>
+<presentation>
+<reflist>
+<ref refid="f5383b7c-52ce-11ed-a753-bbafa601978e"/>
+</reflist>
+</presentation>
+<region>
+<reflist>
+<ref refid="0b5bd8dd-52cf-11ed-96d6-bbafa601978e"/>
+</reflist>
+</region>
+</StateMachine>
+<StateMachineItem id="f5383b7c-52ce-11ed-a753-bbafa601978e">
+<matrix>
+<val>(1.0, 0.0, 0.0, 1.0, 200.0874786376953, 190.89295959472656)</val>
+</matrix>
+<top-left>
+<val>(148.90948486328125, 6.771130175972985)</val>
+</top-left>
+<width>
+<val>215.62518310546875</val>
+</width>
+<height>
+<val>558.7871776968427</val>
+</height>
+<children>
+<reflist>
+<ref refid="0b5b7656-52cf-11ed-89b2-bbafa601978e"/>
+<ref refid="2378c5d3-52cf-11ed-803b-bbafa601978e"/>
+<ref refid="a8dbac90-52d0-11ed-9a00-bbafa601978e"/>
+<ref refid="b546b51a-52d0-11ed-a42b-bbafa601978e"/>
+<ref refid="d40c0a6e-52d0-11ed-a276-bbafa601978e"/>
+<ref refid="eef744eb-52d0-11ed-96e3-bbafa601978e"/>
+</reflist>
+</children>
+<diagram>
+<ref refid="58d6c536-66f8-11ec-b4c8-0456e5e540ed"/>
+</diagram>
+<subject>
+<ref refid="f5372d5b-52ce-11ed-be6c-bbafa601978e"/>
+</subject>
+</StateMachineItem>
+<Pseudostate id="0b5b41dc-52cf-11ed-9487-bbafa601978e">
+<comment>
+<reflist>
+<ref refid="971d6aa4-52d1-11ed-a9b9-bbafa601978e"/>
+</reflist>
+</comment>
+<container>
+<ref refid="0b5bd8dd-52cf-11ed-96d6-bbafa601978e"/>
+</container>
+<outgoing>
+<reflist>
+<ref refid="890238bd-52d0-11ed-a4e8-bbafa601978e"/>
+</reflist>
+</outgoing>
+<presentation>
+<reflist>
+<ref refid="0b5b7656-52cf-11ed-89b2-bbafa601978e"/>
+</reflist>
+</presentation>
+</Pseudostate>
+<PseudostateItem id="0b5b7656-52cf-11ed-89b2-bbafa601978e">
+<matrix>
+<val>(1.0, 0.0, 0.0, 1.0, 240.6453857421875, 50.229888916015625)</val>
+</matrix>
+<top-left>
+<val>(0.0, 0.0)</val>
+</top-left>
+<width>
+<val>20.0</val>
+</width>
+<height>
+<val>20.0</val>
+</height>
+<diagram>
+<ref refid="58d6c536-66f8-11ec-b4c8-0456e5e540ed"/>
+</diagram>
+<parent>
+<ref refid="f5383b7c-52ce-11ed-a753-bbafa601978e"/>
+</parent>
+<subject>
+<ref refid="0b5b41dc-52cf-11ed-9487-bbafa601978e"/>
+</subject>
+</PseudostateItem>
+<Region id="0b5bd8dd-52cf-11ed-96d6-bbafa601978e">
+<stateMachine>
+<ref refid="f5372d5b-52ce-11ed-be6c-bbafa601978e"/>
+</stateMachine>
+<subvertex>
+<reflist>
+<ref refid="0b5b41dc-52cf-11ed-9487-bbafa601978e"/>
+<ref refid="2378009a-52cf-11ed-b499-bbafa601978e"/>
+<ref refid="a8db6f5c-52d0-11ed-9592-bbafa601978e"/>
+<ref refid="b546797b-52d0-11ed-b04f-bbafa601978e"/>
+<ref refid="d40b7ed1-52d0-11ed-92b6-bbafa601978e"/>
+<ref refid="eef6fb58-52d0-11ed-b318-bbafa601978e"/>
+</reflist>
+</subvertex>
+</Region>
+<State id="2378009a-52cf-11ed-b499-bbafa601978e">
+<comment>
+<reflist>
+<ref refid="2960a924-52d5-11ed-af38-bbafa601978e"/>
+</reflist>
+</comment>
+<container>
+<ref refid="0b5bd8dd-52cf-11ed-96d6-bbafa601978e"/>
+</container>
+<incoming>
+<reflist>
+<ref refid="890238bd-52d0-11ed-a4e8-bbafa601978e"/>
+</reflist>
+</incoming>
+<name>
+<val>Not Configured (0)</val>
+</name>
+<outgoing>
+<reflist>
+<ref refid="206dc68e-52d1-11ed-9afe-bbafa601978e"/>
+</reflist>
+</outgoing>
+<presentation>
+<reflist>
+<ref refid="2378c5d3-52cf-11ed-803b-bbafa601978e"/>
+</reflist>
+</presentation>
+</State>
+<StateItem id="2378c5d3-52cf-11ed-803b-bbafa601978e">
+<matrix>
+<val>(1.0, 0.0, 0.0, 1.0, 187.66551208496094, 126.41725158691406)</val>
+</matrix>
+<top-left>
+<val>(0.0, 0.0)</val>
+</top-left>
+<width>
+<val>144.521240234375</val>
+</width>
+<height>
+<val>44.161529541015625</val>
+</height>
+<diagram>
+<ref refid="58d6c536-66f8-11ec-b4c8-0456e5e540ed"/>
+</diagram>
+<parent>
+<ref refid="f5383b7c-52ce-11ed-a753-bbafa601978e"/>
+</parent>
+<subject>
+<ref refid="2378009a-52cf-11ed-b499-bbafa601978e"/>
+</subject>
+</StateItem>
+<TransitionItem id="8647f2fb-52d0-11ed-a23a-bbafa601978e">
+<diagram>
+<ref refid="58d6c536-66f8-11ec-b4c8-0456e5e540ed"/>
+</diagram>
+<horizontal>
+<val>0</val>
+</horizontal>
+<subject>
+<ref refid="890238bd-52d0-11ed-a4e8-bbafa601978e"/>
+</subject>
+<matrix>
+<val>(1.0, 0.0, 0.0, 1.0, 566.4192504882812, 266.549560546875)</val>
+</matrix>
+<points>
+<val>[(-114.74034118652344, -5.4267120361328125), (-115.8216552734375, 50.760650634765625)]</val>
+</points>
+<head-connection>
+<ref refid="0b5b7656-52cf-11ed-89b2-bbafa601978e"/>
+</head-connection>
+<tail-connection>
+<ref refid="2378c5d3-52cf-11ed-803b-bbafa601978e"/>
+</tail-connection>
+</TransitionItem>
+<Transition id="890238bd-52d0-11ed-a4e8-bbafa601978e">
+<container>
+<ref refid="0b5bd8dd-52cf-11ed-96d6-bbafa601978e"/>
+</container>
+<guard>
+<ref refid="8903596a-52d0-11ed-9612-bbafa601978e"/>
+</guard>
+<presentation>
+<reflist>
+<ref refid="8647f2fb-52d0-11ed-a23a-bbafa601978e"/>
+</reflist>
+</presentation>
+<source>
+<ref refid="0b5b41dc-52cf-11ed-9487-bbafa601978e"/>
+</source>
+<target>
+<ref refid="2378009a-52cf-11ed-b499-bbafa601978e"/>
+</target>
+</Transition>
+<Constraint id="8903596a-52d0-11ed-9612-bbafa601978e">
+<transition>
+<ref refid="890238bd-52d0-11ed-a4e8-bbafa601978e"/>
+</transition>
+</Constraint>
+<State id="a8db6f5c-52d0-11ed-9592-bbafa601978e">
+<comment>
+<reflist>
+<ref refid="5312d1e9-52d2-11ed-b9aa-bbafa601978e"/>
+</reflist>
+</comment>
+<container>
+<ref refid="0b5bd8dd-52cf-11ed-96d6-bbafa601978e"/>
+</container>
+<incoming>
+<reflist>
+<ref refid="206dc68e-52d1-11ed-9afe-bbafa601978e"/>
+</reflist>
+</incoming>
+<name>
+<val>Configured (1)</val>
+</name>
+<outgoing>
+<reflist>
+<ref refid="2803f4ca-52d1-11ed-8ccf-bbafa601978e"/>
+</reflist>
+</outgoing>
+<presentation>
+<reflist>
+<ref refid="a8dbac90-52d0-11ed-9a00-bbafa601978e"/>
+</reflist>
+</presentation>
+</State>
+<StateItem id="a8dbac90-52d0-11ed-9a00-bbafa601978e">
+<matrix>
+<val>(1.0, 0.0, 0.0, 1.0, 190.2382049560547, 229.22386169433594)</val>
+</matrix>
+<top-left>
+<val>(0.0, 0.0)</val>
+</top-left>
+<width>
+<val>141.94854736328125</val>
+</width>
+<height>
+<val>31.045379638671875</val>
+</height>
+<diagram>
+<ref refid="58d6c536-66f8-11ec-b4c8-0456e5e540ed"/>
+</diagram>
+<parent>
+<ref refid="f5383b7c-52ce-11ed-a753-bbafa601978e"/>
+</parent>
+<subject>
+<ref refid="a8db6f5c-52d0-11ed-9592-bbafa601978e"/>
+</subject>
+</StateItem>
+<State id="b546797b-52d0-11ed-b04f-bbafa601978e">
+<comment>
+<reflist>
+<ref refid="eb4377f5-52d2-11ed-aa26-bbafa601978e"/>
+<ref refid="c2825056-52d8-11ed-a750-bbafa601978e"/>
+</reflist>
+</comment>
+<container>
+<ref refid="0b5bd8dd-52cf-11ed-96d6-bbafa601978e"/>
+</container>
+<incoming>
+<reflist>
+<ref refid="2803f4ca-52d1-11ed-8ccf-bbafa601978e"/>
+</reflist>
+</incoming>
+<name>
+<val>Sent (2)</val>
+</name>
+<outgoing>
+<reflist>
+<ref refid="37a30529-52d1-11ed-beb2-bbafa601978e"/>
+</reflist>
+</outgoing>
+<presentation>
+<reflist>
+<ref refid="b546b51a-52d0-11ed-a42b-bbafa601978e"/>
+</reflist>
+</presentation>
+</State>
+<StateItem id="b546b51a-52d0-11ed-a42b-bbafa601978e">
+<matrix>
+<val>(1.0, 0.0, 0.0, 1.0, 190.95745849609375, 323.02354431152344)</val>
+</matrix>
+<top-left>
+<val>(0.0, 0.0)</val>
+</top-left>
+<width>
+<val>140.51004028320312</val>
+</width>
+<height>
+<val>30.91998291015625</val>
+</height>
+<diagram>
+<ref refid="58d6c536-66f8-11ec-b4c8-0456e5e540ed"/>
+</diagram>
+<parent>
+<ref refid="f5383b7c-52ce-11ed-a753-bbafa601978e"/>
+</parent>
+<subject>
+<ref refid="b546797b-52d0-11ed-b04f-bbafa601978e"/>
+</subject>
+</StateItem>
+<State id="d40b7ed1-52d0-11ed-92b6-bbafa601978e">
+<comment>
+<reflist>
+<ref refid="122b5691-52d3-11ed-bfdb-bbafa601978e"/>
+<ref refid="8b688c25-52db-11ed-88d7-bbafa601978e"/>
+</reflist>
+</comment>
+<container>
+<ref refid="0b5bd8dd-52cf-11ed-96d6-bbafa601978e"/>
+</container>
+<incoming>
+<reflist>
+<ref refid="37a30529-52d1-11ed-beb2-bbafa601978e"/>
+</reflist>
+</incoming>
+<name>
+<val>Used (3)</val>
+</name>
+<outgoing>
+<reflist>
+<ref refid="50f4a88b-52d1-11ed-b2d2-bbafa601978e"/>
+</reflist>
+</outgoing>
+<presentation>
+<reflist>
+<ref refid="d40c0a6e-52d0-11ed-a276-bbafa601978e"/>
+</reflist>
+</presentation>
+</State>
+<StateItem id="d40c0a6e-52d0-11ed-a276-bbafa601978e">
+<matrix>
+<val>(1.0, 0.0, 0.0, 1.0, 190.2382049560547, 419.78660583496094)</val>
+</matrix>
+<top-left>
+<val>(0.0, 0.0)</val>
+</top-left>
+<width>
+<val>141.94854736328125</val>
+</width>
+<height>
+<val>30.0</val>
+</height>
+<diagram>
+<ref refid="58d6c536-66f8-11ec-b4c8-0456e5e540ed"/>
+</diagram>
+<parent>
+<ref refid="f5383b7c-52ce-11ed-a753-bbafa601978e"/>
+</parent>
+<subject>
+<ref refid="d40b7ed1-52d0-11ed-92b6-bbafa601978e"/>
+</subject>
+</StateItem>
+<FinalState id="eef6fb58-52d0-11ed-b318-bbafa601978e">
+<container>
+<ref refid="0b5bd8dd-52cf-11ed-96d6-bbafa601978e"/>
+</container>
+<incoming>
+<reflist>
+<ref refid="50f4a88b-52d1-11ed-b2d2-bbafa601978e"/>
+</reflist>
+</incoming>
+<presentation>
+<reflist>
+<ref refid="eef744eb-52d0-11ed-96e3-bbafa601978e"/>
+</reflist>
+</presentation>
+</FinalState>
+<FinalStateItem id="eef744eb-52d0-11ed-96e3-bbafa601978e">
+<matrix>
+<val>(1.0, 0.0, 0.0, 1.0, 238.74107360839844, 527.0137176513672)</val>
+</matrix>
+<top-left>
+<val>(0.0, 0.0)</val>
+</top-left>
+<width>
+<val>30.0</val>
+</width>
+<height>
+<val>30.0</val>
+</height>
+<diagram>
+<ref refid="58d6c536-66f8-11ec-b4c8-0456e5e540ed"/>
+</diagram>
+<parent>
+<ref refid="f5383b7c-52ce-11ed-a753-bbafa601978e"/>
+</parent>
+<subject>
+<ref refid="eef6fb58-52d0-11ed-b318-bbafa601978e"/>
+</subject>
+</FinalStateItem>
+<TransitionItem id="1e36b4ff-52d1-11ed-bcf9-bbafa601978e">
+<diagram>
+<ref refid="58d6c536-66f8-11ec-b4c8-0456e5e540ed"/>
+</diagram>
+<horizontal>
+<val>0</val>
+</horizontal>
+<subject>
+<ref refid="206dc68e-52d1-11ed-9afe-bbafa601978e"/>
+</subject>
+<matrix>
+<val>(1.0, 0.0, 0.0, 1.0, 572.9508666992188, 352.0079650878906)</val>
+</matrix>
+<points>
+<val>[(-120.7579345703125, 9.463775634765625), (-120.5032958984375, 68.10885620117188)]</val>
+</points>
+<head-connection>
+<ref refid="2378c5d3-52cf-11ed-803b-bbafa601978e"/>
+</head-connection>
+<tail-connection>
+<ref refid="a8dbac90-52d0-11ed-9a00-bbafa601978e"/>
+</tail-connection>
+</TransitionItem>
+<Transition id="206dc68e-52d1-11ed-9afe-bbafa601978e">
+<container>
+<ref refid="0b5bd8dd-52cf-11ed-96d6-bbafa601978e"/>
+</container>
+<guard>
+<ref refid="206edbae-52d1-11ed-93bd-bbafa601978e"/>
+</guard>
+<presentation>
+<reflist>
+<ref refid="1e36b4ff-52d1-11ed-bcf9-bbafa601978e"/>
+</reflist>
+</presentation>
+<source>
+<ref refid="2378009a-52cf-11ed-b499-bbafa601978e"/>
+</source>
+<target>
+<ref refid="a8db6f5c-52d0-11ed-9592-bbafa601978e"/>
+</target>
+</Transition>
+<Constraint id="206edbae-52d1-11ed-93bd-bbafa601978e">
+<transition>
+<ref refid="206dc68e-52d1-11ed-9afe-bbafa601978e"/>
+</transition>
+</Constraint>
+<TransitionItem id="2534a521-52d1-11ed-9bc6-bbafa601978e">
+<diagram>
+<ref refid="58d6c536-66f8-11ec-b4c8-0456e5e540ed"/>
+</diagram>
+<horizontal>
+<val>0</val>
+</horizontal>
+<subject>
+<ref refid="2803f4ca-52d1-11ed-8ccf-bbafa601978e"/>
+</subject>
+<matrix>
+<val>(1.0, 0.0, 0.0, 1.0, 573.5729370117188, 442.9110412597656)</val>
+</matrix>
+<points>
+<val>[(-120.7579345703125, 8.25115966796875), (-120.11488342285156, 71.00546264648438)]</val>
+</points>
+<head-connection>
+<ref refid="a8dbac90-52d0-11ed-9a00-bbafa601978e"/>
+</head-connection>
+<tail-connection>
+<ref refid="b546b51a-52d0-11ed-a42b-bbafa601978e"/>
+</tail-connection>
+</TransitionItem>
+<Transition id="2803f4ca-52d1-11ed-8ccf-bbafa601978e">
+<container>
+<ref refid="0b5bd8dd-52cf-11ed-96d6-bbafa601978e"/>
+</container>
+<guard>
+<ref refid="2806f068-52d1-11ed-98b3-bbafa601978e"/>
+</guard>
+<presentation>
+<reflist>
+<ref refid="2534a521-52d1-11ed-9bc6-bbafa601978e"/>
+</reflist>
+</presentation>
+<source>
+<ref refid="a8db6f5c-52d0-11ed-9592-bbafa601978e"/>
+</source>
+<target>
+<ref refid="b546797b-52d0-11ed-b04f-bbafa601978e"/>
+</target>
+</Transition>
+<Constraint id="2806f068-52d1-11ed-98b3-bbafa601978e">
+<transition>
+<ref refid="2803f4ca-52d1-11ed-8ccf-bbafa601978e"/>
+</transition>
+</Constraint>
+<TransitionItem id="340ed896-52d1-11ed-a895-bbafa601978e">
+<diagram>
+<ref refid="58d6c536-66f8-11ec-b4c8-0456e5e540ed"/>
+</diagram>
+<horizontal>
+<val>0</val>
+</horizontal>
+<subject>
+<ref refid="37a30529-52d1-11ed-beb2-bbafa601978e"/>
+</subject>
+<matrix>
+<val>(1.0, 0.0, 0.0, 1.0, 573.5464477539062, 540.594970703125)</val>
+</matrix>
+<points>
+<val>[(-120.10780334472656, 4.24151611328125), (-119.7178955078125, 70.0845947265625)]</val>
+</points>
+<head-connection>
+<ref refid="b546b51a-52d0-11ed-a42b-bbafa601978e"/>
+</head-connection>
+<tail-connection>
+<ref refid="d40c0a6e-52d0-11ed-a276-bbafa601978e"/>
+</tail-connection>
+</TransitionItem>
+<Transition id="37a30529-52d1-11ed-beb2-bbafa601978e">
+<container>
+<ref refid="0b5bd8dd-52cf-11ed-96d6-bbafa601978e"/>
+</container>
+<guard>
+<ref refid="37a41ad0-52d1-11ed-bbb1-bbafa601978e"/>
+</guard>
+<presentation>
+<reflist>
+<ref refid="340ed896-52d1-11ed-a895-bbafa601978e"/>
+</reflist>
+</presentation>
+<source>
+<ref refid="b546797b-52d0-11ed-b04f-bbafa601978e"/>
+</source>
+<target>
+<ref refid="d40b7ed1-52d0-11ed-92b6-bbafa601978e"/>
+</target>
+</Transition>
+<Constraint id="37a41ad0-52d1-11ed-bbb1-bbafa601978e">
+<transition>
+<ref refid="37a30529-52d1-11ed-beb2-bbafa601978e"/>
+</transition>
+</Constraint>
+<TransitionItem id="44b02935-52d1-11ed-8fba-bbafa601978e">
+<diagram>
+<ref refid="58d6c536-66f8-11ec-b4c8-0456e5e540ed"/>
+</diagram>
+<horizontal>
+<val>0</val>
+</horizontal>
+<subject>
+<ref refid="50f4a88b-52d1-11ed-b2d2-bbafa601978e"/>
+</subject>
+<matrix>
+<val>(1.0, 0.0, 0.0, 1.0, 574.5864868164062, 633.9732055664062)</val>
+</matrix>
+<points>
+<val>[(-120.4735107421875, 6.70635986328125), (-120.8402099609375, 83.9334716796875)]</val>
+</points>
+<head-connection>
+<ref refid="d40c0a6e-52d0-11ed-a276-bbafa601978e"/>
+</head-connection>
+<tail-connection>
+<ref refid="eef744eb-52d0-11ed-96e3-bbafa601978e"/>
+</tail-connection>
+</TransitionItem>
+<Transition id="50f4a88b-52d1-11ed-b2d2-bbafa601978e">
+<container>
+<ref refid="0b5bd8dd-52cf-11ed-96d6-bbafa601978e"/>
+</container>
+<guard>
+<ref refid="50f5df18-52d1-11ed-9134-bbafa601978e"/>
+</guard>
+<presentation>
+<reflist>
+<ref refid="44b02935-52d1-11ed-8fba-bbafa601978e"/>
+</reflist>
+</presentation>
+<source>
+<ref refid="d40b7ed1-52d0-11ed-92b6-bbafa601978e"/>
+</source>
+<target>
+<ref refid="eef6fb58-52d0-11ed-b318-bbafa601978e"/>
+</target>
+</Transition>
+<Constraint id="50f5df18-52d1-11ed-9134-bbafa601978e">
+<transition>
+<ref refid="50f4a88b-52d1-11ed-b2d2-bbafa601978e"/>
+</transition>
+</Constraint>
+<Comment id="971d6aa4-52d1-11ed-a9b9-bbafa601978e">
+<annotatedElement>
+<reflist>
+<ref refid="0b5b41dc-52cf-11ed-9487-bbafa601978e"/>
+</reflist>
+</annotatedElement>
+<body>
+<val>Create Adverting Token
+state: empty (0)</val>
+</body>
+<presentation>
+<reflist>
+<ref refid="971d70c0-52d1-11ed-93a6-bbafa601978e"/>
+</reflist>
+</presentation>
+</Comment>
+<CommentItem id="971d70c0-52d1-11ed-93a6-bbafa601978e">
+<matrix>
+<val>(1.0, 0.0, 0.0, 1.0, 50.03348159790039, 216.3704376220703)</val>
+</matrix>
+<top-left>
+<val>(11.06844711303711, 0.0)</val>
+</top-left>
+<width>
+<val>216.14800643920898</val>
+</width>
+<height>
+<val>53.08906555175781</val>
+</height>
+<diagram>
+<ref refid="58d6c536-66f8-11ec-b4c8-0456e5e540ed"/>
+</diagram>
+<subject>
+<ref refid="971d6aa4-52d1-11ed-a9b9-bbafa601978e"/>
+</subject>
+</CommentItem>
+<CommentLineItem id="d144e340-52d1-11ed-ae9d-bbafa601978e">
+<diagram>
+<ref refid="58d6c536-66f8-11ec-b4c8-0456e5e540ed"/>
+</diagram>
+<horizontal>
+<val>0</val>
+</horizontal>
+<matrix>
+<val>(1.0, 0.0, 0.0, 1.0, 279.67791748046875, 256.4088439941406)</val>
+</matrix>
+<points>
+<val>[(-2.4279823303222656, -7.26348311755558), (161.05494689941406, -5.5574188232421875)]</val>
+</points>
+<head-connection>
+<ref refid="971d70c0-52d1-11ed-93a6-bbafa601978e"/>
+</head-connection>
+<tail-connection>
+<ref refid="0b5b7656-52cf-11ed-89b2-bbafa601978e"/>
+</tail-connection>
+</CommentLineItem>
+<Comment id="e29fc5f9-52d1-11ed-b842-bbafa601978e">
+<body>
+<val>Buy Tokens from Advertiser</val>
+</body>
+<presentation>
+<reflist>
+<ref refid="e29fd2c8-52d1-11ed-b572-bbafa601978e"/>
+</reflist>
+</presentation>
+</Comment>
+<CommentItem id="e29fd2c8-52d1-11ed-b572-bbafa601978e">
+<matrix>
+<val>(1.0, 0.0, 0.0, 1.0, 50.885475158691406, 300.6496276855469)</val>
+</matrix>
+<top-left>
+<val>(10.216453552246094, 0.0)</val>
+</top-left>
+<width>
+<val>217.0</val>
+</width>
+<height>
+<val>50.0</val>
+</height>
+<diagram>
+<ref refid="58d6c536-66f8-11ec-b4c8-0456e5e540ed"/>
+</diagram>
+<subject>
+<ref refid="e29fc5f9-52d1-11ed-b842-bbafa601978e"/>
+</subject>
+</CommentItem>
+<CommentLineItem id="18e76e0c-52d2-11ed-8042-bbafa601978e">
+<diagram>
+<ref refid="58d6c536-66f8-11ec-b4c8-0456e5e540ed"/>
+</diagram>
+<horizontal>
+<val>0</val>
+</horizontal>
+<matrix>
+<val>(1.0, 0.0, 0.0, 1.0, 275.873779296875, 326.48480224609375)</val>
+</matrix>
+<points>
+<val>[(3.53424072265625, 8.261688232421875), (111.87921142578125, 8.85296630859375)]</val>
+</points>
+<tail-connection>
+<ref refid="2378c5d3-52cf-11ed-803b-bbafa601978e"/>
+</tail-connection>
+</CommentLineItem>
+<Comment id="5312d1e9-52d2-11ed-b9aa-bbafa601978e">
+<annotatedElement>
+<reflist>
+<ref refid="a8db6f5c-52d0-11ed-9592-bbafa601978e"/>
+</reflist>
+</annotatedElement>
+<body>
+<val>Configure Campaign</val>
+</body>
+<presentation>
+<reflist>
+<ref refid="5312e291-52d2-11ed-ab46-bbafa601978e"/>
+</reflist>
+</presentation>
+</Comment>
+<CommentItem id="5312e291-52d2-11ed-ab46-bbafa601978e">
+<matrix>
+<val>(1.0, 0.0, 0.0, 1.0, 51.33957290649414, 401.3409423828125)</val>
+</matrix>
+<top-left>
+<val>(9.76235580444336, 0.0)</val>
+</top-left>
+<width>
+<val>218.30609130859375</val>
+</width>
+<height>
+<val>56.826690673828125</val>
+</height>
+<diagram>
+<ref refid="58d6c536-66f8-11ec-b4c8-0456e5e540ed"/>
+</diagram>
+<subject>
+<ref refid="5312d1e9-52d2-11ed-b9aa-bbafa601978e"/>
+</subject>
+</CommentItem>
+<CommentLineItem id="c6797148-52d2-11ed-b71c-bbafa601978e">
+<diagram>
+<ref refid="58d6c536-66f8-11ec-b4c8-0456e5e540ed"/>
+</diagram>
+<horizontal>
+<val>0</val>
+</horizontal>
+<matrix>
+<val>(1.0, 0.0, 0.0, 1.0, 277.99835205078125, 435.6068420410156)</val>
+</matrix>
+<points>
+<val>[(1.40966796875, 1.8964227467690193), (112.32733154296875, 0.76214599609375)]</val>
+</points>
+<head-connection>
+<ref refid="5312e291-52d2-11ed-ab46-bbafa601978e"/>
+</head-connection>
+<tail-connection>
+<ref refid="a8dbac90-52d0-11ed-9a00-bbafa601978e"/>
+</tail-connection>
+</CommentLineItem>
+<Comment id="eb4377f5-52d2-11ed-aa26-bbafa601978e">
+<annotatedElement>
+<reflist>
+<ref refid="b546797b-52d0-11ed-b04f-bbafa601978e"/>
+</reflist>
+</annotatedElement>
+<body>
+<val>Send Campaign</val>
+</body>
+<presentation>
+<reflist>
+<ref refid="eb4386a8-52d2-11ed-8720-bbafa601978e"/>
+</reflist>
+</presentation>
+</Comment>
+<CommentItem id="eb4386a8-52d2-11ed-8720-bbafa601978e">
+<matrix>
+<val>(1.0, 0.0, 0.0, 1.0, 59.95616149902344, 503.1747741699219)</val>
+</matrix>
+<top-left>
+<val>(0.0, 0.0)</val>
+</top-left>
+<width>
+<val>218.4395408630371</val>
+</width>
+<height>
+<val>50.0</val>
+</height>
+<diagram>
+<ref refid="58d6c536-66f8-11ec-b4c8-0456e5e540ed"/>
+</diagram>
+<subject>
+<ref refid="eb4377f5-52d2-11ed-aa26-bbafa601978e"/>
+</subject>
+</CommentItem>
+<CommentLineItem id="08792a48-52d3-11ed-a693-bbafa601978e">
+<diagram>
+<ref refid="58d6c536-66f8-11ec-b4c8-0456e5e540ed"/>
+</diagram>
+<horizontal>
+<val>0</val>
+</horizontal>
+<matrix>
+<val>(1.0, 0.0, 0.0, 1.0, 271.98388671875, 528.372802734375)</val>
+</matrix>
+<points>
+<val>[(6.411815643310547, 0.0), (119.06105041503906, -0.3380392124093987)]</val>
+</points>
+<head-connection>
+<ref refid="eb4386a8-52d2-11ed-8720-bbafa601978e"/>
+</head-connection>
+<tail-connection>
+<ref refid="b546b51a-52d0-11ed-a42b-bbafa601978e"/>
+</tail-connection>
+</CommentLineItem>
+<Comment id="122b5691-52d3-11ed-bfdb-bbafa601978e">
+<annotatedElement>
+<reflist>
+<ref refid="d40b7ed1-52d0-11ed-92b6-bbafa601978e"/>
+</reflist>
+</annotatedElement>
+<body>
+<val>Token watched &amp; Pay Out</val>
+</body>
+<presentation>
+<reflist>
+<ref refid="122b748c-52d3-11ed-9dd0-bbafa601978e"/>
+</reflist>
+</presentation>
+</Comment>
+<CommentItem id="122b748c-52d3-11ed-9dd0-bbafa601978e">
+<matrix>
+<val>(1.0, 0.0, 0.0, 1.0, 59.95616149902344, 593.357421875)</val>
+</matrix>
+<top-left>
+<val>(0.0, 0.0)</val>
+</top-left>
+<width>
+<val>215.4529037475586</val>
+</width>
+<height>
+<val>54.166748046875</val>
+</height>
+<diagram>
+<ref refid="58d6c536-66f8-11ec-b4c8-0456e5e540ed"/>
+</diagram>
+<subject>
+<ref refid="122b5691-52d3-11ed-bfdb-bbafa601978e"/>
+</subject>
+</CommentItem>
+<CommentLineItem id="405a47a1-52d3-11ed-875f-bbafa601978e">
+<diagram>
+<ref refid="58d6c536-66f8-11ec-b4c8-0456e5e540ed"/>
+</diagram>
+<horizontal>
+<val>0</val>
+</horizontal>
+<matrix>
+<val>(1.0, 0.0, 0.0, 1.0, 264.8740234375, 621.7108154296875)</val>
+</matrix>
+<points>
+<val>[(10.535041809082031, 0.4925900570868009), (125.45166015625, 1.029052734375)]</val>
+</points>
+<head-connection>
+<ref refid="122b748c-52d3-11ed-9dd0-bbafa601978e"/>
+</head-connection>
+<tail-connection>
+<ref refid="d40c0a6e-52d0-11ed-a276-bbafa601978e"/>
+</tail-connection>
+</CommentLineItem>
+<Comment id="4b39af3e-52d3-11ed-b27b-bbafa601978e">
+<body>
+<val>Create Complex Token function, creates a Publicity Token with 11 state vars set on the token:
+- **state 0** :  VAULT address
+      - **state 1** :  Publickey 1 vault script
+      - **state 2** :  Publickey 2 vault script
+      - **state 3** :  Publickey 3 vault script
+      - **state 4** :  DAO address
+      - **state 5** :  DAO publickey
+      - **state 6** :  % Third party comission of the rewards to be received by DAO
+      - **state 7** :  % Final user comission of the rewards to be received by DAO
+      - **state 8** :  % of the value of rewards if are not minimas to be received by DAO
+      - **state 9** :  Price of the token 
+      - **state 99** : A specific name for the token 
+      - **state 100**; [MDAE] It means is a publicity token
+</val>
+</body>
+<presentation>
+<reflist>
+<ref refid="4b39b652-52d3-11ed-a221-bbafa601978e"/>
+</reflist>
+</presentation>
+</Comment>
+<CommentItem id="4b39b652-52d3-11ed-a221-bbafa601978e">
+<matrix>
+<val>(1.0, 0.0, 0.0, 1.0, 863.7189331054688, -274.57220458984375)</val>
+</matrix>
+<top-left>
+<val>(-377.56427001953125, 124.91789281253364)</val>
+</top-left>
+<width>
+<val>636.5576782226561</val>
+</width>
+<height>
+<val>293.08210718746636</val>
+</height>
+<diagram>
+<ref refid="58d6c536-66f8-11ec-b4c8-0456e5e540ed"/>
+</diagram>
+<subject>
+<ref refid="4b39af3e-52d3-11ed-b27b-bbafa601978e"/>
+</subject>
+</CommentItem>
+<ControlFlowItem id="08ee5824-52d5-11ed-a55d-bbafa601978e">
+<diagram>
+<ref refid="58d6c536-66f8-11ec-b4c8-0456e5e540ed"/>
+</diagram>
+<horizontal>
+<val>0</val>
+</horizontal>
+<matrix>
+<val>(1.0, 0.0, 0.0, 1.0, 755.8329467773438, 133.871066055838)</val>
+</matrix>
+<points>
+<val>[(-105.027126257389, 7.464812901859375), (-174.9947509765625, 111.80862426757812)]</val>
+</points>
+</ControlFlowItem>
+<Comment id="2960a924-52d5-11ed-af38-bbafa601978e">
+<annotatedElement>
+<reflist>
+<ref refid="2378009a-52cf-11ed-b499-bbafa601978e"/>
+</reflist>
+</annotatedElement>
+<body>
+<val>When the token is bought it adds three more state vars before sending the token to the buyer:
+      - **state 10** : Buyer address
+      - **state 11** : Amount of tokens to buy
+      - **state 12** : Buyer publickey</val>
+</body>
+<presentation>
+<reflist>
+<ref refid="2960b07a-52d5-11ed-8746-bbafa601978e"/>
+</reflist>
+</presentation>
+</Comment>
+<CommentItem id="2960b07a-52d5-11ed-8746-bbafa601978e">
+<matrix>
+<val>(1.0, 0.0, 0.0, 1.0, 853.1278076171875, 216.3704376220703)</val>
+</matrix>
+<top-left>
+<val>(-108.41546630859375, 0.0)</val>
+</top-left>
+<width>
+<val>378.0</val>
+</width>
+<height>
+<val>100.27529907226562</val>
+</height>
+<diagram>
+<ref refid="58d6c536-66f8-11ec-b4c8-0456e5e540ed"/>
+</diagram>
+<subject>
+<ref refid="2960a924-52d5-11ed-af38-bbafa601978e"/>
+</subject>
+</CommentItem>
+<CommentLineItem id="a0445c88-52d5-11ed-9d9a-bbafa601978e">
+<diagram>
+<ref refid="58d6c536-66f8-11ec-b4c8-0456e5e540ed"/>
+</diagram>
+<horizontal>
+<val>0</val>
+</horizontal>
+<matrix>
+<val>(1.0, 0.0, 0.0, 1.0, 749.3771362304688, 333.8099710808235)</val>
+</matrix>
+<points>
+<val>[(-217.1029052734375, 0.0968017578125), (-4.664794921875, -81.923524496173)]</val>
+</points>
+<head-connection>
+<ref refid="2378c5d3-52cf-11ed-803b-bbafa601978e"/>
+</head-connection>
+<tail-connection>
+<ref refid="2960b07a-52d5-11ed-8746-bbafa601978e"/>
+</tail-connection>
+</CommentLineItem>
+<Comment id="f02482ae-52d5-11ed-b23b-bbafa601978e">
+<body>
+<val>ConfigureCampaign function creates an script based on the
+TOKENID &amp; Camaign name, configures all state vars with the user input values, and send the choosen amount of configured tokens building a TX SPLITTING in units of one the first 150 units, to the SCRIPT address, .
+
+      - **state 13** : CAMPAIGN name
+      - **state 14** : State of the token (0,1,2,3) non configured(empty),
+      - **state 15** : Amount of rewards to be received by the dapp(developer)
+      - **state 16** : Type of rewards dapp (tokenid) (usualy 0x00)
+      - **state 17** : Amount of rewards to be received by the final user
+      - **state 18** : Type of rewards final user (tokenid) (usually 0x00)
+      - **state 19** : Type of advertising (0-6) text(23-31),web, image, survey, actions, contest, others
+      - **state 20** : Content according to type of publicity  Web Page / Image
+      - **state 21** : Actions (Interaction on twitter, discord, social networks)
+      - **state 22** : Conditions on what needs to be done to considered a publicity watched (click)
+      - **state 23** : Text 0 publicity
+      - **state 24** : Text 1 publicity
+      - **state 25** : Text 2 publicity
+      - **state 26** : Text 3 publicity
+      - **state 27** : Text 4 publicity
+      - **state 28** : Text 5 publicity
+      - **state 29** : Text 6 publicity
+      - **state 30** : Text 7 publicity
+      - **state 31** : Text 8 publicity
+      - **state 99** : A specific name for the token  (not used so far)
+      - **state 100**; [MDAE] It means is a publicity token</val>
+</body>
+<presentation>
+<reflist>
+<ref refid="f024918f-52d5-11ed-80d5-bbafa601978e"/>
+</reflist>
+</presentation>
+</Comment>
+<CommentItem id="f024918f-52d5-11ed-80d5-bbafa601978e">
+<matrix>
+<val>(1.0, 0.0, 0.0, 1.0, 744.8433837890625, 348.14614543476205)</val>
+</matrix>
+<top-left>
+<val>(-145.25506591796875, -8.75516948261361)</val>
+</top-left>
+<width>
+<val>523.1240234375</val>
+</width>
+<height>
+<val>596.7551694826136</val>
+</height>
+<diagram>
+<ref refid="58d6c536-66f8-11ec-b4c8-0456e5e540ed"/>
+</diagram>
+<subject>
+<ref refid="f02482ae-52d5-11ed-b23b-bbafa601978e"/>
+</subject>
+</CommentItem>
+<CommentLineItem id="8aa45e25-52d8-11ed-93b1-bbafa601978e">
+<diagram>
+<ref refid="58d6c536-66f8-11ec-b4c8-0456e5e540ed"/>
+</diagram>
+<horizontal>
+<val>0</val>
+</horizontal>
+<matrix>
+<val>(1.0, 0.0, 0.0, 1.0, 531.733615930111, 433.3865839137521)</val>
+</matrix>
+<points>
+<val>[(0.5406150269202499, 2.033172607421875), (65.2118530273438, 3.244049072265625)]</val>
+</points>
+<head-connection>
+<ref refid="a8dbac90-52d0-11ed-9a00-bbafa601978e"/>
+</head-connection>
+</CommentLineItem>
+<Comment id="c2825056-52d8-11ed-a750-bbafa601978e">
+<annotatedElement>
+<reflist>
+<ref refid="b546797b-52d0-11ed-b04f-bbafa601978e"/>
+</reflist>
+</annotatedElement>
+<body>
+<val>SendCampaign sends one publicity token from the choosed campaing to a final user adrdress script (generated from the combination of user address and a developer address) as well as wiht the rewards the token state vars indicate, as is the final user'script that would hold the publicity tokens and the rewards to be payed when the publisity is watched.
+</val>
+</body>
+<presentation>
+<reflist>
+<ref refid="c28260c7-52d8-11ed-bd41-bbafa601978e"/>
+</reflist>
+</presentation>
+</Comment>
+<CommentItem id="c28260c7-52d8-11ed-bd41-bbafa601978e">
+<matrix>
+<val>(1.0, 0.0, 0.0, 1.0, 61.10192871093753, 788.1467164153933)</val>
+</matrix>
+<top-left>
+<val>(0.0, 0.0)</val>
+</top-left>
+<width>
+<val>469.9699172424964</val>
+</width>
+<height>
+<val>135.87841796875</val>
+</height>
+<diagram>
+<ref refid="58d6c536-66f8-11ec-b4c8-0456e5e540ed"/>
+</diagram>
+<subject>
+<ref refid="c2825056-52d8-11ed-a750-bbafa601978e"/>
+</subject>
+</CommentItem>
+<CommentLineItem id="ad92b626-52d9-11ed-a301-bbafa601978e">
+<diagram>
+<ref refid="58d6c536-66f8-11ec-b4c8-0456e5e540ed"/>
+</diagram>
+<horizontal>
+<val>0</val>
+</horizontal>
+<matrix>
+<val>(1.0, 0.0, 0.0, 1.0, 260.464069421322, 787.4394715423464)</val>
+</matrix>
+<points>
+<val>[(0.0, 0.707244873046875), (135.29985943727175, -242.60298472594013)]</val>
+</points>
+<head-connection>
+<ref refid="c28260c7-52d8-11ed-bd41-bbafa601978e"/>
+</head-connection>
+<tail-connection>
+<ref refid="b546b51a-52d0-11ed-a42b-bbafa601978e"/>
+</tail-connection>
+</CommentLineItem>
+<Comment id="c19f778b-52d9-11ed-9c31-bbafa601978e">
+<body>
+<val>!!!! ATENTION !!!
+
+The TOKEN is created with  a embedded script that controls all life cicle of the TOKEN based on his state and the state vars values, and protects itself as the transaction will must satisfy the script conditions.
+Though so far is created without this script, but all Tx and operations are done like the script were present, so adding the script it should work as well the right positions of inputs and outputs are done.
+</val>
+</body>
+<presentation>
+<reflist>
+<ref refid="c19f7d88-52d9-11ed-b649-bbafa601978e"/>
+</reflist>
+</presentation>
+</Comment>
+<CommentItem id="c19f7d88-52d9-11ed-b649-bbafa601978e">
+<matrix>
+<val>(1.0, 0.0, 0.0, 1.0, 57.33304410699092, -149.6543117773101)</val>
+</matrix>
+<top-left>
+<val>(0.0, 0.0)</val>
+</top-left>
+<width>
+<val>374.0222759246826</val>
+</width>
+<height>
+<val>293.08210718746636</val>
+</height>
+<diagram>
+<ref refid="58d6c536-66f8-11ec-b4c8-0456e5e540ed"/>
+</diagram>
+<subject>
+<ref refid="c19f778b-52d9-11ed-9c31-bbafa601978e"/>
+</subject>
+</CommentItem>
+<Comment id="8b688c25-52db-11ed-88d7-bbafa601978e">
+<annotatedElement>
+<reflist>
+<ref refid="d40b7ed1-52d0-11ed-92b6-bbafa601978e"/>
+</reflist>
+</annotatedElement>
+<body>
+<val>When the publicity is watched, the function ** get_publiciy_token_rewards ** pays all parties his rewards and send back token to the advertiser building a TX that satisfys what token state vars says, as the rewards and the token are into an script.</val>
+</body>
+<presentation>
+<reflist>
+<ref refid="8b68ac2e-52db-11ed-8ceb-bbafa601978e"/>
+</reflist>
+</presentation>
+</Comment>
+<CommentItem id="8b68ac2e-52db-11ed-8ceb-bbafa601978e">
+<matrix>
+<val>(1.0, 0.0, 0.0, 1.0, 232.61802561567595, 971.1413662179889)</val>
+</matrix>
+<top-left>
+<val>(0.0, 0.0)</val>
+</top-left>
+<width>
+<val>691.5525512695312</val>
+</width>
+<height>
+<val>78.71131794710095</val>
+</height>
+<diagram>
+<ref refid="58d6c536-66f8-11ec-b4c8-0456e5e540ed"/>
+</diagram>
+<subject>
+<ref refid="8b688c25-52db-11ed-88d7-bbafa601978e"/>
+</subject>
+</CommentItem>
+<CommentLineItem id="4cf79f67-52dc-11ed-bd2c-bbafa601978e">
+<diagram>
+<ref refid="58d6c536-66f8-11ec-b4c8-0456e5e540ed"/>
+</diagram>
+<horizontal>
+<val>0</val>
+</horizontal>
+<matrix>
+<val>(1.0, 0.0, 0.0, 1.0, 524.0810993461447, 627.1968766699729)</val>
+</matrix>
+<points>
+<val>[(-6.736782897148942, 13.48268875971462), (60.51409912109375, 343.944489548016)]</val>
+</points>
+<head-connection>
+<ref refid="d40c0a6e-52d0-11ed-a276-bbafa601978e"/>
+</head-connection>
+<tail-connection>
+<ref refid="8b68ac2e-52db-11ed-8ceb-bbafa601978e"/>
+</tail-connection>
+</CommentLineItem>
+</gaphor>

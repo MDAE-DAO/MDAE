@@ -1,0 +1,646 @@
+<?xml version="1.0" encoding="utf-8"?>
+<gaphor xmlns="http://gaphor.sourceforge.net/model" version="3.0" gaphor-version="2.12.1">
+<StyleSheet id="58d6989a-66f8-11ec-b4c8-0456e5e540ed"/>
+<Package id="58d6c2e8-66f8-11ec-b4c8-0456e5e540ed">
+<name>
+<val>New model</val>
+</name>
+<ownedDiagram>
+<reflist>
+<ref refid="58d6c536-66f8-11ec-b4c8-0456e5e540ed"/>
+</reflist>
+</ownedDiagram>
+<ownedType>
+<reflist>
+<ref refid="ff82ee96-52f4-11ed-bf84-2fee27813833"/>
+</reflist>
+</ownedType>
+</Package>
+<Diagram id="58d6c536-66f8-11ec-b4c8-0456e5e540ed">
+<element>
+<ref refid="58d6c2e8-66f8-11ec-b4c8-0456e5e540ed"/>
+</element>
+<name>
+<val>main</val>
+</name>
+<ownedPresentation>
+<reflist>
+<ref refid="ff841a12-52f4-11ed-9bc9-2fee27813833"/>
+<ref refid="31132c00-52f5-11ed-b47a-2fee27813833"/>
+<ref refid="2af1c528-52f6-11ed-9932-2fee27813833"/>
+<ref refid="f5ced864-52f7-11ed-9259-2fee27813833"/>
+<ref refid="13e340bf-52f8-11ed-82f4-2fee27813833"/>
+<ref refid="a06d2dd5-52f9-11ed-ba72-2fee27813833"/>
+<ref refid="bcd0612e-52f9-11ed-ac7b-2fee27813833"/>
+<ref refid="b4fb7b4d-52fb-11ed-a8e7-2fee27813833"/>
+<ref refid="d85c7d1d-52fb-11ed-a9d0-2fee27813833"/>
+<ref refid="9434bf9d-52f6-11ed-9584-2fee27813833"/>
+<ref refid="1a86c857-52f8-11ed-9e77-2fee27813833"/>
+<ref refid="eac291d6-52f9-11ed-8d96-2fee27813833"/>
+<ref refid="f15ae19c-52fb-11ed-bf11-2fee27813833"/>
+</reflist>
+</ownedPresentation>
+</Diagram>
+<Interaction id="ff82ee96-52f4-11ed-bf84-2fee27813833">
+<fragment>
+<reflist>
+<ref refid="2c06b10f-52f6-11ed-b537-2fee27813833"/>
+<ref refid="16f7b744-52f8-11ed-89a3-2fee27813833"/>
+<ref refid="bf5cc15a-52f9-11ed-8a68-2fee27813833"/>
+<ref refid="db1fd7cf-52fb-11ed-8cd9-2fee27813833"/>
+</reflist>
+</fragment>
+<lifeline>
+<reflist>
+<ref refid="31129403-52f5-11ed-b6f2-2fee27813833"/>
+<ref refid="f5ce4367-52f7-11ed-9c87-2fee27813833"/>
+<ref refid="a06caeb2-52f9-11ed-98dc-2fee27813833"/>
+<ref refid="b4faff02-52fb-11ed-8eee-2fee27813833"/>
+</reflist>
+</lifeline>
+<name>
+<val>API_publicity sequence</val>
+</name>
+<package>
+<ref refid="58d6c2e8-66f8-11ec-b4c8-0456e5e540ed"/>
+</package>
+<presentation>
+<reflist>
+<ref refid="ff841a12-52f4-11ed-9bc9-2fee27813833"/>
+</reflist>
+</presentation>
+</Interaction>
+<InteractionItem id="ff841a12-52f4-11ed-9bc9-2fee27813833">
+<matrix>
+<val>(1.0, 0.0, 0.0, 1.0, 207.8592987060547, 111.07233629988679)</val>
+</matrix>
+<top-left>
+<val>(41.01175900834937, 10.339341808347456)</val>
+</top-left>
+<width>
+<val>1183.9193208677036</val>
+</width>
+<height>
+<val>510.99999999999994</val>
+</height>
+<children>
+<reflist>
+<ref refid="31132c00-52f5-11ed-b47a-2fee27813833"/>
+<ref refid="f5ced864-52f7-11ed-9259-2fee27813833"/>
+<ref refid="a06d2dd5-52f9-11ed-ba72-2fee27813833"/>
+<ref refid="b4fb7b4d-52fb-11ed-a8e7-2fee27813833"/>
+</reflist>
+</children>
+<diagram>
+<ref refid="58d6c536-66f8-11ec-b4c8-0456e5e540ed"/>
+</diagram>
+<subject>
+<ref refid="ff82ee96-52f4-11ed-bf84-2fee27813833"/>
+</subject>
+</InteractionItem>
+<Lifeline id="31129403-52f5-11ed-b6f2-2fee27813833">
+<coveredBy>
+<reflist>
+<ref refid="2c076f4a-52f6-11ed-8177-2fee27813833"/>
+<ref refid="2c077e21-52f6-11ed-9ced-2fee27813833"/>
+</reflist>
+</coveredBy>
+<interaction>
+<ref refid="ff82ee96-52f4-11ed-bf84-2fee27813833"/>
+</interaction>
+<name>
+<val>isthereaWallet </val>
+</name>
+<presentation>
+<reflist>
+<ref refid="31132c00-52f5-11ed-b47a-2fee27813833"/>
+</reflist>
+</presentation>
+</Lifeline>
+<LifelineItem id="31132c00-52f5-11ed-b47a-2fee27813833">
+<matrix>
+<val>(1.0, 0.0, 0.0, 1.0, 70.08906555175781, 80.271240234375)</val>
+</matrix>
+<top-left>
+<val>(-14.4039306640625, 0.0)</val>
+</top-left>
+<width>
+<val>133.4039306640625</val>
+</width>
+<height>
+<val>50.12760925292969</val>
+</height>
+<children>
+<reflist>
+<ref refid="2af1c528-52f6-11ed-9932-2fee27813833"/>
+</reflist>
+</children>
+<diagram>
+<ref refid="58d6c536-66f8-11ec-b4c8-0456e5e540ed"/>
+</diagram>
+<parent>
+<ref refid="ff841a12-52f4-11ed-9bc9-2fee27813833"/>
+</parent>
+<subject>
+<ref refid="31129403-52f5-11ed-b6f2-2fee27813833"/>
+</subject>
+<lifetime-y>
+<val>354.2774200439453</val>
+</lifetime-y>
+</LifelineItem>
+<ExecutionSpecificationItem id="2af1c528-52f6-11ed-9932-2fee27813833">
+<matrix>
+<val>(1.0, 0.0, 0.0, 1.0, 50.0758056640625, 76.94795227050781)</val>
+</matrix>
+<points>
+<val>[(2.22222900390625, 161.39669799804688), (2.22222900390625, 0.0)]</val>
+</points>
+<head-connection>
+<ref refid="31132c00-52f5-11ed-b47a-2fee27813833"/>
+</head-connection>
+<diagram>
+<ref refid="58d6c536-66f8-11ec-b4c8-0456e5e540ed"/>
+</diagram>
+<parent>
+<ref refid="31132c00-52f5-11ed-b47a-2fee27813833"/>
+</parent>
+<subject>
+<ref refid="2c06b10f-52f6-11ed-b537-2fee27813833"/>
+</subject>
+</ExecutionSpecificationItem>
+<BehaviorExecutionSpecification id="2c06b10f-52f6-11ed-b537-2fee27813833">
+<enclosingInteraction>
+<ref refid="ff82ee96-52f4-11ed-bf84-2fee27813833"/>
+</enclosingInteraction>
+<executionOccurrenceSpecification>
+<reflist>
+<ref refid="2c076f4a-52f6-11ed-8177-2fee27813833"/>
+<ref refid="2c077e21-52f6-11ed-9ced-2fee27813833"/>
+</reflist>
+</executionOccurrenceSpecification>
+<presentation>
+<reflist>
+<ref refid="2af1c528-52f6-11ed-9932-2fee27813833"/>
+</reflist>
+</presentation>
+</BehaviorExecutionSpecification>
+<ExecutionOccurrenceSpecification id="2c076f4a-52f6-11ed-8177-2fee27813833">
+<covered>
+<ref refid="31129403-52f5-11ed-b6f2-2fee27813833"/>
+</covered>
+<execution>
+<ref refid="2c06b10f-52f6-11ed-b537-2fee27813833"/>
+</execution>
+</ExecutionOccurrenceSpecification>
+<ExecutionOccurrenceSpecification id="2c077e21-52f6-11ed-9ced-2fee27813833">
+<covered>
+<ref refid="31129403-52f5-11ed-b6f2-2fee27813833"/>
+</covered>
+<execution>
+<ref refid="2c06b10f-52f6-11ed-b537-2fee27813833"/>
+</execution>
+</ExecutionOccurrenceSpecification>
+<Comment id="9434afff-52f6-11ed-826b-2fee27813833">
+<body>
+<val>- Checks if is the first time Dapp used, if so, ask for a user wallet and save on DB, and create the script of develporer's wallet plus user's wallet:function: isthereaWallet
+-</val>
+</body>
+<presentation>
+<reflist>
+<ref refid="9434bf9d-52f6-11ed-9584-2fee27813833"/>
+</reflist>
+</presentation>
+</Comment>
+<CommentItem id="9434bf9d-52f6-11ed-9584-2fee27813833">
+<matrix>
+<val>(1.0, 0.0, 0.0, 1.0, 337.94622802734375, 288.310302734375)</val>
+</matrix>
+<top-left>
+<val>(0.0, 0.0)</val>
+</top-left>
+<width>
+<val>290.4796142578125</val>
+</width>
+<height>
+<val>112.0</val>
+</height>
+<diagram>
+<ref refid="58d6c536-66f8-11ec-b4c8-0456e5e540ed"/>
+</diagram>
+<subject>
+<ref refid="9434afff-52f6-11ed-826b-2fee27813833"/>
+</subject>
+</CommentItem>
+<Lifeline id="f5ce4367-52f7-11ed-9c87-2fee27813833">
+<coveredBy>
+<reflist>
+<ref refid="16f92f48-52f8-11ed-9bc5-2fee27813833"/>
+<ref refid="16f95d10-52f8-11ed-94c3-2fee27813833"/>
+</reflist>
+</coveredBy>
+<interaction>
+<ref refid="ff82ee96-52f4-11ed-bf84-2fee27813833"/>
+</interaction>
+<name>
+<val> get_publicity_tokens </val>
+</name>
+<presentation>
+<reflist>
+<ref refid="f5ced864-52f7-11ed-9259-2fee27813833"/>
+</reflist>
+</presentation>
+</Lifeline>
+<LifelineItem id="f5ced864-52f7-11ed-9259-2fee27813833">
+<matrix>
+<val>(1.0, 0.0, 0.0, 1.0, 384.00514221191406, 80.271240234375)</val>
+</matrix>
+<top-left>
+<val>(0.0, 0.0)</val>
+</top-left>
+<width>
+<val>172.0</val>
+</width>
+<height>
+<val>50.0</val>
+</height>
+<children>
+<reflist>
+<ref refid="13e340bf-52f8-11ed-82f4-2fee27813833"/>
+</reflist>
+</children>
+<diagram>
+<ref refid="58d6c536-66f8-11ec-b4c8-0456e5e540ed"/>
+</diagram>
+<parent>
+<ref refid="ff841a12-52f4-11ed-9bc9-2fee27813833"/>
+</parent>
+<subject>
+<ref refid="f5ce4367-52f7-11ed-9c87-2fee27813833"/>
+</subject>
+<lifetime-y>
+<val>349.9987335205078</val>
+</lifetime-y>
+</LifelineItem>
+<ExecutionSpecificationItem id="13e340bf-52f8-11ed-82f4-2fee27813833">
+<matrix>
+<val>(1.0, 0.0, 0.0, 1.0, 78.7520751953125, 85.58720397949219)</val>
+</matrix>
+<points>
+<val>[(7.2479248046875, 191.225830078125), (7.2479248046875, 0.0)]</val>
+</points>
+<head-connection>
+<ref refid="f5ced864-52f7-11ed-9259-2fee27813833"/>
+</head-connection>
+<diagram>
+<ref refid="58d6c536-66f8-11ec-b4c8-0456e5e540ed"/>
+</diagram>
+<parent>
+<ref refid="f5ced864-52f7-11ed-9259-2fee27813833"/>
+</parent>
+<subject>
+<ref refid="16f7b744-52f8-11ed-89a3-2fee27813833"/>
+</subject>
+</ExecutionSpecificationItem>
+<BehaviorExecutionSpecification id="16f7b744-52f8-11ed-89a3-2fee27813833">
+<enclosingInteraction>
+<ref refid="ff82ee96-52f4-11ed-bf84-2fee27813833"/>
+</enclosingInteraction>
+<executionOccurrenceSpecification>
+<reflist>
+<ref refid="16f92f48-52f8-11ed-9bc5-2fee27813833"/>
+<ref refid="16f95d10-52f8-11ed-94c3-2fee27813833"/>
+</reflist>
+</executionOccurrenceSpecification>
+<presentation>
+<reflist>
+<ref refid="13e340bf-52f8-11ed-82f4-2fee27813833"/>
+</reflist>
+</presentation>
+</BehaviorExecutionSpecification>
+<ExecutionOccurrenceSpecification id="16f92f48-52f8-11ed-9bc5-2fee27813833">
+<covered>
+<ref refid="f5ce4367-52f7-11ed-9c87-2fee27813833"/>
+</covered>
+<execution>
+<ref refid="16f7b744-52f8-11ed-89a3-2fee27813833"/>
+</execution>
+</ExecutionOccurrenceSpecification>
+<ExecutionOccurrenceSpecification id="16f95d10-52f8-11ed-94c3-2fee27813833">
+<covered>
+<ref refid="f5ce4367-52f7-11ed-9c87-2fee27813833"/>
+</covered>
+<execution>
+<ref refid="16f7b744-52f8-11ed-89a3-2fee27813833"/>
+</execution>
+</ExecutionOccurrenceSpecification>
+<Comment id="1a86b8c3-52f8-11ed-a5fe-2fee27813833">
+<body>
+<val>- Fired on start up and on newBalance event if there is a script registered.
+
+-Get all tokens of scripts's address, divide them betwen minimas and Advetising tokens, and set them on memory Object:
+
+var USER_PUBLICITY_TOKENS ={
+  tokens:[],
+  minimas:[]
+}
+</val>
+</body>
+<presentation>
+<reflist>
+<ref refid="1a86c857-52f8-11ed-9e77-2fee27813833"/>
+</reflist>
+</presentation>
+</Comment>
+<CommentItem id="1a86c857-52f8-11ed-9e77-2fee27813833">
+<matrix>
+<val>(1.0, 0.0, 0.0, 1.0, 685.1780395507812, 288.310302734375)</val>
+</matrix>
+<top-left>
+<val>(0.0, 0.0)</val>
+</top-left>
+<width>
+<val>218.84862587136604</val>
+</width>
+<height>
+<val>299.0</val>
+</height>
+<diagram>
+<ref refid="58d6c536-66f8-11ec-b4c8-0456e5e540ed"/>
+</diagram>
+<subject>
+<ref refid="1a86b8c3-52f8-11ed-a5fe-2fee27813833"/>
+</subject>
+</CommentItem>
+<Lifeline id="a06caeb2-52f9-11ed-98dc-2fee27813833">
+<coveredBy>
+<reflist>
+<ref refid="bf5d8e37-52f9-11ed-8975-2fee27813833"/>
+<ref refid="bf5d9c29-52f9-11ed-a847-2fee27813833"/>
+</reflist>
+</coveredBy>
+<interaction>
+<ref refid="ff82ee96-52f4-11ed-bf84-2fee27813833"/>
+</interaction>
+<name>
+<val> displayPublicity </val>
+</name>
+<presentation>
+<reflist>
+<ref refid="a06d2dd5-52f9-11ed-ba72-2fee27813833"/>
+</reflist>
+</presentation>
+</Lifeline>
+<LifelineItem id="a06d2dd5-52f9-11ed-ba72-2fee27813833">
+<matrix>
+<val>(1.0, 0.0, 0.0, 1.0, 661.4759604660926, 80.271240234375)</val>
+</matrix>
+<top-left>
+<val>(0.0, 0.0)</val>
+</top-left>
+<width>
+<val>135.0</val>
+</width>
+<height>
+<val>50.0</val>
+</height>
+<children>
+<reflist>
+<ref refid="bcd0612e-52f9-11ed-ac7b-2fee27813833"/>
+</reflist>
+</children>
+<diagram>
+<ref refid="58d6c536-66f8-11ec-b4c8-0456e5e540ed"/>
+</diagram>
+<parent>
+<ref refid="ff841a12-52f4-11ed-9bc9-2fee27813833"/>
+</parent>
+<subject>
+<ref refid="a06caeb2-52f9-11ed-98dc-2fee27813833"/>
+</subject>
+<lifetime-y>
+<val>360.44996643066406</val>
+</lifetime-y>
+</LifelineItem>
+<ExecutionSpecificationItem id="bcd0612e-52f9-11ed-ac7b-2fee27813833">
+<matrix>
+<val>(1.0, 0.0, 0.0, 1.0, 64.3988037109375, 86.28133210592006)</val>
+</matrix>
+<points>
+<val>[(3.1011962890625, 195.25100708007812), (3.1011962890625, 0.0)]</val>
+</points>
+<head-connection>
+<ref refid="a06d2dd5-52f9-11ed-ba72-2fee27813833"/>
+</head-connection>
+<diagram>
+<ref refid="58d6c536-66f8-11ec-b4c8-0456e5e540ed"/>
+</diagram>
+<parent>
+<ref refid="a06d2dd5-52f9-11ed-ba72-2fee27813833"/>
+</parent>
+<subject>
+<ref refid="bf5cc15a-52f9-11ed-8a68-2fee27813833"/>
+</subject>
+</ExecutionSpecificationItem>
+<BehaviorExecutionSpecification id="bf5cc15a-52f9-11ed-8a68-2fee27813833">
+<enclosingInteraction>
+<ref refid="ff82ee96-52f4-11ed-bf84-2fee27813833"/>
+</enclosingInteraction>
+<executionOccurrenceSpecification>
+<reflist>
+<ref refid="bf5d8e37-52f9-11ed-8975-2fee27813833"/>
+<ref refid="bf5d9c29-52f9-11ed-a847-2fee27813833"/>
+</reflist>
+</executionOccurrenceSpecification>
+<presentation>
+<reflist>
+<ref refid="bcd0612e-52f9-11ed-ac7b-2fee27813833"/>
+</reflist>
+</presentation>
+</BehaviorExecutionSpecification>
+<ExecutionOccurrenceSpecification id="bf5d8e37-52f9-11ed-8975-2fee27813833">
+<covered>
+<ref refid="a06caeb2-52f9-11ed-98dc-2fee27813833"/>
+</covered>
+<execution>
+<ref refid="bf5cc15a-52f9-11ed-8a68-2fee27813833"/>
+</execution>
+</ExecutionOccurrenceSpecification>
+<ExecutionOccurrenceSpecification id="bf5d9c29-52f9-11ed-a847-2fee27813833">
+<covered>
+<ref refid="a06caeb2-52f9-11ed-98dc-2fee27813833"/>
+</covered>
+<execution>
+<ref refid="bf5cc15a-52f9-11ed-8a68-2fee27813833"/>
+</execution>
+</ExecutionOccurrenceSpecification>
+<Comment id="eac28162-52f9-11ed-809d-2fee27813833">
+<body>
+<val>- Check if there are any publicity tokens on the script on the memory object: USER_PUBLICITY_TOKENS
+
+if so, show publicity on the html page section  designated for.</val>
+</body>
+<presentation>
+<reflist>
+<ref refid="eac291d6-52f9-11ed-8d96-2fee27813833"/>
+</reflist>
+</presentation>
+</Comment>
+<CommentItem id="eac291d6-52f9-11ed-8d96-2fee27813833">
+<matrix>
+<val>(1.0, 0.0, 0.0, 1.0, 943.2006022942973, 307.40740966796875)</val>
+</matrix>
+<top-left>
+<val>(0.0, 0.0)</val>
+</top-left>
+<width>
+<val>206.0</val>
+</width>
+<height>
+<val>201.95217493440612</val>
+</height>
+<diagram>
+<ref refid="58d6c536-66f8-11ec-b4c8-0456e5e540ed"/>
+</diagram>
+<subject>
+<ref refid="eac28162-52f9-11ed-809d-2fee27813833"/>
+</subject>
+</CommentItem>
+<Lifeline id="b4faff02-52fb-11ed-8eee-2fee27813833">
+<coveredBy>
+<reflist>
+<ref refid="db209d00-52fb-11ed-914d-2fee27813833"/>
+<ref refid="db20ac7e-52fb-11ed-b7e1-2fee27813833"/>
+</reflist>
+</coveredBy>
+<interaction>
+<ref refid="ff82ee96-52f4-11ed-bf84-2fee27813833"/>
+</interaction>
+<name>
+<val> get_publiciy_token_rewards </val>
+</name>
+<presentation>
+<reflist>
+<ref refid="b4fb7b4d-52fb-11ed-a8e7-2fee27813833"/>
+</reflist>
+</presentation>
+</Lifeline>
+<LifelineItem id="b4fb7b4d-52fb-11ed-a8e7-2fee27813833">
+<matrix>
+<val>(1.0, 0.0, 0.0, 1.0, 853.0496385803854, 80.271240234375)</val>
+</matrix>
+<top-left>
+<val>(0.0, 0.0)</val>
+</top-left>
+<width>
+<val>227.0</val>
+</width>
+<height>
+<val>50.0</val>
+</height>
+<children>
+<reflist>
+<ref refid="d85c7d1d-52fb-11ed-a9d0-2fee27813833"/>
+</reflist>
+</children>
+<diagram>
+<ref refid="58d6c536-66f8-11ec-b4c8-0456e5e540ed"/>
+</diagram>
+<parent>
+<ref refid="ff841a12-52f4-11ed-9bc9-2fee27813833"/>
+</parent>
+<subject>
+<ref refid="b4faff02-52fb-11ed-8eee-2fee27813833"/>
+</subject>
+<lifetime-y>
+<val>402.72279759977357</val>
+</lifetime-y>
+</LifelineItem>
+<ExecutionSpecificationItem id="d85c7d1d-52fb-11ed-a9d0-2fee27813833">
+<matrix>
+<val>(1.0, 0.0, 0.0, 1.0, 98.91159538264515, 89.91855982210143)</val>
+</matrix>
+<points>
+<val>[(14.588404617354854, 201.1129150390625), (14.588404617354854, 0.0)]</val>
+</points>
+<head-connection>
+<ref refid="b4fb7b4d-52fb-11ed-a8e7-2fee27813833"/>
+</head-connection>
+<diagram>
+<ref refid="58d6c536-66f8-11ec-b4c8-0456e5e540ed"/>
+</diagram>
+<parent>
+<ref refid="b4fb7b4d-52fb-11ed-a8e7-2fee27813833"/>
+</parent>
+<subject>
+<ref refid="db1fd7cf-52fb-11ed-8cd9-2fee27813833"/>
+</subject>
+</ExecutionSpecificationItem>
+<BehaviorExecutionSpecification id="db1fd7cf-52fb-11ed-8cd9-2fee27813833">
+<enclosingInteraction>
+<ref refid="ff82ee96-52f4-11ed-bf84-2fee27813833"/>
+</enclosingInteraction>
+<executionOccurrenceSpecification>
+<reflist>
+<ref refid="db209d00-52fb-11ed-914d-2fee27813833"/>
+<ref refid="db20ac7e-52fb-11ed-b7e1-2fee27813833"/>
+</reflist>
+</executionOccurrenceSpecification>
+<presentation>
+<reflist>
+<ref refid="d85c7d1d-52fb-11ed-a9d0-2fee27813833"/>
+</reflist>
+</presentation>
+</BehaviorExecutionSpecification>
+<ExecutionOccurrenceSpecification id="db209d00-52fb-11ed-914d-2fee27813833">
+<covered>
+<ref refid="b4faff02-52fb-11ed-8eee-2fee27813833"/>
+</covered>
+<execution>
+<ref refid="db1fd7cf-52fb-11ed-8cd9-2fee27813833"/>
+</execution>
+</ExecutionOccurrenceSpecification>
+<ExecutionOccurrenceSpecification id="db20ac7e-52fb-11ed-b7e1-2fee27813833">
+<covered>
+<ref refid="b4faff02-52fb-11ed-8eee-2fee27813833"/>
+</covered>
+<execution>
+<ref refid="db1fd7cf-52fb-11ed-8cd9-2fee27813833"/>
+</execution>
+</ExecutionOccurrenceSpecification>
+<Comment id="f15ad1ab-52fb-11ed-8858-2fee27813833">
+<body>
+<val>- Fired when the user clicks over the publitciy shown.
+
+- Look for the coinid clicked token on the memory object, fetch it.
+
+- Get all the info from the token token and build  a TX to pay out all parties according the values of state vars.
+
+- Execute the TX</val>
+</body>
+<presentation>
+<reflist>
+<ref refid="f15ae19c-52fb-11ed-bf11-2fee27813833"/>
+</reflist>
+</presentation>
+</Comment>
+<CommentItem id="f15ae19c-52fb-11ed-bf11-2fee27813833">
+<matrix>
+<val>(1.0, 0.0, 0.0, 1.0, 1179.7872074737727, 288.310302734375)</val>
+</matrix>
+<top-left>
+<val>(0.0, 0.0)</val>
+</top-left>
+<width>
+<val>236.63739013671875</val>
+</width>
+<height>
+<val>281.031490119953</val>
+</height>
+<diagram>
+<ref refid="58d6c536-66f8-11ec-b4c8-0456e5e540ed"/>
+</diagram>
+<subject>
+<ref refid="f15ad1ab-52fb-11ed-8858-2fee27813833"/>
+</subject>
+</CommentItem>
+</gaphor>
