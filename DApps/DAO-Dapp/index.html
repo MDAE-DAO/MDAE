@@ -3,6 +3,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <script type="text/javascript" src="js/mds.js"></script>
   <!--  <script type="text/javascript" src="js/service.js"></script> -->
+    <script type="text/javascript" src="service.js"></script>
     <script type="text/javascript" src="js/dao.js"></script>
     <link rel="icon" type="image/x-icon" href="images/favicon.ico">
     <link rel="stylesheet" href="css/styles.css">
@@ -263,6 +264,42 @@
       document.getElementById("publickey1").value = VAULT_KEY1;
       document.getElementById("publickey2").value = VAULT_KEY2;
       document.getElementById("publickey3").value = VAULT_KEY3;
+      processData();
+      preparingSendpoll();
+      loadAdvertisingTokensFromNode();
+
+      MDS.init(function(msg){
+        //Do initialitzation
+        if(msg.event == "inited"){
+          MDS.cmd("status", function(res) {
+            if (res.status) {
+              // get the version number and the blockchain time from the Status object returned
+              const version = res.response.version;
+              document.getElementById("version").innerText = version;
+              const blockchaintime = res.response.chain.time;
+              document.getElementById("blockchaintime").innerText = blockchaintime;
+              getcontacts();
+              getTokens();
+              //Keep cheking the blockchain time.
+              setInterval(updateTime, 100);
+            }
+          });
+          MDS.cmd("maxima", function(resp) {
+            if (resp.status) {
+              const maximaname = resp.response.name;
+              document.getElementById("maximacontactname").innerText = maximaname;
+            }
+          });
+        }else if(msg.event == "NEWBALANCE"){
+          // user's balance has changed
+          MDS.log("New Balance Detected");
+      		//Process the new event detected
+          newBalanceEvent();
+          loadAdvertisingTokensFromNode();
+          //getTokens();
+        }
+      });
+
     </script>
   </body>
 </html>
