@@ -23,6 +23,7 @@ function createTheDBTokens(msg){
 }
 
 //This function just create the databases if they are not yet
+
 function createTheDBtokensreceived(msg){
 	initsql = "CREATE TABLE IF NOT EXISTS `tokensreceived` ( "
 					+"  `id` IDENTITY PRIMARY KEY, "
@@ -64,7 +65,7 @@ function createTheDBProfiles(msg){
           +"  `operation` varchar(64), "
           +"  `clientwalletaddress` varchar(512), "
           +"  `profile` varchar(64), "
-					+"  `topicsofinterest` varchar(64), "
+					+"  `topicsofinterest` varchar(512), "
           +"  `trxdone` int, "
 					+"  `date` bigint "
 					+" )";
@@ -73,6 +74,7 @@ function createTheDBProfiles(msg){
 			MDS.log("DB DAO Profiles Inited..");
 		});
 }
+
 //This function just create the databases if they are not yet
 function createTheDBAdvertisers(msg){
 	initsql = "CREATE TABLE IF NOT EXISTS `advertisersDAO` ( "
@@ -98,7 +100,7 @@ function createTheDBAdvertisers(msg){
 MDS.init(function(msg){
   //Do initialitzation
   if(msg.event == "inited"){
-    MDS.log("The service.js is initialising MDS also in the background...");
+    MDS.log("The service.js is initialising MDS in the background...");
     createTheDBtokensreceived();
     createTheDBDAOWalletAddress();
     createTheDBProfiles();
