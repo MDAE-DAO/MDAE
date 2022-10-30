@@ -1,7 +1,7 @@
 
-var DAPP_WALLET = "";
+var DAPP_WALLET = "0xF9B9AE1B70572D553A1CBB6FA21AADF48936F8FE298141C6C008F4D611879772";
 var USER_WALLET = "";
-var DAO_WALLET_ADDRESS = "";
+var DAO_WALLET_ADDRESS = "0x54C12B5978FDA46D648FEB54127CC6124A14711AEBEA0A7DCB03BF43ED9EA929";
 var SCRIPT_ADDRESS = "";
 var SCRIPT = "";
 var ADVERTISING_TOKENS = [];
@@ -125,12 +125,12 @@ function getPublicityTokensFromDAO(){
 
         // The DAO will respond sending a message thru MAXIMA
 
-        var nodeStatus = JSON.stringify(resp.response, undefined, 2);
-        document.getElementById("status-object").innerText = nodeStatus;
+        //var nodeStatus = JSON.stringify(resp.response, undefined, 2);
+        //document.getElementById("status-object").innerText = nodeStatus;
       }
       else{
-        var nodeStatus = JSON.stringify(resp, undefined, 2);
-        document.getElementById("status-object").innerText = nodeStatus;
+        //var nodeStatus = JSON.stringify(resp, undefined, 2);
+        //document.getElementById("status-object").innerText = nodeStatus;
         MDS.log("ERROR: getPublicityTokensFromDAO ");
         MDS.log(JSON.stringify(resp, undefined, 2));
       }
@@ -210,7 +210,7 @@ function register_user_script(script){
     if (res.status) {
       //alert(res.response.address);
       SCRIPT_ADDRESS = res.response.address;
-      document.getElementById("scriptwalletaddress").innerHTML = SCRIPT_ADDRESS;
+      //document.getElementById("scriptwalletaddress").innerHTML = SCRIPT_ADDRESS;
       MDS.log("OK: Final User SCRIPT registered: "+JSON.stringify(res.response));
       get_publicity_tokens(SCRIPT_ADDRESS);
     }
@@ -254,6 +254,11 @@ function add_wallet_DAO(){
   DAO_WALLET_ADDRESS = address;
   getPublicityTokensFromDAO();
   //register_user_script(get_user_script());
+}
+
+function set_wallet_DAO(address){
+  DAO_WALLET_ADDRESS = address;
+  getPublicityTokensFromDAO();
 }
 
 // Needs to be called on a NEWBALANCE event if it is a publiciy token
@@ -356,11 +361,11 @@ function get_publiciy_token_rewards(token_coinid){
 
 
       // Show on the html page all the payouts
-      document.getElementById("rew_vault_dev").innerHTML = commissionDappDao;
-      document.getElementById("rew_vault_user").innerHTML = commissionUserDao;
-      document.getElementById("rew_dao_token").innerHTML = token.tokenid;
-      document.getElementById("rew_dev").innerHTML = commissionDapp;
-      document.getElementById("rew_user").innerHTML = commissionUser;
+      //document.getElementById("rew_vault_dev").innerHTML = commissionDappDao;
+      //document.getElementById("rew_vault_user").innerHTML = commissionUserDao;
+      //document.getElementById("rew_dao_token").innerHTML = token.tokenid;
+      //document.getElementById("rew_dev").innerHTML = commissionDapp;
+      //document.getElementById("rew_user").innerHTML = commissionUser;
 
 
       // do the transaction and pay all parts according to state vairables of the token
@@ -402,7 +407,7 @@ function get_publiciy_token_rewards(token_coinid){
                 alert("ERROR: Campaign tokens rewards have not been payout");
                 MDS.log("---ERROR--- Getting Rewards Campaign "+campaign_name+" token : "+campaign_name+" command : "+res[i].command+" token : "+JSON.stringify(res[i].params)+" token : "+tokenid+" to address: "+campaign_address);
                 var nodeStatus = JSON.stringify(res[i], undefined, 2);
-                document.getElementById("status-object").innerText = nodeStatus;
+                //document.getElementById("status-object").innerText = nodeStatus;
                 status = false;
                 MDS.log(JSON.stringify(res[i]));
                 break;
@@ -428,8 +433,8 @@ function get_publiciy_token_rewards(token_coinid){
             MDS.log("payout advertiser 1 token, tokenid:"+ token.tokenid);
             USER_PUBLICITY_TOKENS.tokens[i] = null;  //delete the spent token
             USER_PUBLICITY_TOKENS.minimas[i] = null; //delete the spent minimas
-            var nodeStatus = JSON.stringify(res, undefined, 2);
-            document.getElementById("status-object").innerText = nodeStatus;
+            //var nodeStatus = JSON.stringify(res, undefined, 2);
+            //document.getElementById("status-object").innerText = nodeStatus;
             //  MDS.log(JSON.stringify(res));
           }
           //if the response status is false
@@ -646,11 +651,11 @@ function displayPublicity(section){
         addsection = "<img src="+url_image+" class='advertiser' style='width: 35vw; height: auto;' onclick='get_publiciy_token_rewards(null)'>";
 				document.getElementById(targetPublicity).innerHTML = addsection;
         // Reset on the html page all the payouts
-        document.getElementById("rew_vault_dev").innerHTML = "";
-        document.getElementById("rew_vault_user").innerHTML = "";
-        document.getElementById("rew_dao_token").innerHTML = "";
-        document.getElementById("rew_dev").innerHTML = "";
-        document.getElementById("rew_user").innerHTML = "";
+        //document.getElementById("rew_vault_dev").innerHTML = "";
+        //document.getElementById("rew_vault_user").innerHTML = "";
+        //document.getElementById("rew_dao_token").innerHTML = "";
+        //document.getElementById("rew_dev").innerHTML = "";
+        //document.getElementById("rew_user").innerHTML = "";
 
 	} else{
         var token = USER_PUBLICITY_TOKENS.tokens[0];
@@ -755,9 +760,9 @@ function isthereaWallet(section){
             if (resp.status) {
               MDS.log("Address HAS BEEN Inserted Correctly in the DB");
               alert("Wallet Address has Changed Correctly");
-              WalletAddress("user", address);
+              //WalletAddress("user", address);
               USER_WALLET = address;
-//              register_user_script(get_user_script());
+              register_user_script(get_user_script());
             }
             else {
               MDS.log("The Address HAS NOT BEEN Inserted in the DB");
@@ -777,7 +782,8 @@ function isthereaWallet(section){
         var nodeStatus = JSON.stringify(sqlrow, undefined, 2);
         getwalletaddress = sqlrow.WALLETADDRESS;
         USER_WALLET = getwalletaddress;
-        WalletAddress("user", USER_WALLET);
+        get_user_script_address(get_user_script());
+        //WalletAddress("user", USER_WALLET);
 //        register_user_script(get_user_script());
       }
     }
@@ -792,11 +798,11 @@ function deleteUserWallet(){
     if (resp.status) {
       MDS.log("Address from userwalletaddress HAS BEEN deleted Correctly in the DB");
       alert("Wallet Address has Deleted Correctly");
-      WalletAddress("user", "");
+      //WalletAddress("user", "");
       USER_WALLET = "";
       SCRIPT_ADDRESS = ""
-      document.getElementById("scriptwalletaddress").innerText = "";
-      document.getElementById("userwalletaddress").innerText = "";
+    //  document.getElementById("scriptwalletaddress").innerText = "";
+    //  document.getElementById("userwalletaddress").innerText = "";
     }
     else {
       MDS.log("The Address HAS NOT BEEN deleted in the DB");

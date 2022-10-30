@@ -134,6 +134,20 @@ MDS.init(function(msg){
   }
 });
 
+/*
+.................... From MAXSOLO -------------------
+*/
+const utf8encoder = new TextEncoder();
+
+function utf8ToHex(s)
+{
+  const rb = utf8encoder.encode(s);
+  let r = '';
+  for (const b of rb) {
+    r += ('0' + b.toString(16)).slice(-2);
+  }
+  return r;
+}
 
 function hexToUtf8(s)
 {
@@ -142,6 +156,11 @@ function hexToUtf8(s)
       .replace(/[0-9A-F]{2}/g, '%$&') // add '%' before each 2 characters
   );
 }
+/*
+.................... From MAXSOLO END ------------------
+*/
+
+
 
 //send address:0x9D90EE44464722B25EA05EBC443755FB81D8AAB1077726D5A2A09010BD041184 amount:7 tokenid:0x00 state:{"0":"[BUY]", "1":"0xC6496C916268F428259FA05A979A3FDE8E0901A52525A4D73578903AE2975634", "2":"0x00", "3":"7"}
 
@@ -1331,6 +1350,20 @@ function ConfigureCampaign(){
             state_vars +=
             '"21":"['+actions_adv+']",' +
             '"22":"['+rules_adv+']",' +
+            // Convert the txt fields hex to let include html, javascript and css data on them
+            '"23":"0x'+utf8ToHex(text_0_adv).toUpperCase().trim()+'",' +
+            '"24":"0x'+utf8ToHex(text_1_adv).toUpperCase().trim()+'",' +
+            '"25":"0x'+utf8ToHex(text_2_adv).toUpperCase().trim()+'",' +
+            '"26":"0x'+utf8ToHex(text_3_adv).toUpperCase().trim()+'",' +
+            '"27":"0x'+utf8ToHex(text_4_adv).toUpperCase().trim()+'",' +
+            '"28":"0x'+utf8ToHex(text_5_adv).toUpperCase().trim()+'",' +
+            '"29":"0x'+utf8ToHex(text_6_adv).toUpperCase().trim()+'",' +
+            '"30":"0x'+utf8ToHex(text_7_adv).toUpperCase().trim()+'",' +
+            '"31":"0x'+utf8ToHex(text_8_adv).toUpperCase().trim()+'"}';
+
+            /*
+            '"21":"['+actions_adv+']",' +
+            '"22":"['+rules_adv+']",' +
             '"23":"['+text_0_adv+']",' +
             '"24":"['+text_1_adv+']",' +
             '"25":"['+text_2_adv+']",' +
@@ -1340,7 +1373,7 @@ function ConfigureCampaign(){
             '"29":"['+text_6_adv+']",' +
             '"30":"['+text_7_adv+']",' +
             '"31":"['+text_8_adv+']"}';
-
+            */
             MDS.log("STATE VARS to configure:"+state_vars);
 
             //alert(JSON.stringify(res.response[0]));
