@@ -1,9 +1,10 @@
 
 var DAPP_WALLET = "";
-var USER_WALLET ="";
+var USER_WALLET = "";
+var DAO_WALLET_ADDRESS = "";
 var SCRIPT_ADDRESS = "";
 var SCRIPT = "";
-const ADVERTISING_TOKENS = [];
+var ADVERTISING_TOKENS = [];
 //const ADVERTISING_TOKENS = ["0x6F3D1B097DD5B73FF6D9CC018ADB2524BF1F854B32820DC695ECD58E199363B6", "0x835F54EF6FBD7E3B599AA3C963E6BCE02680729AD8AE2B95882BE810A0074587"];
 
 // it is a javascript object with two arrays where the positions betwen them are syncronized, every token
@@ -13,7 +14,9 @@ const ADVERTISING_TOKENS = [];
 var USER_PUBLICITY_TOKENS ={
   tokens:[],
   minimas:[]
-}
+};
+
+var MAXIMA = new Object();
 
 //Main message handler..
 //set_dapp_wallet(0xE52DB05CF2E2C91290168D15CAB7BCD3DB64518AF1CDB2936615D838A1010842);
@@ -30,17 +33,6 @@ MDS.init(function(msg){
     MDS.log("The service.js is initialising MDS also in the background...");
     createTheDBUserWalletAddress();
     if (SCRIPT_ADDRESS.length != 0) get_publicity_tokens(SCRIPT_ADDRESS);
-    MDS.cmd("status", function(res) {
-      if (res.status) {
-        // get the version number and the blockchain time from the Status object returned
-        const version = res.response.version;
-        document.getElementById("version").innerText = version;
-        const blockchaintime = res.response.chain.time;
-        document.getElementById("blockchaintime").innerText = blockchaintime;
-        //Keep cheking the blockchain time.
-        setInterval(updateTime, 100);
-      }
-    });
     isthereaWallet("user");
   }
   else if(msg.event == "NEWBLOCK"){
@@ -52,9 +44,33 @@ MDS.init(function(msg){
 		//Process the new event detected
     if (SCRIPT_ADDRESS.length > 0) get_publicity_tokens(SCRIPT_ADDRESS);
   }
-  else if(msg.event == "MINING"){
-    //alert("newbalance: "+JSON.stringify(msg, undefined, 2));
-  // mining has started or ended
+  else if(msg.event == "MAXIMA"){
+    // CONFIGURE data: Advertiser-Dapp-data-configure"  :Receives the pubicity tokens avaiable from DAO
+    if(msg.data.application == "Advertiser-Dapp-data-configure"){
+
+      //Relevant data
+      //Object to receive over MAXIMA
+      /*
+      var data = {};
+      data.id_maxima = "";
+      data.users 	= [];
+      data.developers	= [];
+      data.tokens_publicity = [];
+      */
+
+      //remove the leading 0x
+      var datastr	= msg.data.data.substring(2);
+
+      //Convert the data..
+      var jsonstr = hexToUtf8(datastr);
+
+      //And create the actua object data received
+      var maxjson = JSON.parse(jsonstr);
+      ADVERTISING_TOKENS = maxjson.tokens_publicity;
+      alert(JSON.stringify(maxjson, undefined, 2));
+      if (SCRIPT_ADDRESS.length != 0) get_publicity_tokens(SCRIPT_ADDRESS);
+      MDS.log("Received Maxima data: "+ JSON.stringify(maxjson, undefined, 2));
+    }
   }
   else if(msg.event == "MINIMALOG"){
   // new Minima log message
@@ -62,6 +78,66 @@ MDS.init(function(msg){
   else{
   }
 });
+
+function hexToUtf8(s){
+  return decodeURIComponent(
+     s.replace(/\s+/g, '') // remove spaces
+      .replace(/[0-9A-F]{2}/g, '%$&') // add '%' before each 2 characters
+  );
+}
+
+// Get the maxima info most recent of the miima node and set it on memory
+function getMaximaInfo(callback) {
+  MDS.cmd("maxima action:info", function(resp) {
+    if (resp.status) {
+      //alert("Contact maxima action info!");
+      MDS.log("getting MAXIMA info....");
+      MDS.log("Maxima info:"+JSON.stringify(resp.response, undefined, 2));
+      MAXIMA.contact = resp.response.contact;
+      MAXIMA.publickey = resp.response.publickey;
+      MAXIMA.name = resp.response.name;
+      MAXIMA.info = [];
+      callback(resp);
+    }else{
+      var nodeStatus = JSON.stringify(resp, undefined, 2);
+      MDS.log("ERROR getmaxsoloting MAXIMA info...."+nodeStatus);
+    }
+  });
+}
+
+/*CONFIGURE_TOKENS
+port == 0 operation
+port == 1 Maxima Contact
+port == 2 Publickey
+*/
+function getPublicityTokensFromDAO(){
+  //Get the information
+  MDS.log("getPublicityTokensFromDAO ");
+  getMaximaInfo(function(res){
+    var state_vars = '{"0":"[CONFIGURE_TOKENS]","1":"['+MAXIMA.contact+']","2":"['+MAXIMA.publickey+']"}';
+    //alert(state_vars);
+    //alert(DAO_WALLET_ADDRESS);
+    var CreateSend = "send address:"+DAO_WALLET_ADDRESS+" amount:1 tokenid:0x00" + " state:"+state_vars;
+    alert("- Wallwet -> Maxima reesponse command:\n -:"+CreateSend);
+    MDS.cmd(CreateSend, function(resp) {
+      if (resp.status) {
+        MDS.log("getPublicityTokensFromDAO command sent ");
+
+        // The DAO will respond sending a message thru MAXIMA
+
+        var nodeStatus = JSON.stringify(resp.response, undefined, 2);
+        document.getElementById("status-object").innerText = nodeStatus;
+      }
+      else{
+        var nodeStatus = JSON.stringify(resp, undefined, 2);
+        document.getElementById("status-object").innerText = nodeStatus;
+        MDS.log("ERROR: getPublicityTokensFromDAO ");
+        MDS.log(JSON.stringify(resp, undefined, 2));
+      }
+    });
+  });
+
+}
 
 function set_script_wallets(dapp_wallet, user_wallet){
   DAPP_WALLET = dapp_wallet;
@@ -108,9 +184,8 @@ function get_user_script_address(){
 }
 
 // Retunr addrress script on target html element
-function get_user_script_variable_address(target_html) {
-  register_user_script(get_user_script(),target_html);
-  	//document.getElementById(target_html).innerHTML = SCRIPT_ADDRESS;
+function get_user_script_variable_address() {
+  register_user_script(get_user_script());
 }
 
 // Simulate newBalanceEvent to load new Developer Wallet and new Publicity Tokens to refresh screen
@@ -125,7 +200,7 @@ function update_publicity_tokens(){
 // on the API when the APP start up.
 // Also get all publicity tokens of that script address and set them as global variables.
 // get_publicity_tokens
-function register_user_script(script, target_html){
+function register_user_script(script){
   alert("REGSITERING SCRIPT: "+script);
   var command = 'newscript trackall:true script:"'+script+'"'
   MDS.log("register_user_script: "+command);
@@ -135,7 +210,7 @@ function register_user_script(script, target_html){
     if (res.status) {
       //alert(res.response.address);
       SCRIPT_ADDRESS = res.response.address;
-      if (target_html != null) document.getElementById(target_html).innerHTML = SCRIPT_ADDRESS;
+      document.getElementById("scriptwalletaddress").innerHTML = SCRIPT_ADDRESS;
       MDS.log("OK: Final User SCRIPT registered: "+JSON.stringify(res.response));
       get_publicity_tokens(SCRIPT_ADDRESS);
     }
@@ -168,6 +243,16 @@ function add_wallet_developer(){
 function add_wallet_user(){
   var address = prompt("Please enter the User address:", "");
   USER_WALLET = address;
+  //register_user_script(get_user_script());
+}
+
+// Needed to comunitcate with the DAO to get the publicity tokens available, on a real case scenario This
+// address will be hardcoded by the developer of the DAPP or a service will be called to get that address or Also
+// it could not be necessary if the developer hardcode the tokenid of the publicity tokens to be received by his DAPP
+function add_wallet_DAO(){
+  var address = prompt("Please enter the DAO address:", "");
+  DAO_WALLET_ADDRESS = address;
+  getPublicityTokensFromDAO();
   //register_user_script(get_user_script());
 }
 

@@ -12,31 +12,37 @@
   </head>
   <body>
     <h1>The SHOW PUBLICITY DAPP - API for DAPP Developers</h1>
+    <!--
     <p class="statusdata">Current Node Version: <span class="maindata" id="version"></span></p>
     <p class="statusdata">Current blockchain Time: <span class="maindata" id="blockchaintime"></span></p>
+  -->
     <div class="wrapper">
       <div class="INF instrucions">
         <h2>DEVELOPER DAPP INSTRUCTIONS</h2>
 
         <p>1.-: <span>Include API: publicity-API.js in your index.html</span></p>
         </br>
-        <p>2.-: <span>Include the Developer Wallet for receving rewards to show publicity into the api</span></p>
+        <p>2.-: <span>Include the Developer Wallet for receving rewards to show publicity into the api and call the function getPublicityTokensFromDAO()
+          at he init function, on this prototype is called when the DAO wallet is set </span></p>
         </br>
         <p>3.-: <span>Include a DIV layer with the id: 'advertiserbanner' into the code where publicity will be showed</span></p>
         </br>
         <p>4.-: <span>The API: publicity-API.js will execute MDS.init on startup, if is the first time a popup will ask for user wallet where to
           receive the rewards for watching the publicity and it will save it to the database, then it will register on the user node the script
-          composed by developar wallet plus user wallet, generating a unique address, where publicity tokens will be sent /span></p>
+          composed by developar wallet plus user wallet, generating a unique address, where publicity tokens will be sent(On this prototype this must be triggered MANUALLY
+          calling the function get_user_script_variable_address() clicking the button <b>Get Script User Address</b>), and also as explained on the former
+          paragraph it will fetch the publicity tokens from the DAO sending a minima TX to the DAO and this will response thru a Maxima
+          message with an array of available publicity tokens</span></p>
         </br>
         <p>5.-: <span>The API: publicity-API.js after registering the script will fetch the publicity tokens calling the
           function get_publicity_tokens(script_address) and set them on a global variable: USER_PUBLICITY_TOKENS </span></p>
         </br>
-        <p>6.-: <span>On NEWBALANCEEVENT: the function get_publicity_tokens will call displayPublicity(section) and if there is some publicity
+        <p>6.-: <span>On NEWBALANCEEVENT: the function get_publicity_tokens will call displayPublicity(section) and if there are some publicity
           tokens into the registered script this publicity will be show on the 'id' specified by section, if 'null' is
           used, then the default id: 'advertiserbanner' will be used, and also it will be called on NEWBALANCE event </span></p>
         </br>
         <p>7.-: <span>Once the publicity area is clicked, it will trigger the function: get_publiciy_token_rewards(token_coinid) that
-          will execute a transaction paying all rewards to all parties and returning the token to the DAO according the states variables
+          will execute a transaction paying all rewards to all parties and returning the token to the ADVERTISER according the states variables
           that are defined into the publicity TOKEN </span></p>
       </div>
       <div class="INF Publicity section" align="center">
@@ -76,7 +82,7 @@
       <p class="statusdata">Current Script User Address: <span style="font-size: 1em;" class="maindata" id="scriptwalletaddress"></span></p>
       <button class="button" onclick='datarole="user"; WalletAddress(datarole);'>Get User Wallet Address</button>
       <button class="button" onclick='datarole="developer"; WalletAddress(datarole);'>Get Developer Wallet Address</button>
-      <button class="button" onclick='get_user_script_variable_address("scriptwalletaddress");'>Get Script User Address</button>
+      <button class="button" onclick='get_user_script_variable_address();'>Get Script User Address</button>
       <button class="button" onclick='deleteUserWallet();'>Delete User Address</button>
       <button class="button" onclick='update_publicity_tokens();'>Update publicity tokens waiting</button>
     </div>
@@ -88,6 +94,7 @@
       <button class="button" disabled onclick='add_publicity_token();'>Add Publicity tokenid</button>
       <button class="button" onclick='add_wallet_user();'>Add User DEVELOPER</button>
       <button class="button" onclick='add_wallet_developer();'>Add Wallet DEVELOPER</button>
+      <button class="button" onclick='add_wallet_DAO();'>Add Wallet DAO</button>
       <pre id="status-object"></pre>
       <div class="visualconsole"></div>
     </div>
