@@ -703,6 +703,11 @@ function get_user_script(){
   return script;
 }
 
+function get_user_script(user_address, developer_address){
+  var script = "LET finaluserwallet=" + user_address +
+  " LET dappdeveloperwallet="+developer_address+ " RETURN TRUE"
+  return script;
+}
 
 function get_minima_amount_available(){
   for(var i=0; i < BALANCE.length; i++) {
@@ -764,7 +769,7 @@ function getTxSendCampaignString(token, address, camapign_address, rewards_coini
     }
     txncreator +=
     "txnbasics id:"+txnid+";"+
-    "txnsign id:"+txnid+" publickey:auto;"+
+  //  "txnsign id:"+txnid+" publickey:auto;"+
     "txnpost id:"+txnid+";"+
     "txndelete id:"+txnid+";";
 
@@ -929,19 +934,245 @@ function sendCampaign(){
                   }
                 });
               }else {
-                MDS.log(JSON.stringify(sqlmsg));
+                MDS.log(JSON.stringify(res));
               }
             });
 
         }else {
           alert("There are not tokens on this address"+campaign_address);
-          MDS.log(JSON.stringify(sqlmsg));
+          MDS.log(JSON.stringify(res));
         }
       });
       }else{
-        MDS.log(JSON.stringify(sqlmsg));
+        MDS.log(JSON.stringify(res));
       }
     });
+}
+
+
+// Build the transaction for sending a campaign tokens[] to the final users addresses[]
+// rewards_coinid[] is an array of coinid that all of them sum the quantity necesary, so that the configured campaign tokens
+// indicates to be sent to the final user, otherwise, if the rewards sent to the final user than the campaign dictates are
+// not send,the payouts on the final user will fail as well as the script that verify that the stablished rules
+// are meet.
+function getTxSendCampaignStringMulti(tokens, addresses, camapign_address, rewards_coinid, rewards_token, rewards_amount, pubicity_amout, advertiser_wallet, change_back, change_back_token){
+  //Create a random txn id..
+  var txnid = Math.floor(Math.random()*1000000000);
+
+  //Construct Transaction..
+  var txncreator = "txncreate id:"+txnid+";";
+
+
+    // Constructs state variables, getting the tokens statevars,
+    for (var i=0; i<tokens[0].state.length; i++){
+      txncreator += "txnstate id:"+txnid+" port:"+token.state[i].port+" value:"+token.state[i].data+";";
+    }
+    txncreator += "txnstate id:"+txnid+" port:14 value:2;";         // 2:sent  -> set state to Token to used
+
+    for (i=0; i<tokens.length; i++){
+      txncreator += "txninput id:"+txnid+" coinid:"+token.coinid+";"  //Input coin of Token
+    }
+
+
+    //alert("txncreator: "+JSON.stringify(rewards_coinid));         //Input coins minima
+    for (var i=0; i<rewards_coinid.length; i++) {
+      txncreator += "txninput id:"+txnid+" coinid:"+rewards_coinid[i]+";"
+      //alert("txncreator: "+rewards_coinid[i]);
+    }
+
+    for (i=0; i<addresses.length; i++){
+      txncreator +=
+      "txnoutput id:"+txnid+" amount:"+rewards_amount+" address:"+addresses[i]+" tokenid:"+rewards_token+" storestate:false;"+
+      "txnoutput id:"+txnid+" amount:"+pubicity_amout+" address:"+addresses[i]+" tokenid:"+tokens[0].tokenid+" storestate:true;"
+    }
+
+    if (change_back > 0) {
+      txncreator += "txnoutput id:"+txnid+" amount:"+change_back+" address:"+advertiser_wallet+" tokenid:"+rewards_token+" storestate:false;"
+    }
+    if (change_back_token > 0) {
+      txncreator += "txnoutput id:"+txnid+" amount:"+change_back_token+" address:"+camapign_address+" tokenid:"+tokens[0].tokenid+" storestate:true;"
+    }
+    txncreator +=
+    "txnbasics id:"+txnid+";"+
+  //  "txnsign id:"+txnid+" publickey:auto;"+
+    "txnpost id:"+txnid+";"+
+    "txndelete id:"+txnid+";";
+
+    return txncreator;
+}
+
+
+// Send a publicity campaign token configured to a group of final user script address, composed of a user wallet and developer
+// walletWALLET_ADDRES as well as the rewards of the user and the developer in order to the final user script can make
+// the payouts when the publicty token will be watched
+function sendCampaignMulti(){
+  var campaign_name_select= document.getElementById("select_campaigns");
+  var campaign_tokenid = campaign_name_select.options[campaign_name_select.selectedIndex].value;
+  var campaign_name = campaign_name_select.options[campaign_name_select.selectedIndex].text;
+  var campaign_address = CAMPAIGNS[campaign_name].campaign_address;
+  var campaign_amount = CAMPAIGNS[campaign_name].amount;
+
+
+
+
+
+      MDS.cmd("coins address:"+campaign_address, function(res){
+        if (res.status) {
+          if (res.response.length == 0) {alert("There are no more tokens avaiable for this campaign");return;}
+          MDS.log("Getting token info to send the campaing to : "+campaign_address);
+          //alert(JSON.stringify(res.response, undefined, 2));
+
+          var amount_users = TARGET_USERS.length;
+          var max_tokens_to_send = 0;
+          var tokens = [];
+          // get the tokens availabe to send on the campaign address that are less or equal that amount_users fetched
+          // from the DAO and also must be less or equal to campaign_amount and less than 150
+          if (campaign_amount >= amount_users) max_tokens_to_send = amount_users;
+          else max_tokens_to_send = campaign_amount;
+          if (max_tokens_to_send > 150) max_tokens_to_send = 150; // max input coinid
+          var token_units = 0;
+
+          for (var i=0; i<res.length; i++){
+            var units = res.response[i].tokenamount;
+            if (token_units < max_tokens_to_send) {
+              token_units += units;
+              tokens.push(res.response[i]);
+            } else break;
+          }
+
+          alert("max_tokens_to_send: "+max_tokens_to_send+" tokens: "+tokens.length+" token_units: "+token_units);
+          const token = res.response[0];  //publicity token
+          //var tokenid = coin.tokenid;
+          //var coinid  = coin.coinid;
+          var user_rewards = parseFloat(token.state[17].data);
+          var developer_rewards = parseFloat(token.state[15].data);
+          var total_rewards_to_send = (developer_rewards + user_rewards) * max_tokens_to_send;
+          var total_rewards_to_send_by_token = developer_rewards + user_rewards;
+
+
+          //MDS.log("TOKEN to send:"+JSON.stringify(token));
+          alert(total_rewards_to_send+" ,"+developer_rewards+" ,"+user_rewards+" ,"+max_tokens_to_send);
+
+          var advertiser_wallet = token.state[10].data;   // buyer address
+
+
+          var change_back_token = 0;
+          if (token_units > max_tokens_to_send) change_back_token = max_tokens_to_send - token_units ;
+          alert("change_back_token: "+change_back_token);
+
+          // check if there are enough funds quantity to send along with the campaign token since the token specify
+          // the amount needed to send, so far we only consider minima token rewards
+          // we only look into ADVERTISER_WALLET_ADDRESS to assure the minimas we got are from the same node
+          // and not other coins from other nodes tracked
+
+            // ## Look for and fetch coinid minimas rewards to send on the transaciot
+            // we need to get all coinids  of minima tokens that sum at least the total_rewards_to_send
+            MDS.cmd("coins address:"+ADVERTISER_WALLET_ADDRESS+" tokenid:0x00", function(res){
+              if (res.status) {
+                var change_back = 0.0;
+                var coinid_rewards = [];
+                var total_minima_coinids = 0.0;
+
+                // Get the list of coinid that sum at least the ammount of rewards to send
+                //alert(ADVERTISER_WALLET_ADDRESS);
+                //alert("before for: "+JSON.stringify(res.response[0]));
+                for (var i=0; i<res.response.length; i++){
+                  var coin = res.response[i];
+                  // discard minimas with state variables set
+                //  if (coin.state.length == 0){
+                    coinid_rewards.push(coin.coinid);
+                    //alert(coin.amount);
+                    total_minima_coinids += parseFloat(coin.amount);
+                    //alert(total_minima_coinids+", "+total_rewards_to_send);
+                    if (total_minima_coinids >= parseFloat(total_rewards_to_send)) break;
+                //  }
+                }
+                if (total_minima_coinids < total_rewards_to_send) {
+                  alert("You don't have enough minima funds to send the campaign, you need: "+total_rewards_to_send+" minimas and only have: "+total_minima_coinids);
+                  return;
+                }
+                change_back = total_minima_coinids - total_rewards_to_send;
+                alert("ChangeBack minimas:"+change_back);
+
+                // SENDING campaign building a custom transaction
+                //alert("Final user script addres: "+final_user_script_address);
+
+
+
+                // calculate the script for every pair of user-developer wallet for the results of the DB
+                // stored on global arrays TARGET_USERS and TARGET_DEVELOPERS until the amount of tokens of the campaing is
+                // reached or there are no more data on the Arrays (In this prototype we asume that there is an exact match of
+                // user and developers and are correlated on the array positions), on a real case scenario the user will Also
+                // have to choose the Dapps where to receive the publicity otherwise, a user who selected a topic of sport could
+                // be pair with a developer Dapp who is about sports too but the user has not installed that Dapp, so then, the
+                // token sent by advertiser will be lost as it will never be watched by the user.
+
+                var TARGET_SCRIPTS_USERS = [];
+                var command = "";
+                for (var i=0; i<max_tokens_to_send; i++){
+                  command += 'runscript script:"'+get_user_script(TARGET_USERS[i], TARGET_DEVELOPERS[i])+'";';
+                }
+                MDS.cmd(command, function(res){
+                  for (var i=0; i<res.length; i++){ //CHECK  FOR ERRORS ON EVERY COMMAND OF multicommand
+                      if (!res[i].status) { // if some comand fails
+                        alert("ERROR: sendCampaignMulti running script");
+                        MDS.log("---ERROR--- sendCampaignMulti "+campaign_name+" token : "+campaign_name+" command : "+res[i].command+" token : "+JSON.stringify(res[i].params)+" token : "+tokenid+" to address: "+campaign_address);
+                        var nodeStatus = JSON.stringify(res[i], undefined, 2);
+                        document.getElementById("status-object").innerText = nodeStatus;
+                        MDS.log(JSON.stringify(res[i]));
+                        return;
+                      }else {
+                        TARGET_SCRIPTS_USERS.push(res[i].response.script.address);
+                      }
+                  }
+
+
+
+                  var command = getTxSendCampaignStringMulti(tokens, TARGET_SCRIPTS_USERS, campaign_address, coinid_rewards, "0x00", total_rewards_to_send_by_token, "1", advertiser_wallet, change_back, change_back_token);
+                  MDS.log("Send Campaign minima command: "+command);
+                  //alert(command);
+                  MDS.log("PRINTING splitted command: ");
+                  var split_command = command.split(';');
+                  split_command.forEach(function (value) {
+                    MDS.log(value);
+                  });
+
+                  MDS.cmd(command, function(res){
+                    var status = true;
+                    for (var i=0; i<res.length; i++){ //CHECK  FOR ERRORS ON EVERY COMMAND OF TRANSACTION
+                        if (!res[i].status) { // if some comand fails
+                          alert("ERROR: Campaign tokens Multi has not been sent");
+                          MDS.log("---ERROR--- Send Campaign Multi "+campaign_name+" token : "+campaign_name+" command : "+res[i].command+" token : "+JSON.stringify(res[i].params)+" token : "+tokenid+" to address: "+campaign_address);
+                          var nodeStatus = JSON.stringify(res[i], undefined, 2);
+                          document.getElementById("status-object").innerText = nodeStatus;
+                          status = false;
+                          MDS.log(JSON.stringify(res[i]));
+                          break;
+                        }
+                    }
+                    //alert("STATUS TX: "+status);
+                    if (status) {
+                      MDS.log("Send Campaign "+campaign_name+" sent to final user total tokens: "+max_tokens_to_send);
+                      MDS.log("Send Campaign "+campaign_name+" token : "+campaign_tokenid+" from address: "+campaign_address);
+                      MDS.log("Send Campaign rewards amount:"+total_rewards_to_send);
+                      MDS.log("Send Campaign change back amount minimas: "+change_back);
+                      MDS.log("Send Campaign change back amount token: "+change_back_token);
+                      // update campaing database and subtract 1 to the amount of tokens
+                      update_campaign_amount(campaign_name, campaign_amount - max_tokens_to_send);
+                      var nodeStatus = JSON.stringify(res, undefined, 2);
+                      document.getElementById("status-object").innerText = nodeStatus;
+                    }
+                  });
+                });
+                }else {
+                  MDS.log(JSON.stringify(res));
+                }
+              });
+        }else {
+          //alert("There are not tokens on this address"+campaign_address);
+          MDS.log(JSON.stringify(res));
+        }
+      });
 }
 
 
@@ -1350,7 +1581,7 @@ function ConfigureCampaign(){
             state_vars +=
             '"21":"['+actions_adv+']",' +
             '"22":"['+rules_adv+']",' +
-            // Convert the txt fields hex to let include html, javascript and css data on them
+            // Convert the txt fields to hex to let include html, javascript and css data on them
             '"23":"0x'+utf8ToHex(text_0_adv).toUpperCase().trim()+'",' +
             '"24":"0x'+utf8ToHex(text_1_adv).toUpperCase().trim()+'",' +
             '"25":"0x'+utf8ToHex(text_2_adv).toUpperCase().trim()+'",' +

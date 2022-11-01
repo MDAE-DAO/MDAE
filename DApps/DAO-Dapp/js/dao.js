@@ -1077,11 +1077,15 @@ function sendTheDataToTheAdvertiser(coin){
       if (sqlmsg.count > 0){
         var sqlrows = sqlmsg.rows;
         //Takes the last address recorded
-        let j = (sqlrows.length -1);
-        var sqlrow = sqlrows[j];
+        //let j = (sqlrows.length -1);
+        //var sqlrow = sqlrows[j];
         MDS.log(JSON.stringify(sqlmsg));
-        var client_wallet_address = sqlrow.CLIENTWALLETADDRESS;
-        data.users.push(client_wallet_address);
+        for (var j=0; j<sqlrows.length; j++){
+          var sqlrow = sqlrows[j];
+          var client_wallet_address = sqlrow.CLIENTWALLETADDRESS;
+          data.users.push(client_wallet_address);
+        }
+
 
         MDS.sql("SELECT * from profiles WHERE topicsofinterest='"+topics_of_interest+"' AND profile='[developer]'", function(sqlmsg2){
           if (sqlmsg2.status) {
@@ -1089,11 +1093,16 @@ function sendTheDataToTheAdvertiser(coin){
             if (sqlmsg2.count > 0){
               var sqlrows2 = sqlmsg2.rows;
               //Takes the last address recorded
-              let m = (sqlrows2.length -1);
-              var sqlrow2 = sqlrows2[m];
-              var client_wallet_address2 = sqlrow2.CLIENTWALLETADDRESS;
+              //let m = (sqlrows2.length -1);
+              //var sqlrow2 = sqlrows2[m];
+              //var client_wallet_address2 = sqlrow2.CLIENTWALLETADDRESS;
               MDS.log(JSON.stringify(sqlmsg2));
-              data.developers.push(client_wallet_address2);
+              for (var j=0; j<sqlrows.length; j++){
+                var sqlrow2 = sqlrows2[j];
+                var client_wallet_address2 = sqlrow2.CLIENTWALLETADDRESS;
+                data.developers.push(client_wallet_address2);
+              }
+
               MDS.log(JSON.stringify(sqlmsg));
                 contactid = contactid.slice(1,-1); // remove "[]"
                 publickey = publickey.slice(1,-1); // remove "[]"
